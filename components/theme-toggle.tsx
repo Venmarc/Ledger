@@ -9,18 +9,18 @@ export function ThemeToggle() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line
     setMounted(true)
   }, [])
 
   if (!mounted) {
-    return <div className="w-10 h-10 md:w-9 md:h-9" />
+    return <div className="w-11 h-11 md:w-9 md:h-9" />
   }
 
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-transparent text-text-secondary hover:bg-bg-subtle hover:text-text-primary active:scale-[0.92] transition-all duration-150 cursor-pointer"
+      className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-transparent text-text-secondary hover:bg-bg-subtle hover:text-text-primary active:scale-[0.92] transition-all duration-150 cursor-pointer"
       aria-label="Toggle theme"
     >
       {theme === 'dark' ? (

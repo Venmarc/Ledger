@@ -15,17 +15,17 @@ export default function Home() {
           <ThemeToggle />
           
           <Show when="signed-out">
-            <Link href="/sign-in" className="h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer">
+            <Link href="/sign-in" className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer">
               Sign In
             </Link>
-            <Link href="/sign-up" className="h-10 px-5 text-sm font-semibold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(249,115,22,0.2)]">
+            <Link href="/sign-up" className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(249,115,22,0.2)]">
               View Demo
             </Link>
           </Show>
           <Show when="signed-in">
             <Link
               href="/dashboard"
-              className="h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer"
+              className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer"
             >
               Dashboard
             </Link>
@@ -84,7 +84,7 @@ export default function Home() {
                   <span>Naira balance</span>
                   <span>₦ - tnum</span>
                 </div>
-                <div className="text-4xl font-bold font-display text-text-primary tracking-tight">
+                <div className="text-4xl font-bold font-sans tracking-tight tabular-nums text-text-primary">
                   ₦450,200.<span className="text-text-tertiary text-2xl">00</span>
                 </div>
                 <div className="w-full bg-bg-surface h-1.5 rounded-full overflow-hidden">

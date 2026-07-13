@@ -2,7 +2,7 @@ import React from 'react'
 import { Sidebar } from '@/components/sidebar'
 import { BottomNav } from '@/components/bottom-nav'
 import { TopBar } from '@/components/top-bar'
-import { syncUserProfile } from '@/lib/actions/profile'
+import { ProfileSync } from '@/components/profile-sync'
 import { redirect } from 'next/navigation'
 import { auth } from '@clerk/nextjs/server'
 import { Plus } from 'lucide-react'
@@ -17,14 +17,9 @@ export default async function AppProtectedLayout({
     redirect('/sign-in')
   }
 
-  try {
-    await syncUserProfile()
-  } catch (err) {
-    console.error('Async profile sync error:', err)
-  }
-
   return (
     <div className="flex min-h-screen bg-bg-base text-text-primary">
+      <ProfileSync />
       {/* Sidebar for Desktop */}
       <Sidebar />
       
