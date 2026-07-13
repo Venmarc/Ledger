@@ -1,16 +1,25 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { useTheme } from './theme-provider'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <div className="w-10 h-10 md:w-9 md:h-9" />
+  }
 
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-transparent text-text-secondary hover:bg-bg-subtle hover:text-text-primary active:scale-92 transition-all duration-150 cursor-pointer"
+      className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-transparent text-text-secondary hover:bg-bg-subtle hover:text-text-primary active:scale-[0.92] transition-all duration-150 cursor-pointer"
       aria-label="Toggle theme"
     >
       {theme === 'dark' ? (
