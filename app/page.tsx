@@ -1,118 +1,154 @@
-import { SignInButton, SignUpButton, Show, UserButton } from '@clerk/nextjs'
-import { Wallet, ArrowRight, ShieldCheck, TrendingUp, Sparkles } from 'lucide-react'
+import { Show, UserButton } from '@clerk/nextjs'
+import { Logo } from '@/components/logo'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { ArrowRight, Receipt, Landmark, Target, BarChart3, Sparkles } from 'lucide-react'
+import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#0A0A0A] font-sans antialiased text-[#F5F5F5]">
-      {/* Navigation Header */}
-      <header className="flex items-center justify-between w-full border-b border-[#2A2A2A] bg-[#141414] py-4 px-6 md:px-12 z-10">
-        <div className="flex items-center gap-2 cursor-pointer transition-transform duration-200 hover:-translate-y-[2px] group">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#F97316] to-[#EA6C0A] shadow-[0_0_12px_rgba(249,115,22,0.3)] group-hover:shadow-[0_0_16px_rgba(249,115,22,0.5)] transition-shadow duration-200">
-            <Wallet className="w-5 h-5 text-black" strokeWidth={2.5} />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-[#F5F5F5] font-display">
-            Ledger
-          </span>
-        </div>
+    <div className="flex flex-col min-h-screen bg-bg-base font-sans antialiased text-text-primary selection:bg-orange/30 selection:text-orange">
+      {/* Navigation */}
+      <header className="flex items-center justify-between w-full border-b border-border bg-bg-surface/80 backdrop-blur-md py-4 px-6 md:px-12 sticky top-0 z-50">
+        <Logo showText size={32} />
 
-        {/* Auth Buttons */}
         <div className="flex items-center gap-4">
+          <ThemeToggle />
+          
           <Show when="signed-out">
-            <SignInButton mode="modal">
-              <button className="h-10 px-5 text-sm font-semibold rounded-lg border border-[#3A3A3A] bg-transparent text-[#F5F5F5] transition-colors duration-150 hover:bg-[#232323] cursor-pointer">
-                Sign In
-              </button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button className="h-10 px-5 text-sm font-semibold rounded-lg bg-[#F97316] text-[#0A0A0A] transition-all duration-150 hover:bg-[#EA6C0A] hover:-translate-y-[1px] active:translate-y-0 cursor-pointer shadow-[0_0_12px_rgba(249,115,22,0.2)]">
-                Sign Up
-              </button>
-            </SignUpButton>
+            <Link href="/sign-in" className="h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer">
+              Sign In
+            </Link>
+            <Link href="/sign-up" className="h-10 px-5 text-sm font-semibold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(249,115,22,0.2)]">
+              View Demo
+            </Link>
           </Show>
           <Show when="signed-in">
+            <a
+              href="/dashboard"
+              className="h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer"
+            >
+              Dashboard
+            </a>
             <UserButton />
           </Show>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 md:py-24 max-w-6xl mx-auto w-full">
-        {/* Hero Section */}
-        <div className="flex flex-col items-center text-center max-w-3xl gap-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#7C2D12] bg-[#431407] text-[#F97316] text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5" />
-            Personal Finance OS
-          </div>
-          
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-[#F5F5F5] font-display leading-[1.1] max-w-2xl">
-            Track every Naira. <br />
-            <span className="bg-gradient-to-r from-[#F97316] to-[#38BDF8] bg-clip-text text-transparent">
-              Build financial clarity.
-            </span>
-          </h1>
+      {/* Hero Section */}
+      <main className="flex-1 max-w-[1100px] w-full mx-auto px-6 py-12 md:py-24 space-y-24">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-border bg-orange-muted text-orange text-xs font-semibold tracking-wide">
+              <Sparkles className="w-3.5 h-3.5" />
+              Ledger Personal Finance OS
+            </div>
 
-          <p className="text-lg md:text-xl text-[#A3A3A3] max-w-lg leading-relaxed">
-            Fast, secure expense tracking built for Nigerian realities. Kill bad spending, hit your monthly budgets, and master your money.
-          </p>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] font-display text-text-primary max-w-xl">
+              Track every ₦.<br />
+              Kill bad spending.<br />
+              <span className="text-azure">Build clarity.</span>
+            </h1>
 
-          <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full sm:w-auto justify-center">
-            <Show when="signed-out">
-              <SignUpButton mode="modal">
-                <button className="h-12 px-8 text-base font-bold rounded-xl bg-[#F97316] text-[#0A0A0A] transition-all duration-150 hover:bg-[#EA6C0A] hover:-translate-y-[1px] active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_16px_rgba(249,115,22,0.3)]">
-                  Get Started for Free
+            <p className="text-lg text-text-secondary max-w-md leading-relaxed">
+              A serious, high-precision finance tracker tailored for Nigerian realities. No bank-sync delays. Log expenses in under 10 seconds.
+            </p>
+
+            <div className="pt-2">
+              <Show when="signed-out">
+                <Link href="/sign-up" className="h-12 px-8 text-base font-bold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]">
+                  Log First Transaction
                   <ArrowRight className="w-5 h-5" />
-                </button>
-              </SignUpButton>
-            </Show>
-            <Show when="signed-in">
-              <a
-                href="/dashboard"
-                className="h-12 px-8 text-base font-bold rounded-xl bg-[#F97316] text-[#0A0A0A] transition-all duration-150 hover:bg-[#EA6C0A] hover:-translate-y-[1px] active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_16px_rgba(249,115,22,0.3)]"
-              >
-                Go to Dashboard
-                <ArrowRight className="w-5 h-5" />
-              </a>
-            </Show>
-          </div>
-        </div>
-
-        {/* Feature Highlights Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 md:mt-24 w-full">
-          <div className="flex flex-col gap-3 p-6 rounded-2xl bg-[#141414] border border-[#2A2A2A] hover:bg-[#1C1C1C] transition-colors duration-150">
-            <div className="w-10 h-10 rounded-xl bg-[#431407] border border-[#7C2D12] flex items-center justify-center text-[#F97316]">
-              <TrendingUp className="w-5 h-5" />
+                </Link>
+              </Show>
+              <Show when="signed-in">
+                <a
+                  href="/dashboard"
+                  className="h-12 px-8 text-base font-bold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="w-5 h-5" />
+                </a>
+              </Show>
             </div>
-            <h3 className="text-lg font-bold text-[#F5F5F5]">Real-time Insights</h3>
-            <p className="text-sm text-[#A3A3A3] leading-relaxed">
-              Understand your money leaks. Monitor Transport, Feeding, and College expenses instantly.
-            </p>
           </div>
 
-          <div className="flex flex-col gap-3 p-6 rounded-2xl bg-[#141414] border border-[#2A2A2A] hover:bg-[#1C1C1C] transition-colors duration-150">
-            <div className="w-10 h-10 rounded-xl bg-[#082F49] border border-[#0F5A82] flex items-center justify-center text-[#38BDF8]">
-              <Wallet className="w-5 h-5" />
+          {/* Visual Board Mockup (Right Column) */}
+          <div className="lg:col-span-5 hidden lg:block bg-bg-surface border border-border p-6 rounded-lg relative overflow-hidden group hover:border-border-strong transition-all duration-300">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <span className="text-xs font-mono text-text-tertiary">#01 / VISUAL WORLD</span>
+                <span className="w-2.5 h-2.5 bg-orange rounded-full animate-pulse" />
+              </div>
+              <div className="aspect-[4/3] bg-bg-base border border-border rounded p-4 flex flex-col justify-between font-mono">
+                <div className="flex justify-between text-xs text-text-secondary">
+                  <span>Naira balance</span>
+                  <span>₦ - tnum</span>
+                </div>
+                <div className="text-4xl font-bold font-display text-text-primary tracking-tight">
+                  ₦450,200.<span className="text-text-tertiary text-2xl">00</span>
+                </div>
+                <div className="w-full bg-bg-surface h-1.5 rounded-full overflow-hidden">
+                  <div className="bg-azure h-full w-[65%]" />
+                </div>
+                <div className="flex justify-between text-[10px] text-text-tertiary">
+                  <span>Transport Spent</span>
+                  <span className="text-azure">65% of budget</span>
+                </div>
+              </div>
+              <p className="text-xs italic text-text-secondary text-center font-display">
+                &ldquo;Clarity builds confidence&rdquo;
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-[#F5F5F5]">Budget vs Actual</h3>
-            <p className="text-sm text-[#A3A3A3] leading-relaxed">
-              Set monthly category targets. View clean, real-time warning indicators when you approach 75% limit.
-            </p>
           </div>
+        </section>
 
-          <div className="flex flex-col gap-3 p-6 rounded-2xl bg-[#141414] border border-[#2A2A2A] hover:bg-[#1C1C1C] transition-colors duration-150">
-            <div className="w-10 h-10 rounded-xl bg-[#052E16] border border-[#166534] flex items-center justify-center text-[#22C55E]">
-              <ShieldCheck className="w-5 h-5" />
+        {/* Value Propositions */}
+        <section className="space-y-8">
+          <h2 className="text-2xl font-bold font-display tracking-tight border-b border-border pb-3">
+            Engineered Modules
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
+              <Receipt className="w-8 h-8 text-orange mb-4" />
+              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Snappy Logging</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                Log transport or feeding costs on your mobile phone in under 10 seconds with draft caching.
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-[#F5F5F5]">Secure & Trustworthy</h3>
-            <p className="text-sm text-[#A3A3A3] leading-relaxed">
-              Fintech-grade data security with Clerk authentication. Your financial data is private and locked.
-            </p>
+
+            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
+              <Landmark className="w-8 h-8 text-azure mb-4" />
+              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Category Budgets</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                Set firm category constraints. Receive warnings at 75% thresholds and indicators on overflow.
+              </p>
+            </div>
+
+            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
+              <Target className="w-8 h-8 text-green mb-4" />
+              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Goal Projections</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                Track specific savings goals (Emergency, School Fees) and verify contribution progress.
+              </p>
+            </div>
+
+            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
+              <BarChart3 className="w-8 h-8 text-amber mb-4" />
+              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Leaks Detection</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                Visualize spending trends and isolate recurring categories that leak financial control.
+              </p>
+            </div>
           </div>
-        </div>
+        </section>
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-[#2A2A2A] bg-[#141414] py-6 px-6 text-center text-sm text-[#6B6B6B]">
-        &copy; {new Date().getFullYear()} Ledger. All rights reserved. Built for Nigerian financial discipline.
+      <footer className="border-t border-border bg-bg-surface py-8 px-6 text-center text-sm text-text-secondary">
+        <div className="max-w-[1100px] w-full mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="font-mono text-xs">LEDGER // PORTFOLIO SYSTEM</span>
+          <span className="text-text-tertiary">Built by Venmarc &copy; {new Date().getFullYear()}</span>
+        </div>
       </footer>
     </div>
   )
