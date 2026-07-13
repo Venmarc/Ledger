@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import { shadcn } from "@clerk/ui/themes";
+import { dark } from "@clerk/themes";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Providers } from "@/components/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
+  variable: "--font-display"
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-body"
 });
 
 export const metadata: Metadata = {
@@ -25,15 +28,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <ClerkProvider appearance={{ theme: shadcn }}>
-          {children}
-        </ClerkProvider>
-      </body>
-    </html>
+    <ClerkProvider appearance={{ theme: dark }}>
+      <html
+        lang="en"
+        className={cn("h-full", "antialiased", "dark", spaceGrotesk.variable, inter.variable)}
+        data-theme="dark"
+      >
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  const theme = localStorage.getItem('ledger-theme') || 'dark';
+                  document.documentElement.setAttribute('data-theme', theme);
+                  document.documentElement.classList.remove('light', 'dark');
+                  document.documentElement.classList.add(theme);
+                })()
+              `
+            }}
+          />
+        </head>
+        <body className="min-h-full flex flex-col bg-bg-base text-text-primary">
+          <ThemeProvider>
+            <Providers>
+              {children}
+            </Providers>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
