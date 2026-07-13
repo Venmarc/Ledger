@@ -17,10 +17,11 @@ export default async function AppProtectedLayout({
     redirect('/sign-in')
   }
 
-  // Sync profile asynchronously (so it doesn't block loading UI)
-  syncUserProfile().catch((err) => {
+  try {
+    await syncUserProfile()
+  } catch (err) {
     console.error('Async profile sync error:', err)
-  })
+  }
 
   return (
     <div className="flex min-h-screen bg-bg-base text-text-primary">
