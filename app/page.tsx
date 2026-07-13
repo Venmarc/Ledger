@@ -23,12 +23,12 @@ export default function Home() {
             </Link>
           </Show>
           <Show when="signed-in">
-            <a
+            <Link
               href="/dashboard"
               className="h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer"
             >
               Dashboard
-            </a>
+            </Link>
             <UserButton />
           </Show>
         </div>
@@ -61,13 +61,13 @@ export default function Home() {
                 </Link>
               </Show>
               <Show when="signed-in">
-                <a
+                <Link
                   href="/dashboard"
                   className="h-12 px-8 text-base font-bold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]"
                 >
                   Go to Dashboard
                   <ArrowRight className="w-5 h-5" />
-                </a>
+                </Link>
               </Show>
             </div>
           </div>
