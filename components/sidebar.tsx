@@ -52,7 +52,7 @@ export function Sidebar() {
       <button
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
         className="absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors duration-200 cursor-pointer shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
-        aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {isCollapsed ? (
           <ChevronRight className="h-3.5 w-3.5" />
