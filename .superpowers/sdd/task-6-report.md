@@ -109,4 +109,24 @@
 - **TypeScript Verification:** `npx tsc --noEmit` completed successfully with zero compilation errors.
 - **Production Build:** `npm run build` completed successfully with zero compilation/hydration issues.
 
+---
+
+## Task 6 Final Polish Fixes: Orange Button Contrast Ratio (Completed 2026-07-14)
+
+### 1. Orange Button Text Color Variable Definition
+- Defined `--color-orange-btn-text: var(--color-orange-btn-text);` inside `@theme inline` in `/home/redmane/Documents/Port Sites/Category 5/Ledger/app/globals.css`.
+- Added `--color-orange-btn-text: #0A0A0A;` under `:root` in `/home/redmane/Documents/Port Sites/Category 5/Ledger/app/globals.css`.
+- This ensures that theme-independent orange buttons always render text in a dark charcoal shade (`#0A0A0A`) across both light and dark modes, satisfying the WCAG AA contrast ratio (> 4.5:1).
+
+### 2. Class Updates on Orange Buttons
+- In `/home/redmane/Documents/Port Sites/Category 5/Ledger/app/page.tsx`, replaced `text-text-inverse` with `text-orange-btn-text` in the three orange-button `<Link>` elements.
+- In `/home/redmane/Documents/Port Sites/Category 5/Ledger/app/(app)/layout.tsx`, replaced `text-text-inverse` with `text-orange-btn-text` in the Quick Add transaction button.
+- In `/home/redmane/Documents/Port Sites/Category 5/Ledger/app/(auth)/sign-in/[[...sign-in]]/page.tsx` and `/home/redmane/Documents/Port Sites/Category 5/Ledger/app/(auth)/sign-up/[[...sign-up]]/page.tsx`, replaced `text-text-inverse` with `text-orange-btn-text` inside the Clerk `formButtonPrimary` configurations.
+
+### Verification Logs
+- **Linting:** `npm run lint` completed successfully with zero warnings.
+- **TypeScript Verification:** `npx tsc --noEmit` completed successfully with zero compiler errors.
+- **Production Build:** `npm run build` completed successfully with zero errors.
+
+
 
