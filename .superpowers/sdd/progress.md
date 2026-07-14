@@ -8,6 +8,6 @@
 
 ## Phase 0 — Layout & Auth Revisions
 
-- [ ] Task 4: Clerk Error Catching & Auth Layout Cleanup
+- [x] Task 4: Clerk Error Catching & Auth Layout Cleanup (commits a0918a2..aa64051, review clean)
 - [ ] Task 5: Mobile Settings Avatar Menu Integration
 - [ ] Task 6: Collapsible Desktop Sidebar & Layout Refactoring
