@@ -9,14 +9,12 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   const [mounted, setMounted] = useState(false)
-  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     let isMounted = true
     const timer = setTimeout(() => {
       if (isMounted) {
         setMounted(true)
-        setVisible(true)
       }
     }, 16)
     return () => {
@@ -30,14 +28,21 @@ export default function AuthLayout({
       <div className="w-full max-w-[480px] space-y-8 flex flex-col items-center justify-center">
         {children}
         {mounted && (
-          <Link
-            href="/"
-            className={`text-sm text-text-secondary hover:text-text-primary transition-opacity duration-500 ${
-              visible ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            ← Back to home
-          </Link>
+          <>
+            <style>{`
+              @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(4px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+            `}</style>
+            <Link
+              href="/"
+              style={{ animation: 'fadeIn 0.3s ease-out forwards' }}
+              className="text-sm text-text-secondary hover:text-text-primary transition-colors duration-150 opacity-0"
+            >
+              ← Back to home
+            </Link>
+          </>
         )}
       </div>
     </div>

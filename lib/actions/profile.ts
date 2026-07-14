@@ -15,23 +15,14 @@ export async function syncUserProfile() {
   }
   const supabase = await createClient(token || undefined)
 
-  // Check if profile exists
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single()
-
-  if (profile) return profile
-
-  // If it doesn't exist, retrieve Clerk user information and upsert
+  // Retrieve Clerk user information and upsert directly (keeps profile details fresh on every sign-in)
   const user = await currentUser()
   if (!user) return null
 
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim()
   const avatarUrl = user.imageUrl || ''
 
-  const { data: newProfile, error } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .upsert({
       id: userId,
@@ -48,5 +39,5 @@ export async function syncUserProfile() {
     return null
   }
 
-  return newProfile
+  return profile
 }
