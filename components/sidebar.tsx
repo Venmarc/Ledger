@@ -79,6 +79,7 @@ export function Sidebar() {
               <TooltipPortal key={item.href} text={item.label} disabled={!isCollapsed}>
                 <Link
                   href={item.href}
+                  aria-label={item.label}
                   className={`flex items-center rounded-md text-sm transition-colors duration-150 ${
                     isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5'
                   } ${

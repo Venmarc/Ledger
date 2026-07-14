@@ -55,13 +55,13 @@ export function TooltipPortal({ children, text, disabled = false }: TooltipPorta
     }
   }, [isOpen])
 
-  const handleMouseEnter = (e: React.MouseEvent) => {
+  const handleMouseEnter = (e: React.MouseEvent | React.FocusEvent) => {
     if (disabled || !mounted) return
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
     }
-    const rect = e.currentTarget.getBoundingClientRect()
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
     setCoords({
       top: rect.top + rect.height / 2,
       left: rect.right + 8,
@@ -81,6 +81,8 @@ export function TooltipPortal({ children, text, disabled = false }: TooltipPorta
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onFocusCapture={handleMouseEnter}
+        onBlurCapture={handleMouseLeave}
       >
         {children}
       </div>
