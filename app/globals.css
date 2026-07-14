@@ -20,6 +20,7 @@
   --color-text-secondary: var(--color-text-secondary);
   --color-text-tertiary: var(--color-text-tertiary);
   --color-text-inverse: var(--color-text-inverse);
+  --color-orange-btn-text: var(--color-orange-btn-text);
   
   --color-orange: var(--color-orange);
   --color-orange-hover: var(--color-orange-hover);
@@ -57,6 +58,7 @@
   --color-text-secondary: #A3A3A3;
   --color-text-tertiary: #6B6B6B;
   --color-text-inverse: #0A0A0A;
+  --color-orange-btn-text: #0A0A0A;
   
   --color-orange: #F97316;
   --color-orange-hover: #EA6C0A;

@@ -18,7 +18,7 @@ export default function Home() {
             <Link href="/sign-in" className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer">
               Sign In
             </Link>
-            <Link href="/sign-up" className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(249,115,22,0.2)]">
+            <Link href="/sign-up" className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md bg-orange text-orange-btn-text transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(249,115,22,0.2)]">
               View Demo
             </Link>
           </Show>
@@ -55,7 +55,7 @@ export default function Home() {
 
             <div className="pt-2">
               <Show when="signed-out">
-                <Link href="/sign-up" className="h-12 px-8 text-base font-bold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]">
+                <Link href="/sign-up" className="h-12 px-8 text-base font-bold rounded-md bg-orange text-orange-btn-text transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]">
                   Log First Transaction
                   <ArrowRight className="w-5 h-5" />
                 </Link>
@@ -63,7 +63,7 @@ export default function Home() {
               <Show when="signed-in">
                 <Link
                   href="/dashboard"
-                  className="h-12 px-8 text-base font-bold rounded-md bg-orange text-text-inverse transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]"
+                  className="h-12 px-8 text-base font-bold rounded-md bg-orange text-orange-btn-text transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]"
                 >
                   Go to Dashboard
                   <ArrowRight className="w-5 h-5" />

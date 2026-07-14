@@ -33,7 +33,7 @@ export default async function AppProtectedLayout({
       </div>
 
       <button
-        className="fixed right-4 bottom-[80px] md:right-8 md:bottom-8 w-14 h-14 bg-orange text-text-inverse rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.3)] hover:bg-orange-hover hover:-translate-y-0.5 active:scale-95 transition-all duration-150 z-50 cursor-pointer"
+        className="fixed right-4 bottom-[80px] md:right-8 md:bottom-8 w-14 h-14 bg-orange text-orange-btn-text rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.3)] hover:bg-orange-hover hover:-translate-y-0.5 active:scale-95 transition-all duration-150 z-50 cursor-pointer"
         aria-label="Quick Add Transaction"
       >
         <Plus className="w-7 h-7" />
