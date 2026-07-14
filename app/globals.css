@@ -1,0 +1,135 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@clerk/ui/themes/shadcn.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--color-bg-base);
+  --color-foreground: var(--color-text-primary);
+  
+  --color-bg-base: var(--color-bg-base);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-bg-elevated: var(--color-bg-elevated);
+  --color-bg-subtle: var(--color-bg-subtle);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-text-inverse: var(--color-text-inverse);
+  --color-orange-btn-text: var(--color-orange-btn-text);
+  
+  --color-orange: var(--color-orange);
+  --color-orange-hover: var(--color-orange-hover);
+  --color-orange-muted: var(--color-orange-muted);
+  
+  --color-azure: var(--color-azure);
+  --color-azure-hover: var(--color-azure-hover);
+  --color-azure-muted: var(--color-azure-muted);
+
+  --color-green: var(--color-green);
+  --color-green-hover: var(--color-green-hover);
+  --color-green-muted: var(--color-green-muted);
+
+  --color-amber: var(--color-amber);
+  --color-amber-hover: var(--color-amber-hover);
+  --color-amber-muted: var(--color-amber-muted);
+
+  --color-red: var(--color-red);
+  --color-red-hover: var(--color-red-hover);
+  --color-red-muted: var(--color-red-muted);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+:root {
+  --color-bg-base: #0A0A0A;
+  --color-bg-surface: #141414;
+  --color-bg-elevated: #1C1C1C;
+  --color-bg-subtle: #232323;
+  --color-border: #2A2A2A;
+  --color-border-strong: #3A3A3A;
+  
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #A3A3A3;
+  --color-text-tertiary: #6B6B6B;
+  --color-text-inverse: #0A0A0A;
+  --color-orange-btn-text: #0A0A0A;
+  
+  --color-orange: #F97316;
+  --color-orange-hover: #EA6C0A;
+  --color-orange-muted: #431407;
+  
+  --color-azure: #38BDF8;
+  --color-azure-hover: #0EA5E9;
+  --color-azure-muted: #082F49;
+
+  --color-green: #22C55E;
+  --color-green-hover: #16A34A;
+  --color-green-muted: #052E16;
+
+  --color-amber: #F59E0B;
+  --color-amber-hover: #D97706;
+  --color-amber-muted: #1C1002;
+
+  --color-red: #EF4444;
+  --color-red-hover: #DC2626;
+  --color-red-muted: #1C0202;
+  
+  --color-focus-ring: #F97316;
+}
+
+[data-theme="light"] {
+  --color-bg-base: #FAFAFA;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-elevated: #F5F5F5;
+  --color-bg-subtle: #EFEFEF;
+  --color-border: #E5E5E5;
+  --color-border-strong: #D4D4D4;
+  --color-text-primary: #0A0A0A;
+  --color-text-secondary: #525252;
+  --color-text-tertiary: #A3A3A3;
+  --color-text-inverse: #FAFAFA;
+  --color-azure: #0369A1; /* sky-700 */
+  --color-azure-muted: #E0F2FE; /* sky-100 */
+  --color-orange-muted: #FFEDD5; /* orange-100 */
+  --color-green-muted: #DCFCE7; /* green-100 */
+  --color-amber-muted: #FEF3C7; /* amber-100 */
+  --color-red-muted: #FEE2E2; /* red-100 */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  *:focus-visible {
+    outline: 2px solid var(--color-orange);
+    outline-offset: 2px;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body), sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), sans-serif;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-layout-content {
+    padding-left: var(--sidebar-width);
+    transition: padding-left 0.2s ease-out;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
