@@ -5,11 +5,21 @@ import { UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from './theme-toggle'
 import { Logo } from './logo'
 import { usePathname, useRouter } from 'next/navigation'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Settings } from 'lucide-react'
 
 export function TopBar() {
   const pathname = usePathname()
   const router = useRouter()
+  const [isMobile, setIsMobile] = React.useState(false)
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Determine if we are at the main dashboard root
   const isRoot = pathname === '/dashboard' || pathname === '/'
@@ -50,7 +60,17 @@ export function TopBar() {
       {/* Right side cluster: Toggle sits closest to center, UserButton on far right */}
       <div className="flex items-center gap-4">
         <ThemeToggle />
-        <UserButton />
+        <UserButton>
+          <UserButton.MenuItems>
+            {isMobile && (
+              <UserButton.Link
+                label="Settings"
+                labelIcon={<Settings className="w-4 h-4" />}
+                href="/settings"
+              />
+            )}
+          </UserButton.MenuItems>
+        </UserButton>
       </div>
     </header>
   )
