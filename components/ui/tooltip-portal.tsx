@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
 interface TooltipPortalProps {
-  children: React.ReactElement
+  children: React.ReactNode
   content: string
   disabled?: boolean
 }
@@ -25,8 +25,30 @@ export function TooltipPortal({ children, content, disabled = false }: TooltipPo
     }
   }, [])
 
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleScroll = () => {
+      setIsOpen(false)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    
+    const scrollContainers = document.querySelectorAll('.sidebar-nav')
+    scrollContainers.forEach((el) => {
+      el.addEventListener('scroll', handleScroll, { passive: true })
+    })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      scrollContainers.forEach((el) => {
+        el.removeEventListener('scroll', handleScroll)
+      })
+    }
+  }, [isOpen])
+
   if (disabled || !mounted) {
-    return children
+    return <>{children}</>
   }
 
   const handleMouseEnter = (e: React.MouseEvent) => {
@@ -48,28 +70,14 @@ export function TooltipPortal({ children, content, disabled = false }: TooltipPo
     }, 75)
   }
 
-  const child = React.Children.only(children) as React.ReactElement<{
-    onMouseEnter?: (e: React.MouseEvent) => void
-    onMouseLeave?: (e: React.MouseEvent) => void
-  }>
-  const childWithHandlers = React.cloneElement(child, {
-    onMouseEnter: (e: React.MouseEvent) => {
-      if (child.props && typeof child.props.onMouseEnter === 'function') {
-        child.props.onMouseEnter(e)
-      }
-      handleMouseEnter(e)
-    },
-    onMouseLeave: (e: React.MouseEvent) => {
-      if (child.props && typeof child.props.onMouseLeave === 'function') {
-        child.props.onMouseLeave(e)
-      }
-      handleMouseLeave()
-    },
-  })
-
   return (
     <>
-      {childWithHandlers}
+      <div
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {children}
+      </div>
       {isOpen && coords && typeof document !== 'undefined' && createPortal(
         <div
           style={{

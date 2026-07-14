@@ -6,6 +6,7 @@ import { ProfileSync } from '@/components/profile-sync'
 import { redirect } from 'next/navigation'
 import { auth } from '@clerk/nextjs/server'
 import { Plus } from 'lucide-react'
+import { LayoutShell } from '@/components/layout-shell'
 
 export default async function AppProtectedLayout({
   children,
@@ -18,13 +19,13 @@ export default async function AppProtectedLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-bg-base text-text-primary">
+    <LayoutShell>
       <ProfileSync />
       {/* Sidebar for Desktop */}
       <Sidebar />
       
       {/* Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-[64px] md:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 pb-[64px] md:pb-0 desktop-layout-content">
         <TopBar />
         <main className="flex-1 p-4 md:p-8 max-w-[1100px] w-full mx-auto">
           {children}
@@ -40,6 +41,6 @@ export default async function AppProtectedLayout({
 
       {/* Bottom Nav for Mobile */}
       <BottomNav />
-    </div>
+    </LayoutShell>
   )
 }

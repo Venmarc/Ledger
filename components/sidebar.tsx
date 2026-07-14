@@ -39,12 +39,14 @@ export function Sidebar() {
 
   // Default to true (collapsed) during SSR/hydration to match server rendering
   const isCollapsed = mounted ? sidebarCollapsed : true
-  const width = isCollapsed ? '68px' : '260px'
 
   return (
     <aside
-      style={{ width, willChange: 'width' }}
-      className="relative hidden md:flex flex-col bg-bg-surface border-r border-border h-screen sticky top-0 py-5 transition-all duration-200 ease-out justify-between"
+      style={{
+        width: 'var(--sidebar-width)',
+        willChange: 'width',
+      }}
+      className="fixed left-0 top-0 z-30 hidden md:flex flex-col bg-bg-surface border-r border-border h-screen py-5 transition-[width] duration-200 ease-out justify-between"
     >
       {/* Collapse Toggle Button */}
       <button
@@ -68,7 +70,7 @@ export function Sidebar() {
         </div>
         
         {/* Navigation block */}
-        <nav className={`flex flex-col gap-1 overflow-y-auto overflow-x-hidden no-scrollbar ${isCollapsed ? 'px-2' : 'px-3'}`}>
+        <nav className={`sidebar-nav flex flex-col gap-1 overflow-y-auto overflow-x-hidden no-scrollbar ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
