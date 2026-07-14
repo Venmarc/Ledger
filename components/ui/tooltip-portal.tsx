@@ -5,11 +5,11 @@ import { createPortal } from 'react-dom'
 
 interface TooltipPortalProps {
   children: React.ReactNode
-  content: string
+  text: string
   disabled?: boolean
 }
 
-export function TooltipPortal({ children, content, disabled = false }: TooltipPortalProps) {
+export function TooltipPortal({ children, text, disabled = false }: TooltipPortalProps) {
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -24,6 +24,14 @@ export function TooltipPortal({ children, content, disabled = false }: TooltipPo
       }
     }
   }, [])
+
+  // Close tooltip immediately if disabled becomes true
+  useEffect(() => {
+    if (disabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsOpen(false)
+    }
+  }, [disabled])
 
   useEffect(() => {
     if (!isOpen) return
@@ -47,11 +55,8 @@ export function TooltipPortal({ children, content, disabled = false }: TooltipPo
     }
   }, [isOpen])
 
-  if (disabled || !mounted) {
-    return <>{children}</>
-  }
-
   const handleMouseEnter = (e: React.MouseEvent) => {
+    if (disabled || !mounted) return
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
@@ -65,6 +70,7 @@ export function TooltipPortal({ children, content, disabled = false }: TooltipPo
   }
 
   const handleMouseLeave = () => {
+    if (disabled || !mounted) return
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false)
     }, 75)
@@ -90,7 +96,7 @@ export function TooltipPortal({ children, content, disabled = false }: TooltipPo
           }}
           className="bg-bg-elevated border border-border text-text-primary px-3 py-1.5 rounded-md text-xs font-medium shadow-md font-body whitespace-nowrap animate-in fade-in zoom-in-95 duration-100"
         >
-          {content}
+          {text}
         </div>,
         document.body
       )}

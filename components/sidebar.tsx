@@ -51,7 +51,7 @@ export function Sidebar() {
       {/* Collapse Toggle Button */}
       <button
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors duration-200 cursor-pointer shadow-sm focus:outline-none"
+        className="absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors duration-200 cursor-pointer shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
         aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {isCollapsed ? (
@@ -75,25 +75,21 @@ export function Sidebar() {
             const Icon = item.icon
             const isActive = pathname === item.href
             
-            const linkContent = (
-              <Link
-                href={item.href}
-                className={`flex items-center rounded-md text-sm transition-colors duration-150 ${
-                  isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5'
-                } ${
-                  isActive
-                    ? 'bg-azure-muted text-azure font-medium'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-subtle'
-                }`}
-              >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-azure' : 'text-text-secondary'}`} />
-                {!isCollapsed && <span className="truncate">{item.label}</span>}
-              </Link>
-            )
-
             return (
-              <TooltipPortal key={item.href} content={item.label} disabled={!isCollapsed}>
-                {linkContent}
+              <TooltipPortal key={item.href} text={item.label} disabled={!isCollapsed}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center rounded-md text-sm transition-colors duration-150 ${
+                    isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5'
+                  } ${
+                    isActive
+                      ? 'bg-azure-muted text-azure font-medium'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-bg-subtle'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-azure' : 'text-text-secondary'}`} />
+                  {!isCollapsed && <span className="truncate">{item.label}</span>}
+                </Link>
               </TooltipPortal>
             )
           })}
