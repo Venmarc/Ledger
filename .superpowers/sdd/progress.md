@@ -10,4 +10,4 @@
 
 - [x] Task 4: Clerk Error Catching & Auth Layout Cleanup (commits a0918a2..aa64051, review clean)
 - [x] Task 5: Mobile Settings Avatar Menu Integration (commits aa64051..dac1077, review clean)
-- [x] Task 6: Collapsible Desktop Sidebar & Layout Refactoring (commits dac1077..c43b807, review clean)
+- [x] Task 6: Collapsible Desktop Sidebar & Layout Refactoring (commits dac1077..c8ec8dd, review clean)
