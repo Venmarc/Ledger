@@ -64,17 +64,29 @@ Settings → "Sign out"
  
 ---
  
-## 3. Global UI Elements (Present on All Protected Pages)
+## 3. Global UI Elements
+ 
+Present across the app. Some are protected-only (nav, FAB, recurring banner); the theme toggle spans public and protected pages.
  
 ### 3.1 Navigation
 - **Mobile (< 768px):** Bottom navigation bar with 5 items: Dashboard, Transactions, Budgets, Goals, Analytics. Settings accessible via profile avatar top-right.
 - **Desktop (≥ 768px):** Left sidebar with all nav items including Recurring and Settings.
-### 3.2 Floating Action Button (FAB)
+### 3.2 Theme Toggle
+- Present on every page — public and protected, mobile and desktop. Not confined to Settings.
+- **Placement rule:** sits at the position closest to center among any cluster of top-bar icons/buttons on that side. Every other icon or button (avatar, hamburger, notification bell, CTA button) sits further toward the corner than the toggle. The toggle is always the first thing encountered moving outward from center — never the last.
+- **Mobile:** top bar, right side. Toggle innermost (closest to center), other elements pushed outward toward the corner.
+- **Desktop:** same rule applies to whatever top-bar cluster exists on that page (e.g. landing nav: Toggle → GitHub link → View Demo button, with View Demo at the far corner as the primary CTA).
+- Icon: sun (light mode active) / moon (dark mode active) — see UI/UX_BRIEF.md §6.10 for exact component spec.
+- **Functional from Phase 0.** This is not a placeholder swapped out later — see PHASES.md Phase 0. Only the underlying light-mode color values get refined in Phase 4, not the toggle mechanism itself.
+- Tapping toggles `data-theme` between `"dark"` and `"light"` and persists the choice to `localStorage` under key `ledger-theme`.
+- **Default on first visit** (no stored preference): always `"dark"`, regardless of the device's OS-level light/dark setting. Ledger does not read `prefers-color-scheme`. This is deliberate — a hiring manager viewing the demo on a light-mode laptop should still see the intended dark aesthetic first, and choose light explicitly if they want it.
+- See TRD.md §6.1 for the flash-prevention requirement on page load.
+### 3.3 Floating Action Button (FAB)
 - Present on every protected page except Settings.
 - Position: bottom-right, above bottom nav on mobile.
 - Single tap → opens Quick Add sheet.
 - This is the primary entry point for logging. It must be reachable with one thumb from any screen.
-### 3.3 Recurring Due Banner
+### 3.4 Recurring Due Banner
 - Appears at top of Dashboard when one or more recurring templates have `next_date <= today`.
 - Shows count: "2 recurring transactions are due."
 - Tapping navigates to /recurring filtered to due items.

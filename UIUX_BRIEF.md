@@ -103,9 +103,14 @@ Applied via:
 }
 ```
  
-### 2.7 Light Mode (Future — Structure Only)
+### 2.7 Light Mode (Architecture: Phase 0 · Values Refined: Phase 4)
  
-Light mode is supported from day one via the theme provider (see TRD.md §6.1), but these values are defined as placeholders and refined during Phase 4 polish.
+The theme-switching mechanism is built and verified in Phase 0 — not deferred. Per NOTES.md and TRD.md §6.1, theme switching must exist at project start or every component built afterward requires retrofitting. Phase 0's gate explicitly tests that toggling `data-theme` changes rendered colors app-wide.
+ 
+What Phase 0 delivers: a fully functional Theme Toggle component (see §6.10), correctly placed per APP_FLOW.md §3.2, with working persistence — using these placeholder light-mode values.
+What Phase 4 delivers: replacing the placeholder values above with final, tested light-mode colors. The toggle component itself is not rebuilt.
+ 
+The values below are placeholders for the Phase 0 architecture check — expect them to change in Phase 4.
  
 ```css
 [data-theme="light"] {
@@ -461,6 +466,35 @@ No stacking more than 3 toasts. Oldest dismisses first if limit hit.
 Background: `--color-bg-subtle`.
 Shimmer animation: gradient sweep left-to-right, 1.5s infinite.
 Shape: must approximate the real content's dimensions. A skeleton for a transaction row looks like a transaction row, not a generic bar.
+ 
+### 6.10 Theme Toggle
+ 
+Icon-only button. Sun icon (Lucide `Sun`) represents light mode is active; moon icon (Lucide `Moon`) represents dark mode is active — the icon shown is the mode currently active, not the mode you'd switch to. This matches the mental model of "this is what's on."
+ 
+```css
+size: 36px × 36px (desktop), 40px × 40px (mobile) — meets touch target minimum
+background: transparent
+border-radius: var(--radius-full)
+icon size: 18px (desktop), 20px (mobile)
+color: var(--color-text-secondary)
+ 
+hover: background var(--color-bg-subtle), color var(--color-text-primary)
+active/pressed: scale(0.92), duration var(--duration-fast)
+```
+ 
+**Transition on toggle:** icon cross-fades and rotates slightly (sun/moon swap), duration `--duration-base` (150ms). The rest of the app's colors transition using the same duration on `background-color`, `border-color`, and `color` properties app-wide — applied via a global transition rule scoped to theme-relevant properties only, not `all` (avoids janky transitions on unrelated hover states).
+ 
+```css
+:root, [data-theme] {
+  transition: background-color var(--duration-base) var(--ease-standard),
+              border-color var(--duration-base) var(--ease-standard),
+              color var(--duration-base) var(--ease-standard);
+}
+```
+ 
+**Flash prevention:** the stored theme preference must be read and applied to `data-theme` before first paint — via an inline script in `<head>` or Next.js's theme provider pattern that reads `localStorage` synchronously. A flash of the wrong theme on load is a bug, not a cosmetic detail.
+ 
+**Placement:** see APP_FLOW.md §3.2 for the exact positioning rule (closest to center among top-bar icons, on every page).
  
 ---
  

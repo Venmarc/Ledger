@@ -11,7 +11,7 @@
  
 | Layer | Choice | Reason |
 |---|---|---|
-| Framework | Next.js 16 (App Router) | File-based routing, RSC, Vercel-native |
+| Framework | Next.js 15 (App Router) | File-based routing, RSC, Vercel-native |
 | Language | TypeScript (strict) | No `any`. No exceptions. |
 | Auth | Clerk | Polished UI, social logins, Custom Session Tokens |
 | Database | Supabase (PostgreSQL) | RLS, realtime, familiar SQL |
@@ -119,14 +119,39 @@ Every create, update, and delete must:
 3. On success: confirm. On failure: rollback + toast error.
 No mutation is allowed to make the user wait for a spinner before seeing feedback. This is a finance app — users need to trust that their action registered.
  
-### 4.4 Client-Side Draft Persistence
+### 4.4 External API Calls — Server-Side Only
+ 
+No third-party API key ever touches the client bundle. This is non-negotiable for any external service that requires authentication.
+ 
+**Pattern: internal route handler as proxy.**
+ 
+The client calls an internal Next.js route handler. The route handler makes the external API call server-side using environment variables that have no `NEXT_PUBLIC_` prefix. The client receives only the data it needs — never the key, never the raw external URL.
+ 
+Applied specifically to the currency widget:
+ 
+```
+Client (/settings widget)
+  → GET /api/rates
+  → app/api/rates/route.ts (server)
+      reads process.env.CURRENCY_API_KEY
+      reads process.env.CURRENCY_API_BASE_URL
+      calls https://v6.exchangerate-api.com/v6/{key}/latest/NGN
+      returns { USD: number, GBP: number, EUR: number }
+  → client renders conversion
+```
+ 
+Provider: exchangerate-api.com v6. Base currency: NGN. Returns only the three rates the widget needs. Full response from ExchangeRate API is never forwarded to the client.
+ 
+If a future feature requires additional external API calls, the same pattern applies. No exceptions.
+ 
+### 4.5 Client-Side Draft Persistence
 - The quick-add transaction form must survive accidental reloads, tab closures, and navigation away.
 - Implemented via **Zustand `persist` middleware** writing draft state to `localStorage`.
 - Persisted draft fields: `amount`, `category_id`, `payment_method`, `description`, `notes`, `tags`, `transaction_date`.
 - Draft is cleared on two events only: successful form submission, or explicit user discard.
 - No database call involved. This is entirely client-side. Schema has no part in this.
 - No other form in the app requires draft persistence in v1 — only quick-add, because it is the highest-frequency, highest-friction-risk flow.
-### 4.5 Component Standards
+### 4.6 Component Standards
  
 Every public component must handle three states explicitly:
 - **Loading** — skeleton, not a spinner where possible.
@@ -228,8 +253,9 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
  
-# Currency Widget (public API — e.g. exchangerate-api.com or frankfurter.app)
-NEXT_PUBLIC_CURRENCY_API_URL=
+# Currency Widget (server-only — never expose to client)
+CURRENCY_API_KEY=
+CURRENCY_API_BASE_URL=https://v6.exchangerate-api.com/v6
 ```
  
 ---
