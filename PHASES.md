@@ -1,6 +1,6 @@
 # PHASES.md — Implementation Roadmap
 **Project:** Ledger
-**Last Updated:** 06/07/2026
+**Last Updated:** 13/07/2026
 **Status:** Pre-build. Docs phase complete.
  
 **References:** PRD.md · TRD.md · SCHEMA.md · APP_FLOW.md · PAGE_SPECS.md · UI/UX_BRIEF.md · NOTES.md
@@ -25,7 +25,7 @@ If a gate condition is failing, fix it before moving. Document what broke and wh
  
 ## Phase 0 — Foundation
 **Duration:** 3–4 days
-**Window:** July 7–10
+**Window:** July –10
  
 ### Goal
 A working skeleton that proves every critical integration is functional before a single feature is built. Auth works. Database is reachable with RLS enforced. Navigation renders correctly on mobile and desktop. Theme system is in place. Nothing else.
@@ -40,6 +40,9 @@ Do not build features in Phase 0. The temptation will be there. Resist it.
 - Tailwind CSS + shadcn/ui fully configured
 - CSS custom properties from UI/UX_BRIEF.md §2 implemented in `globals.css`
 - Dark mode as default. Theme provider wrapping the app. `data-theme` attribute on `<html>`.
+- Theme provider supports toggling `data-theme` between `"dark"` and `"light"` — the mechanism must work end-to-end even though light mode's final visual polish happens in Phase 4. This is not optional scaffolding. Per NOTES.md, theme switching must be architected at project start or every component built afterward will need retrofitting.
+- Every CSS custom property in UI/UX_BRIEF.md §2 (dark) and §2.7 (light placeholder) is wired into the theme provider now. Components must reference `var(--color-*)`, never hardcoded hex values — this is what makes the later light mode refinement a values-only change, not a rebuild.
+- Build the real, permanent Theme Toggle component now — not a temporary dev placeholder. Placement per APP_FLOW.md §3.2 (closest to center among top-bar icons, every page). Functional: toggles `data-theme`, persists to `localStorage` under `ledger-theme`, defaults to dark on first visit regardless of OS preference. Full component spec in UI/UX_BRIEF.md §6.10. This component does not get rebuilt in Phase 4 — only the light-mode color values it switches to are refined then.
 - Space Grotesk + Inter loaded via `next/font`. Correct font variables applied.
 - `.env.local` configured. `.env.example` committed with all keys, no values.
 **Auth**
@@ -77,6 +80,10 @@ Do not build features in Phase 0. The temptation will be there. Resist it.
 - [ ] Open on mobile viewport. Bottom nav visible. Sidebar hidden.
 - [ ] Open on desktop viewport. Sidebar visible. Bottom nav hidden.
 - [ ] Dark mode is the rendered default. No flash of light mode on load.
+- [ ] Tap the Theme Toggle. `data-theme` switches to `"light"`. Background, text, and border colors visibly change across the whole app — even if the light values are rough placeholders. This confirms every component is reading CSS variables, not hardcoded colors.
+- [ ] Reload the page after switching to light. Theme stays light (localStorage persistence confirmed). No flash of dark mode before light applies.
+- [ ] Toggle is positioned correctly per APP_FLOW.md §3.2 on at least 3 different pages (e.g. Dashboard, Transactions, Landing) — closest to center among top-bar icons on each.
+- [ ] Grep the codebase for hardcoded hex values in component files (`#[0-9A-Fa-f]{3,6}`). Only `globals.css` (or the theme definition file) should contain raw hex. Any hex found in a component is a violation of TRD.md §6.1 and must be fixed before the gate passes.
 - [ ] Run seed script. 13 categories exist in `categories` table for your user_id.
 - [ ] Attempt to query another user's data directly in Supabase SQL editor using your JWT. RLS blocks it.
 - [ ] `npx tsc --noEmit` passes with zero errors.
@@ -213,10 +220,12 @@ The app becomes a complete tool. Analytics turns your data into insight. Recurri
 - Frequency options: Daily, Weekly, Monthly, Yearly
 **Currency Reference Widget**
 - Wired in `/settings`
-- Fetches rates from public API on page load (frankfurter.app or exchangerate-api.com)
-- Calculates USD, GBP, EUR equivalents client-side on ₦ input change
-- Rate cached for session (no refetch on every keystroke)
-- Failure state: "Rates unavailable" — rest of app unaffected
+- Build the route handler first: `app/api/rates/route.ts`. It proxies the ExchangeRate API call server-side and returns `{ USD, GBP, EUR, lastUpdated }`. See TRD.md §4.4 and PAGE_SPECS.md §12 for full implementation detail.
+- Widget calls `GET /api/rates` on page load. Never calls ExchangeRate directly.
+- Calculates USD, GBP, EUR equivalents client-side from cached rates on ₦ input change.
+- Rate cached in component state for the session. No refetch on keystroke.
+- Failure state: "Rates unavailable" — rest of settings page and app unaffected.
+- Verify: `CURRENCY_API_KEY` and `CURRENCY_API_BASE_URL` are in Vercel environment variables with no `NEXT_PUBLIC_` prefix before testing in production.
 **Settings Completion (`/settings`, `/settings/categories`)**
 - Profile section displaying Clerk data
 - Default payment method preference (stored in `profiles` or localStorage — document decision in NOTES.md)
@@ -254,7 +263,7 @@ The app becomes a complete tool. Analytics turns your data into insight. Recurri
 ### Deliverables (When Resumed)
 - PWA: manifest, service worker, offline viewing support for dashboard and recent transactions
 - CSV export: transactions for a date range, monthly summary
-- Light mode: refine the light theme CSS variables defined in UI/UX_BRIEF.md §2.7. Confirm every component renders correctly.
+- Light mode: the switching architecture, persistence, and Theme Toggle component were fully built in Phase 0 per TRD.md §6.1. This phase is color-value refinement only. Finalize the light theme values in UI/UX_BRIEF.md §2.7 (currently placeholders) and visually QA every page in both themes.
 - Performance audit: Lighthouse scores. Fix anything below 85 on Performance and Accessibility.
 - Responsive polish pass: every page on 375px, 390px, 768px, 1280px. Fix any layout breaks.
 - Logo: design and implement SVG logo with behavior from UI/UX_BRIEF.md §5. Add to nav and landing page.
@@ -291,6 +300,11 @@ All doc changes are logged here. Most recent first.
  
 | Date | Document | Change |
 |---|---|---|
+| 07/07/2026 | APP_FLOW.md, PAGE_SPECS.md, UIUX_BRIEF.md, PHASES.md | Added Theme Toggle as a global component. Fixed placement rule (closest to center, every page, public + protected). Corrected Phase 0/4 split — toggle is real and permanent from Phase 0 with localStorage persistence, not a dev-only placeholder rebuilt later. Added component spec (icon, size, transition, flash-prevention) to UIUX_BRIEF §6.10. |
+| 06/07/2026 | PHASES.md, TRD.md, UIUX_BRIEF.md | Fixed dark/light theme contradiction. NOTES.md and TRD §6.1 required theme switching architected at project start, but Phase 0 never verified it and Phase 4 read like the initial build. Phase 0 now requires a working dev-only toggle + hex-value grep gate. Phase 4 reworded to "refinement only." UIUX_BRIEF §2.7 reworded from "Future — Structure Only" to explicit phase ownership. |
+| 06/07/2026 | PHASES.md | Patched Phase 3 currency widget deliverable — route handler pattern documented, provider confirmed as exchangerate-api.com. |
+| 06/07/2026 | PAGE_SPECS.md | Patched Settings currency widget section — added full route handler implementation detail. Agent no longer needs to guess. |
+| 06/07/2026 | TRD.md | Added §4.4 external API proxy pattern. Updated §8 env vars — removed NEXT_PUBLIC_CURRENCY_API_URL, replaced with CURRENCY_API_KEY and CURRENCY_API_BASE_URL. |
 | 06/07/2026 | PHASES.md | Created. All phases defined. |
 | 06/07/2026 | UIUX_BRIEF.md | Created. Color system, typography, logo behavior, component specs, motion. |
 | 06/07/2026 | APP_FLOW.md | Created. All user flows and route map defined. |
@@ -298,7 +312,7 @@ All doc changes are logged here. Most recent first.
 | 06/07/2026 | SCHEMA.md | Rewritten. Type corrections applied (text user_id, RLS fix, NGN-only). |
 | 06/07/2026 | TRD.md | Created. Merged CONSTITUTION.md + DECISIONS.md. Draft persistence added. |
 | 06/07/2026 | PRD.md | Created. Replaced PROJECT.md. |
-| 05/07/2026 | NOTES.md | Initial dev notes written by Victor. |
+| 05/07/2026 | NOTES.md | Initial dev notes written by RedMane. |
  
 *Update this table every time any project document is modified. Include the document name, date, and a one-line description of what changed. This table is the audit trail for the entire project's documentation history.*
  
