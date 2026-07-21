@@ -5,8 +5,10 @@ import { TopBar } from '@/components/top-bar'
 import { ProfileSync } from '@/components/profile-sync'
 import { redirect } from 'next/navigation'
 import { auth } from '@clerk/nextjs/server'
-import { Plus } from 'lucide-react'
 import { LayoutShell } from '@/components/layout-shell'
+import { QuickAddFab } from '@/components/quick-add-fab'
+import { QuickAddSheet } from '@/components/transactions/quick-add-sheet'
+import { EditTransactionSheet } from '@/components/transactions/edit-transaction-sheet'
 
 export default async function AppProtectedLayout({
   children,
@@ -32,12 +34,9 @@ export default async function AppProtectedLayout({
         </main>
       </div>
 
-      <button
-        className="fixed right-4 bottom-[80px] md:right-8 md:bottom-8 w-14 h-14 bg-orange text-orange-btn-text rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(249,115,22,0.3)] hover:bg-orange-hover hover:-translate-y-0.5 active:scale-95 transition-all duration-150 z-50 cursor-pointer"
-        aria-label="Quick Add Transaction"
-      >
-        <Plus className="w-7 h-7" />
-      </button>
+      <QuickAddFab />
+      <QuickAddSheet />
+      <EditTransactionSheet />
 
       {/* Bottom Nav for Mobile */}
       <BottomNav />

@@ -48,7 +48,8 @@ export function TopBar() {
           </button>
         ) : (
           <div className="md:hidden">
-            <Logo showText size={28} />
+            {/* Mobile: logo always solo (logo_behavior.md / UIUX §5.6) */}
+            <Logo showText={false} size={28} />
           </div>
         )}
 

@@ -18,8 +18,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Ledger",
+  title: "Ledger — Personal Finance Tracker for Nigerian Professionals",
   description: "Personal finance OS for tracking every Naira, killing bad spending, hitting budgets, and building real financial clarity.",
+  icons: {
+    icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
+    // apple-touch-logo.png — add when the PNG is ready; do not invent a placeholder.
+  },
 };
 
 export default function RootLayout({

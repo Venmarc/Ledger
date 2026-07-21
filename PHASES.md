@@ -1,7 +1,7 @@
 # PHASES.md — Implementation Roadmap
 **Project:** Ledger
-**Last Updated:** 13/07/2026
-**Status:** Pre-build. Docs phase complete.
+**Last Updated:** 21/07/2026
+**Status:** Phase 1 **gate passed** (Victor, 21/07/2026). Ready for Phase 2 (Budgets & Savings Goals). Multi-select filter enhancement noted in NOTES.md (backlog, not Phase 2 scope).
  
 **References:** PRD.md · TRD.md · SCHEMA.md · APP_FLOW.md · PAGE_SPECS.md · UI/UX_BRIEF.md · NOTES.md
  
@@ -135,17 +135,30 @@ The app's only job at the end of Phase 1 is to let you log transactions fast and
 - Month selector functional (changes summary numbers)
 - Empty states per PAGE_SPECS.md
 - FAB wired
+### Phase 1 implementation note (2026-07-16 → 2026-07-21)
+
+Built in chunks P1-A→P1-H: foundations, data layer, shared UI, Quick Add, list/filters, edit/delete/undo, categories, dashboard v1. Auth bridge: Clerk JWT template preferred; service-role fallback after Clerk auth if template missing (post-pause fix). Category auto-seed when user has zero categories.
+
+**Post-build polish (not Phase 2):**
+- **19/07:** Dual SnapSlider month control; filter bar rebuild (search + sheet + chips); sidebar icon-rail collapse; `keepPreviousData` on list/summary queries.
+- **21/07:** Delete confirm z-index (`AlertDialog` `z-[130]` above BottomSheet `z-[100]`); ⋮ menu delete hoisted to list parent so outside-click no longer unmounts confirm; sheet Escape defers to open alert dialog. See NOTES.md 21/07.
+
+**Agent verification (not the product gate):** `npx tsc --noEmit` pass as of 2026-07-21 (delete fix). Full lint/build last green at P1-I (2026-07-16) — re-run before claiming gate.
+
 ### Phase 1 Gate — All Must Pass
-- [ ] Log a transport expense on your phone. Tap to saved in under 10 seconds. Time it.
-- [ ] Log an income transaction. Appears in list with green amount. Dashboard income total updates.
-- [ ] Edit a transaction. Changes reflected immediately in list and dashboard.
-- [ ] Delete a transaction. Disappears. Undo toast appears. Tap undo — it comes back.
-- [ ] Close the Quick Add sheet mid-fill (without saving). Re-open FAB. Draft is restored.
-- [ ] Enter 20 real transactions from the past two weeks of your actual spending.
-- [ ] Transaction list filters by category correctly.
-- [ ] Transaction list filters by date range correctly.
-- [ ] Dashboard month summary numbers are arithmetically correct. Verify manually against your 20 transactions.
-- [ ] `npx tsc --noEmit` passes. Zero console errors.
+*(Victor only — agents must not check these off or start Phase 2 without explicit sign-off.)*
+- [x] Log a transport expense on your phone. Tap to saved in under 10 seconds. Time it.
+- [x] Log an income transaction. Appears in list with green amount. Dashboard income total updates.
+- [x] Edit a transaction. Changes reflected immediately in list and dashboard.
+- [x] Delete a transaction. Disappears. Undo toast appears. Tap undo — it comes back.
+- [x] Close the Quick Add sheet mid-fill (without saving). Re-open FAB. Draft is restored.
+- [x] Enter 20 real transactions from the past two weeks of your actual spending.
+- [x] Transaction list filters by category correctly.
+- [x] Transaction list filters by date range correctly.
+- [x] Dashboard month summary numbers are arithmetically correct. Verify manually against your 20 transactions.
+- [x] `npx tsc --noEmit` passes. Zero console errors.
+
+**Gate closed:** 21/07/2026 — Victor: “Phase 1 is done. … No bugs identified.”
 ---
  
 ## Phase 2 — Budgets & Savings Goals
@@ -300,6 +313,9 @@ All doc changes are logged here. Most recent first.
  
 | Date | Document | Change |
 |---|---|---|
+| 21/07/2026 | PHASES.md, NOTES.md | Phase 1 gate **passed** (Victor). Multi-select filter design note (OR within category/payment; AND across dimensions). Prior same-day: polish + delete confirm z-index/lifecycle. |
+| 21/07/2026 | PHASES.md, NOTES.md | Doc sync: 19/07 polish (SnapSlider month, filter rebuild, sidebar) + 21/07 delete confirm stacking (`z-[130]`) and ⋮ menu lifecycle fix. (Gate later closed same day.) |
+| 16/07/2026 | PHASES.md, NOTES.md | Phase 1 implementation marked complete (gate pending Victor). Documented Supabase pause/resume vs Clerk JWT template root cause + auth fallback + category auto-seed. |
 | 07/07/2026 | APP_FLOW.md, PAGE_SPECS.md, UIUX_BRIEF.md, PHASES.md | Added Theme Toggle as a global component. Fixed placement rule (closest to center, every page, public + protected). Corrected Phase 0/4 split — toggle is real and permanent from Phase 0 with localStorage persistence, not a dev-only placeholder rebuilt later. Added component spec (icon, size, transition, flash-prevention) to UIUX_BRIEF §6.10. |
 | 06/07/2026 | PHASES.md, TRD.md, UIUX_BRIEF.md | Fixed dark/light theme contradiction. NOTES.md and TRD §6.1 required theme switching architected at project start, but Phase 0 never verified it and Phase 4 read like the initial build. Phase 0 now requires a working dev-only toggle + hex-value grep gate. Phase 4 reworded to "refinement only." UIUX_BRIEF §2.7 reworded from "Future — Structure Only" to explicit phase ownership. |
 | 06/07/2026 | PHASES.md | Patched Phase 3 currency widget deliverable — route handler pattern documented, provider confirmed as exchangerate-api.com. |

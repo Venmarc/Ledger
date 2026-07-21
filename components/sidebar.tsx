@@ -11,11 +11,12 @@ import {
   BarChart3,
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react'
 import { Logo } from './logo'
 import { useUIStore } from '@/lib/store'
 import { TooltipPortal } from './ui/tooltip-portal'
+import { cn } from '@/lib/utils'
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -25,6 +26,13 @@ const navItems = [
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
+
+/**
+ * Fixed icon rail: icons keep a constant left inset whether collapsed or expanded.
+ * Only the container width + label text expand toward the right — never
+ * justify-center (that caused ~96px icon drift mid-collapse).
+ */
+const ICON_INSET = 'pl-3.5' // 14px — matches collapsed icon optical center
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -37,7 +45,6 @@ export function Sidebar() {
     setMounted(true)
   }, [])
 
-  // Default to true (collapsed) during SSR/hydration to match server rendering
   const isCollapsed = mounted ? sidebarCollapsed : true
 
   return (
@@ -46,12 +53,15 @@ export function Sidebar() {
         width: 'var(--sidebar-width)',
         willChange: 'width',
       }}
-      className="fixed left-0 top-0 z-30 hidden md:flex flex-col bg-bg-surface border-r border-border h-screen py-5 transition-[width] duration-200 ease-out justify-between"
+      className={cn(
+        'fixed left-0 top-0 z-30 hidden h-screen flex-col justify-between border-r border-border bg-bg-surface py-5 md:flex',
+        'transition-[width] duration-[var(--duration-normal)] [transition-timing-function:var(--ease-smooth)]'
+      )}
     >
-      {/* Collapse Toggle Button */}
       <button
+        type="button"
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors duration-200 cursor-pointer shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
+        className="absolute top-6 -right-3 z-40 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary shadow-sm transition-colors duration-[var(--duration-fast)] hover:bg-bg-subtle hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {isCollapsed ? (
@@ -61,35 +71,63 @@ export function Sidebar() {
         )}
       </button>
 
-      <div className="space-y-8 flex flex-col min-h-0">
-        {/* Logo block */}
-        <div className={`flex ${isCollapsed ? 'justify-center' : 'px-5'}`}>
-          <Link href="/" className="block">
-            <Logo showText={!isCollapsed} size={36} />
-          </Link>
+      <div className="flex min-h-0 flex-1 flex-col space-y-6 overflow-hidden">
+        {/* Logo: always left-aligned at the icon rail — never centered */}
+        <div className={cn('flex shrink-0 items-center', ICON_INSET, 'pr-3')}>
+          <Logo showText={!isCollapsed} size={36} />
         </div>
-        
-        {/* Navigation block */}
-        <nav className={`sidebar-nav flex flex-col gap-1 overflow-y-auto overflow-x-hidden no-scrollbar ${isCollapsed ? 'px-2' : 'px-3'}`}>
+
+        <nav
+          className={cn(
+            'sidebar-nav flex min-h-0 flex-1 flex-col gap-1.5 overflow-x-hidden overflow-y-auto ledger-scroll py-2',
+            'pr-2 pl-2'
+          )}
+        >
           {navItems.map((item) => {
             const Icon = item.icon
-            const isActive = pathname === item.href
-            
+            const isActive =
+              pathname === item.href || pathname.startsWith(`${item.href}/`)
+
             return (
-              <TooltipPortal key={item.href} text={item.label} disabled={!isCollapsed}>
+              <TooltipPortal
+                key={item.href}
+                text={item.label}
+                disabled={!isCollapsed}
+              >
                 <Link
                   href={item.href}
                   aria-label={item.label}
-                  className={`flex items-center rounded-md text-sm transition-colors duration-150 ${
-                    isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5'
-                  } ${
+                  className={cn(
+                    // Always start-aligned — icons never re-center on collapse
+                    'flex items-center gap-3 rounded-md py-2.5 text-sm',
+                    ICON_INSET,
+                    'pr-3',
+                    'transition-[background-color,color] duration-[var(--duration-fast)] [transition-timing-function:var(--ease-smooth)]',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 focus-visible:ring-offset-bg-surface',
                     isActive
-                      ? 'bg-azure-muted text-azure font-medium'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-bg-subtle'
-                  }`}
+                      ? 'bg-azure-muted font-medium text-azure'
+                      : 'text-text-secondary hover:bg-bg-subtle hover:text-text-primary'
+                  )}
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-azure' : 'text-text-secondary'}`} />
-                  {!isCollapsed && <span className="truncate">{item.label}</span>}
+                  <Icon
+                    className={cn(
+                      'h-5 w-5 shrink-0',
+                      isActive ? 'text-azure' : 'text-text-secondary'
+                    )}
+                  />
+                  {/* Label clips in place; width of rail grows rightward only */}
+                  <span
+                    className={cn(
+                      'min-w-0 truncate whitespace-nowrap',
+                      'transition-[opacity,max-width] duration-[var(--duration-normal)] [transition-timing-function:var(--ease-smooth)]',
+                      isCollapsed
+                        ? 'max-w-0 opacity-0'
+                        : 'max-w-[11rem] opacity-100'
+                    )}
+                    aria-hidden={isCollapsed}
+                  >
+                    {item.label}
+                  </span>
                 </Link>
               </TooltipPortal>
             )

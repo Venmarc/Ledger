@@ -14,16 +14,17 @@ export default function ErrorBoundary({
   }, [error])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] border border-[#2A2A2A] bg-[#141414] rounded-lg p-8 space-y-6 text-center">
+    <div className="flex flex-col items-center justify-center min-h-[400px] border border-border bg-bg-surface rounded-lg p-8 space-y-6 text-center">
       <div className="space-y-2 max-w-sm">
-        <h2 className="text-xl font-bold font-display text-[#EF4444]">Module Error</h2>
-        <p className="text-sm text-[#A3A3A3]">
+        <h2 className="text-xl font-bold font-display text-red">Module Error</h2>
+        <p className="text-sm text-text-secondary">
           There was an error loading this section of the app.
         </p>
       </div>
       <button
+        type="button"
         onClick={() => reset()}
-        className="h-10 px-6 bg-[#F97316] text-[#0A0A0A] font-bold rounded-md hover:bg-[#EA6C0A] transition-colors cursor-pointer"
+        className="h-11 min-h-11 px-6 bg-orange text-orange-btn-text font-bold rounded-md hover:bg-orange-hover transition-colors cursor-pointer"
       >
         Reload Module
       </button>

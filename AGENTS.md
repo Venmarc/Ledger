@@ -8,7 +8,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Project:** Ledger
 **Document Type:** Agent Orientation, Non-Negotiable Rules & Decision Registry
-**Last Updated:** July 14, 2026
+**Last Updated:** July 16, 2026
 **References:** PRD.md · TRD.md · SCHEMA.md · PHASES.md · APP_FLOW.md · PAGE_SPECS.md · UIUX_BRIEF.md · DESIGN.md · NOTES.md
 
 ---

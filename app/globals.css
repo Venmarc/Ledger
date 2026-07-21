@@ -81,6 +81,48 @@
   --color-red-muted: #1C0202;
   
   --color-focus-ring: #F97316;
+
+  /* Logo glow — orange-tinted (UIUX_BRIEF §5 / logo_behavior.md). Hex only here. */
+  --logo-container-bg: #111111;
+  --logo-glow-rest: drop-shadow(0 0 8px rgba(249, 115, 22, 0.35));
+  --logo-glow-hover: drop-shadow(0 0 14px rgba(249, 115, 22, 0.6));
+
+  /*
+   * Hero film (landing): RGB triplet + opacity.
+   * Raise --hero-film-opacity to thicken / darken; lower to reveal more art.
+   */
+  --hero-film-rgb: 10 10 10;
+  --hero-film-opacity: 0.9;
+  --hero-film-left-boost: 0.06;
+  /* Art band: top portion of the first screen only */
+  --hero-media-height: 52%;
+
+  /* Motion — Rules on UI Polish §1–2 (no browser default ease) */
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.17, 1, 0.32, 1);
+  --ease-spring: cubic-bezier(0.35, 1.55, 0.65, 1);
+  --ease-in-out-soft: cubic-bezier(0.66, 0, 0.34, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 280ms;
+  --duration-entrance: 320ms;
+
+  /* Layered depth — Rule 6 (hairline ring, not a 1px border stroke) */
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  --shadow-elevated:
+    0 4px 8px rgba(0, 0, 0, 0.02),
+    0 8px 12px rgba(0, 0, 0, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 0 0 0.5px rgba(255, 255, 255, 0.06);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --press-scale: 0.98;
 }
 
 [data-theme="light"] {
@@ -100,15 +142,58 @@
   --color-green-muted: #DCFCE7; /* green-100 */
   --color-amber-muted: #FEF3C7; /* amber-100 */
   --color-red-muted: #FEE2E2; /* red-100 */
+
+  --logo-container-bg: #ffffff;
+  --logo-glow-rest: drop-shadow(0 0 6px rgba(234, 108, 10, 0.5));
+  --logo-glow-hover: drop-shadow(0 0 12px rgba(234, 108, 10, 0.65));
+
+  /* Light mode: heavier pale veil so pastel art never fights dark type */
+  --hero-film-rgb: 250 250 250;
+  --hero-film-opacity: 0.86;
+  --hero-film-left-boost: 0.08;
+  --hero-media-height: 52%;
+
+  --shadow-card:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.03),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  --shadow-elevated:
+    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 8px 12px rgba(0, 0, 0, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.03),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 0 0 0.5px #e0e0e0;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-  *:focus-visible {
+  /* Interactive controls only — NOT large containers (sheets/dialogs get focus traps) */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible,
+  [role="option"]:focus-visible,
+  [role="menuitem"]:focus-visible,
+  [tabindex]:not([tabindex="-1"]):focus-visible {
     outline: 2px solid var(--color-orange);
     outline-offset: 2px;
+  }
+  /* Vaul/Radix focus the panel itself on open — never ring the whole sheet */
+  [data-slot="drawer-content"],
+  [data-slot="drawer-content"]:focus,
+  [data-slot="drawer-content"]:focus-visible,
+  [data-slot="dialog-content"],
+  [data-slot="dialog-content"]:focus,
+  [data-slot="dialog-content"]:focus-visible,
+  [data-vaul-drawer],
+  [data-vaul-drawer]:focus,
+  [data-vaul-drawer]:focus-visible {
+    outline: none !important;
+    box-shadow: none;
   }
   body {
     @apply bg-background text-foreground;
@@ -122,7 +207,135 @@
 @media (min-width: 768px) {
   .desktop-layout-content {
     padding-left: var(--sidebar-width);
-    transition: padding-left 0.2s ease-out;
+    transition: padding-left var(--duration-normal) var(--ease-smooth);
+  }
+}
+
+/* Prefer reduced motion: snap sidebar + content padding instantly */
+@media (prefers-reduced-motion: reduce) {
+  .desktop-layout-content {
+    transition: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* UI Polish — Rules 5–9 (entrance, press, reveal, reduced motion)            */
+/* -------------------------------------------------------------------------- */
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+.shadow-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Rule 7 — tactile press (0.98, not a collapse) */
+.pressable {
+  transition:
+    transform var(--duration-fast) var(--ease-smooth),
+    background-color var(--duration-fast) var(--ease-smooth),
+    color var(--duration-fast) var(--ease-smooth),
+    opacity var(--duration-fast) var(--ease-smooth);
+}
+.pressable:active:not(:disabled) {
+  transform: scale(var(--press-scale));
+}
+
+/* Rule 5 — entrances blur + rise; never plain fade alone */
+@keyframes entrance-blur-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.entrance-blur-in {
+  animation: entrance-blur-in var(--duration-entrance) var(--ease-smooth) both;
+}
+
+/* Stagger helpers for short lists (avoid on long infinite lists) */
+.entrance-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.entrance-stagger > *:nth-child(2) { animation-delay: 30ms; }
+.entrance-stagger > *:nth-child(3) { animation-delay: 60ms; }
+.entrance-stagger > *:nth-child(4) { animation-delay: 90ms; }
+.entrance-stagger > *:nth-child(5) { animation-delay: 120ms; }
+.entrance-stagger > *:nth-child(6) { animation-delay: 150ms; }
+.entrance-stagger > * {
+  animation: entrance-blur-in var(--duration-entrance) var(--ease-smooth) both;
+}
+
+/* Rule 8 — real height reveal via grid rows */
+.reveal-grid {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-slow) var(--ease-smooth);
+}
+.reveal-grid[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.reveal-grid > .reveal-grid-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Snap label micro-flash when magnetic snap catches (Rule 4) */
+@keyframes snap-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.snap-label-pulse {
+  animation: snap-pulse 220ms var(--ease-spring);
+}
+
+/* Horizontal snap-slider edge peeks — content continues off-screen */
+.snap-slider-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+}
+
+/* Transaction list: native scroll feel + overscroll */
+.tx-list-scroll {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entrance-blur-in,
+  .entrance-stagger > *,
+  .snap-label-pulse {
+    animation: none !important;
+  }
+  .reveal-grid {
+    transition: none !important;
+  }
+  .pressable {
+    transition: none !important;
+  }
+  .pressable:active:not(:disabled) {
+    transform: none !important;
+  }
+  .desktop-layout-content {
+    transition: none !important;
   }
 }
 
@@ -132,4 +345,370 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Premium slim scrollbars (page + components). Prefer .ledger-scroll on panels. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.ledger-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+.ledger-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.ledger-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-strong);
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+.ledger-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-tertiary);
+}
+
+.ledger-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Logo behavior — UIUX_BRIEF §5 + Research_files/logo_behavior.md            */
+/* -------------------------------------------------------------------------- */
+
+.logo-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: transform 200ms ease;
+}
+
+.logo-container {
+  background-color: var(--logo-container-bg);
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
+  line-height: 0;
+}
+
+.logo-icon {
+  display: block;
+  filter: var(--logo-glow-rest);
+  transition: filter 200ms ease, transform 200ms ease;
+  color: var(--color-text-primary);
+}
+
+/* Mobile / solo default: icon lifts + stronger glow (wordmark is hidden < md) */
+.logo-lockup:hover .logo-icon,
+.logo-lockup:focus-visible .logo-icon {
+  filter: var(--logo-glow-hover);
+  transform: translateY(-2px);
+}
+
+.logo-text {
+  /* Wordmark rides parent lift on desktop; never glows */
+  filter: none;
+}
+
+/* Desktop lockup: whole group lifts; only icon glow intensifies (no double lift) */
+@media (min-width: 768px) {
+  .logo-lockup:has(.logo-text):hover,
+  .logo-lockup:has(.logo-text):focus-visible {
+    transform: translateY(-2px);
+  }
+
+  .logo-lockup:has(.logo-text):hover .logo-icon,
+  .logo-lockup:has(.logo-text):focus-visible .logo-icon {
+    filter: var(--logo-glow-hover);
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-lockup,
+  .logo-icon {
+    transition: none;
+  }
+
+  .logo-lockup:hover,
+  .logo-lockup:focus-visible,
+  .logo-lockup:hover .logo-icon,
+  .logo-lockup:focus-visible .logo-icon {
+    transform: none;
+  }
+}
+
+/* Naira glyph — display font may not ship U+20A6; system stack does */
+.currency-naira {
+  font-family:
+    var(--font-body),
+    system-ui,
+    "Segoe UI",
+    "Segoe UI Symbol",
+    "Noto Sans",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-weight: inherit;
+  letter-spacing: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Landing effects — Effects_Glossary.md (CSS)                                */
+/* (1) Soft light pooled at bottom / light-mode side arches                   */
+/* (3) Cursor-stick glow + rest position on card                              */
+/* -------------------------------------------------------------------------- */
+
+/* Section pool: parent must be position:relative; overflow hidden. */
+.section-pool-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+/*
+ * Stack (hero first screen):
+ *   z-0  .hero-media   — illustration (top half only, soft-edge mask)
+ *   z-1  .hero-film    — theme film (tunable, full section)
+ *   z-2  ::before/::after pool glow
+ *   z-10+ content / z-50 header
+ */
+.hero-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--hero-media-height);
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Fallback while image bytes arrive on slow links */
+  background-color: transparent;
+  background-image: url("/hero/ledger-hero-blur.webp");
+  background-size: cover;
+  background-position: 70% 40%;
+  background-repeat: no-repeat;
+  /*
+   * Soft dissolve on every edge — no hard crop line.
+   * Horizontal + vertical masks intersect so corners die first.
+   */
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      #000 10%,
+      #000 90%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 12%,
+      #000 48%,
+      transparent 100%
+    );
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      #000 10%,
+      #000 90%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 12%,
+      #000 48%,
+      transparent 100%
+    );
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  mask-composite: intersect;
+}
+
+.hero-media-img {
+  object-fit: cover;
+  object-position: 70% 40%;
+  /* Desat + slight darken so it sinks under the film */
+  filter: saturate(0.85) brightness(0.72);
+}
+
+.hero-film {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  /*
+   * Heavy base plate + left boost under copy + soft radial vignette
+   * so nothing reads as a hard picture frame.
+   */
+  background:
+    radial-gradient(
+      ellipse 95% 70% at 55% 28%,
+      transparent 0%,
+      rgb(var(--hero-film-rgb) / calc(var(--hero-film-opacity) * 0.35)) 55%,
+      rgb(var(--hero-film-rgb) / var(--hero-film-opacity)) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgb(var(--hero-film-rgb) / calc(var(--hero-film-opacity) + var(--hero-film-left-boost))) 0%,
+      rgb(var(--hero-film-rgb) / var(--hero-film-opacity)) 48%,
+      rgb(var(--hero-film-rgb) / calc(var(--hero-film-opacity) * 0.95)) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(var(--hero-film-rgb) / calc(var(--hero-film-opacity) * 0.55)) 0%,
+      rgb(var(--hero-film-rgb) / var(--hero-film-opacity)) 55%,
+      rgb(var(--hero-film-rgb) / 1) 100%
+    );
+}
+
+/* Dark (default): orange soft light pooled at the bottom of the section */
+.section-pool-glow::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  bottom: -120px;
+  left: 50%;
+  width: 120%;
+  height: 320px;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    circle at 50% 100%,
+    rgba(249, 115, 22, 0.32) 0%,
+    rgba(249, 115, 22, 0.12) 40%,
+    transparent 70%
+  );
+  filter: blur(100px);
+}
+
+.section-pool-glow::before {
+  content: none;
+}
+
+/*
+ * Light mode: pool leaves the bottom. Asymmetric azure arches on the sides —
+ * left lower, right higher (intentionally uneven). Subtler than dark orange.
+ */
+[data-theme="light"] .section-pool-glow::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  left: -100px;
+  bottom: 8%;
+  width: 300px;
+  height: 380px;
+  background: radial-gradient(
+    ellipse 55% 65% at 50% 50%,
+    rgba(56, 189, 248, 0.18) 0%,
+    rgba(56, 189, 248, 0.06) 45%,
+    transparent 72%
+  );
+  filter: blur(72px);
+}
+
+[data-theme="light"] .section-pool-glow::after {
+  bottom: auto;
+  left: auto;
+  right: -90px;
+  top: 12%;
+  width: 320px;
+  height: 420px;
+  transform: none;
+  background: radial-gradient(
+    ellipse 55% 65% at 50% 50%,
+    rgba(56, 189, 248, 0.2) 0%,
+    rgba(56, 189, 248, 0.07) 45%,
+    transparent 72%
+  );
+  filter: blur(80px);
+}
+
+/* Cursor-stick glow on card — azure, soft, rest-return on leave */
+.cursor-glow-card {
+  --spot-x: 50%;
+  --spot-y: 78%;
+  --spot-return-duration: 0.65s;
+  contain: layout paint;
+}
+
+.cursor-glow-spot {
+  position: absolute;
+  z-index: 0;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  left: var(--spot-x);
+  top: var(--spot-y);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  /* Dark card: soft azure, screen blend so it reads as light on charcoal */
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.55) 0%,
+    rgba(56, 189, 248, 0.18) 42%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  transition:
+    left var(--spot-return-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    top var(--spot-return-duration) cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease;
+}
+
+/* While tracking: snap to cursor (no lag in base form) */
+.cursor-glow-card.is-tracking .cursor-glow-spot {
+  transition: none;
+  opacity: 0.7;
+}
+
+/* Light mode card is light gray/white — no screen blend; soft azure wash */
+[data-theme="light"] .cursor-glow-spot {
+  mix-blend-mode: normal;
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.28) 0%,
+    rgba(56, 189, 248, 0.1) 45%,
+    transparent 70%
+  );
+  opacity: 0.85;
+}
+
+[data-theme="light"] .cursor-glow-card.is-tracking .cursor-glow-spot {
+  opacity: 1;
+}
+
+/* Mobile / touch: hide glow entirely */
+@media (pointer: coarse) {
+  .cursor-glow-spot {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-glow-spot {
+    transition: none;
+  }
 }

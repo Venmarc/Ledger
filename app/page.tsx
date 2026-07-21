@@ -1,153 +1,320 @@
 import { Show, UserButton } from '@clerk/nextjs'
 import { Logo } from '@/components/logo'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { ArrowRight, Receipt, Landmark, Target, BarChart3, Sparkles } from 'lucide-react'
+import { CursorGlowCard } from '@/components/landing/cursor-glow-card'
+import {
+  ArrowRight,
+  Receipt,
+  Landmark,
+  Target,
+  BarChart3,
+  RefreshCw,
+  Smartphone,
+} from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
+
+/** Lucide removed brand logos; inline GitHub mark keeps CTA honest. */
+function GitHubIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
+    </svg>
+  )
+}
+
+const FEATURES = [
+  {
+    icon: Receipt,
+    title: 'Lightning-fast logging',
+    description:
+      'Add income or expenses in under 10 seconds via the floating action button.',
+    accent: 'text-orange',
+  },
+  {
+    icon: Landmark,
+    title: 'Budget tracking',
+    description:
+      'Set monthly budgets per category. Watch them update in real time as you spend.',
+    accent: 'text-azure',
+  },
+  {
+    icon: Target,
+    title: 'Savings goals',
+    description:
+      'Set a target, log contributions, watch the progress ring fill.',
+    accent: 'text-green',
+  },
+  {
+    icon: BarChart3,
+    title: 'Spending analytics',
+    description:
+      'Category breakdowns, month-over-month comparison, and money leak detection.',
+    accent: 'text-amber',
+  },
+  {
+    icon: RefreshCw,
+    title: 'Recurring transactions',
+    description:
+      'Templates for salary, subscriptions, and regular expenses with due-date prompts.',
+    accent: 'text-azure',
+  },
+  {
+    icon: Smartphone,
+    title: 'Mobile-first PWA',
+    description:
+      'Installable on your phone. Built to be used daily, not demoed once.',
+    accent: 'text-orange',
+  },
+] as const
+
+const TECH_STACK = [
+  'Next.js',
+  'TypeScript',
+  'Supabase',
+  'Clerk',
+  'Tailwind CSS',
+  'shadcn/ui',
+  'Recharts',
+  'TanStack Query',
+  'Zustand',
+  'Vercel',
+] as const
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-bg-base font-sans antialiased text-text-primary selection:bg-orange/30 selection:text-orange">
-      {/* Navigation */}
-      <header className="flex items-center justify-between w-full border-b border-border bg-bg-surface/80 backdrop-blur-md py-4 px-6 md:px-12 sticky top-0 z-50">
-        <Logo showText size={32} />
-
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          
-          <Show when="signed-out">
-            <Link href="/sign-in" className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer">
-              Sign In
-            </Link>
-            <Link href="/sign-up" className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md bg-orange text-orange-btn-text transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center cursor-pointer shadow-[0_4px_12px_rgba(249,115,22,0.2)]">
-              View Demo
-            </Link>
-          </Show>
-          <Show when="signed-in">
-            <Link
-              href="/dashboard"
-              className="h-11 md:h-10 px-5 text-sm font-semibold rounded-md border border-border-strong bg-transparent text-text-primary transition-colors duration-150 hover:bg-bg-subtle flex items-center justify-center cursor-pointer"
-            >
-              Dashboard
-            </Link>
-            <UserButton />
-          </Show>
+    <div className="flex flex-col bg-bg-base font-sans antialiased text-text-primary selection:bg-orange/30 selection:text-orange">
+      {/* ================================================================
+          FIRST SCREEN — fills the browser window (Effects_Glossary #2)
+          Nav + hero share one 100dvh block. Soft pool glow at bottom (#1).
+          ================================================================ */}
+      <div className="section-pool-glow flex min-h-[100dvh] flex-col">
+        {/* z-0: art — tiny blur CSS bg paints first; sharp WebP swaps in */}
+        <div className="hero-media" aria-hidden="true">
+          <Image
+            src="/hero/ledger-hero.webp"
+            alt=""
+            fill
+            priority
+            fetchPriority="high"
+            sizes="100vw"
+            quality={70}
+            className="hero-media-img"
+            // Decorative only — text already carries meaning
+          />
         </div>
-      </header>
+        {/* z-1: film under copy + glows. Tune --hero-film-opacity in globals.css */}
+        <div className="hero-film" aria-hidden="true" />
 
-      {/* Hero Section */}
-      <main className="flex-1 max-w-[1100px] w-full mx-auto px-6 py-12 md:py-24 space-y-24">
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-border bg-orange-muted text-orange text-xs font-semibold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5" />
-              Ledger Personal Finance OS
+        <header className="relative z-50 flex w-full items-center justify-between border-b border-border bg-bg-surface/80 px-6 py-4 backdrop-blur-md md:px-12">
+          <Logo showText size={32} />
+
+          <div className="flex items-center gap-3 md:gap-4">
+            <ThemeToggle />
+
+            <Show when="signed-out">
+              {/* Mobile: Sign In only. Desktop: Sign In + Sign Up (no View Demo in header). */}
+              <Link
+                href="/sign-in"
+                className="inline-flex h-11 cursor-pointer items-center justify-center rounded-md border border-border-strong bg-transparent px-4 text-sm font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle md:h-10 md:px-5"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up"
+                className="hidden h-11 cursor-pointer items-center justify-center rounded-md bg-orange px-5 text-sm font-semibold text-orange-btn-text shadow-[0_4px_12px_rgba(249,115,22,0.2)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0 md:inline-flex md:h-10"
+              >
+                Sign Up
+              </Link>
+            </Show>
+            <Show when="signed-in">
+              <Link
+                href="/dashboard"
+                className="inline-flex h-11 cursor-pointer items-center justify-center rounded-md border border-border-strong bg-transparent px-5 text-sm font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle md:h-10"
+              >
+                Dashboard
+              </Link>
+              <UserButton />
+            </Show>
+          </div>
+        </header>
+
+        <section className="relative z-10 flex flex-1 items-center">
+          <div className="mx-auto w-full max-w-[1100px] px-6 py-12 md:py-16">
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
+              <div className="space-y-6 text-left lg:col-span-7">
+                <h1 className="max-w-xl font-display text-4xl font-bold leading-[1.05] tracking-tight text-text-primary md:text-6xl">
+                  {/* ₦ is outside Space Grotesk; system stack carries the currency glyph */}
+                  Track every{' '}
+                  <span className="currency-naira" aria-label="naira">
+                    ₦
+                  </span>
+                  .
+                  <br />
+                  Kill bad spending.
+                  <br />
+                  <span className="text-azure">Build clarity.</span>
+                </h1>
+
+                <p className="max-w-md text-lg leading-relaxed text-text-secondary">
+                  A personal finance tracker built for Nigerian realities.
+                  NGN-first, mobile-first, fast transaction logging, and deep
+                  spending insights.
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <Show when="signed-out">
+                    <Link
+                      href="/sign-up"
+                      className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
+                    >
+                      Log First Transaction
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                    {/* Repo URL not set in project docs yet — wire real href when known */}
+                    <a
+                      href="#github"
+                      className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md border border-border-strong bg-transparent px-6 text-base font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle"
+                    >
+                      <GitHubIcon className="h-5 w-5" />
+                      View on GitHub
+                    </a>
+                  </Show>
+                  <Show when="signed-in">
+                    <Link
+                      href="/dashboard"
+                      className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
+                    >
+                      Go to Dashboard
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  </Show>
+                </div>
+              </div>
+
+              {/* Right column: blank card + cursor glow (content deliberately empty) */}
+              <div className="hidden lg:col-span-5 lg:block">
+                <CursorGlowCard
+                  className="border-border bg-bg-surface/80 transition-[border-color] duration-300 hover:border-border-strong"
+                  aria-label="Preview surface — content coming soon"
+                />
+              </div>
             </div>
+          </div>
+        </section>
+      </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] font-display text-text-primary max-w-xl">
-              Track every ₦.<br />
-              Kill bad spending.<br />
-              <span className="text-azure">Build clarity.</span>
-            </h1>
+      {/* ================================================================
+          SECOND SCREEN — product substance from PAGE_SPECS
+          Same soft pool glow treatment (#1).
+          ================================================================ */}
+      <div className="section-pool-glow">
+        <main className="relative z-10 mx-auto w-full max-w-[1100px] space-y-24 px-6 py-20 md:py-28">
+          {/* What it does */}
+          <section className="space-y-8">
+            <h2 className="border-b border-border pb-3 font-display text-2xl font-bold tracking-tight text-text-primary">
+              What it does
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {FEATURES.map(({ icon: Icon, title, description, accent }) => (
+                <div
+                  key={title}
+                  className="rounded-lg border border-border bg-bg-surface p-6 transition-all duration-150 hover:border-border-strong hover:bg-bg-subtle"
+                >
+                  <Icon className={`mb-4 h-8 w-8 ${accent}`} aria-hidden />
+                  <h3 className="mb-2 font-display text-lg font-bold text-text-primary">
+                    {title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-text-secondary">
+                    {description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
 
-            <p className="text-lg text-text-secondary max-w-md leading-relaxed">
-              A serious, high-precision finance tracker tailored for Nigerian realities. No bank-sync delays. Log expenses in under 10 seconds.
+          {/* Tech Stack */}
+          <section className="space-y-6">
+            <h2 className="border-b border-border pb-3 font-display text-2xl font-bold tracking-tight text-text-primary">
+              Tech Stack
+            </h2>
+            <ul className="flex flex-wrap gap-2">
+              {TECH_STACK.map((item) => (
+                <li
+                  key={item}
+                  className="rounded-full border border-border bg-bg-surface px-3.5 py-1.5 text-sm font-medium text-text-secondary"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Preview placeholder — PAGE_SPECS: no broken images */}
+          <section className="space-y-4">
+            <h2 className="border-b border-border pb-3 font-display text-2xl font-bold tracking-tight text-text-primary">
+              Preview
+            </h2>
+            <div className="flex aspect-[16/9] w-full items-center justify-center rounded-lg border border-border bg-bg-surface">
+              <p className="font-mono text-sm text-text-tertiary">
+                Screenshot coming soon
+              </p>
+            </div>
+            <p className="text-center text-sm text-text-tertiary">
+              Dashboard showing real spending data
             </p>
+          </section>
 
-            <div className="pt-2">
+          {/* CTA strip */}
+          <section className="rounded-lg border border-border bg-bg-surface px-6 py-12 text-center md:px-12">
+            <h2 className="mb-6 font-display text-2xl font-bold tracking-tight text-text-primary md:text-3xl">
+              See it in action
+            </h2>
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
               <Show when="signed-out">
-                <Link href="/sign-up" className="h-12 px-8 text-base font-bold rounded-md bg-orange text-orange-btn-text transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]">
-                  Log First Transaction
-                  <ArrowRight className="w-5 h-5" />
+                <Link
+                  href="/sign-up"
+                  className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
+                >
+                  View Demo
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
               </Show>
               <Show when="signed-in">
                 <Link
                   href="/dashboard"
-                  className="h-12 px-8 text-base font-bold rounded-md bg-orange text-orange-btn-text transition-all duration-150 hover:bg-orange-hover hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center justify-center gap-2 cursor-pointer shadow-[0_4px_16px_rgba(249,115,22,0.3)]"
+                  className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
                 >
                   Go to Dashboard
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
               </Show>
+              <a
+                href="#github"
+                className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md border border-border-strong bg-transparent px-6 text-base font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle"
+              >
+                <GitHubIcon className="h-5 w-5" />
+                GitHub Repo
+              </a>
             </div>
-          </div>
+            <p className="text-sm text-text-tertiary">
+              Built by Venmarc · Open source · No sign-up required for demo
+            </p>
+          </section>
+        </main>
+      </div>
 
-          {/* Visual Board Mockup (Right Column) */}
-          <div className="lg:col-span-5 hidden lg:block bg-bg-surface border border-border p-6 rounded-lg relative overflow-hidden group hover:border-border-strong transition-all duration-300">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <span className="text-xs font-mono text-text-tertiary">#01 / VISUAL WORLD</span>
-                <span className="w-2.5 h-2.5 bg-orange rounded-full animate-pulse" />
-              </div>
-              <div className="aspect-[4/3] bg-bg-base border border-border rounded p-4 flex flex-col justify-between font-mono">
-                <div className="flex justify-between text-xs text-text-secondary">
-                  <span>Naira balance</span>
-                  <span>₦ - tnum</span>
-                </div>
-                <div className="text-4xl font-bold font-sans tracking-tight tabular-nums text-text-primary">
-                  ₦450,200.<span className="text-text-tertiary text-2xl">00</span>
-                </div>
-                <div className="w-full bg-bg-surface h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-azure h-full w-[65%]" />
-                </div>
-                <div className="flex justify-between text-[10px] text-text-tertiary">
-                  <span>Transport Spent</span>
-                  <span className="text-azure">65% of budget</span>
-                </div>
-              </div>
-              <p className="text-xs italic text-text-secondary text-center font-display">
-                &ldquo;Clarity builds confidence&rdquo;
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Value Propositions */}
-        <section className="space-y-8">
-          <h2 className="text-2xl font-bold font-display tracking-tight border-b border-border pb-3">
-            Engineered Modules
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
-              <Receipt className="w-8 h-8 text-orange mb-4" />
-              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Snappy Logging</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Log transport or feeding costs on your mobile phone in under 10 seconds with draft caching.
-              </p>
-            </div>
-
-            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
-              <Landmark className="w-8 h-8 text-azure mb-4" />
-              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Category Budgets</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Set firm category constraints. Receive warnings at 75% thresholds and indicators on overflow.
-              </p>
-            </div>
-
-            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
-              <Target className="w-8 h-8 text-green mb-4" />
-              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Goal Projections</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Track specific savings goals (Emergency, School Fees) and verify contribution progress.
-              </p>
-            </div>
-
-            <div className="p-6 bg-bg-surface border border-border rounded-lg hover:bg-bg-subtle hover:border-border-strong transition-all duration-150">
-              <BarChart3 className="w-8 h-8 text-amber mb-4" />
-              <h3 className="text-lg font-bold font-display text-text-primary mb-2">Leaks Detection</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                Visualize spending trends and isolate recurring categories that leak financial control.
-              </p>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border bg-bg-surface py-8 px-6 text-center text-sm text-text-secondary">
-        <div className="max-w-[1100px] w-full mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="font-mono text-xs">LEDGER // PORTFOLIO SYSTEM</span>
-          <span className="text-text-tertiary">Built by Venmarc &copy; {new Date().getFullYear()}</span>
+      <footer className="relative z-10 border-t border-border bg-bg-surface px-6 py-8 text-center text-sm text-text-secondary">
+        <div className="mx-auto flex w-full max-w-[1100px] flex-col items-center justify-between gap-4 md:flex-row">
+          <span className="text-text-secondary">Ledger — Built by Venmarc</span>
+          <span className="text-text-tertiary">
+            &copy; {new Date().getFullYear()}
+          </span>
         </div>
       </footer>
     </div>

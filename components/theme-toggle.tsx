@@ -4,29 +4,35 @@ import React, { useEffect, useState } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { useTheme } from './theme-provider'
 
+/**
+ * Theme toggle. Renders a stable shell on the server, then attaches
+ * handlers after mount so hydration never fights localStorage.
+ */
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // eslint-disable-next-line
     setMounted(true)
   }, [])
 
-  if (!mounted) {
-    return <div className="w-11 h-11 md:w-9 md:h-9" />
-  }
-
   return (
     <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-transparent text-text-secondary hover:bg-bg-subtle hover:text-text-primary active:scale-[0.92] transition-all duration-150 cursor-pointer"
+      type="button"
+      onClick={() => {
+        if (!mounted) return
+        setTheme(theme === 'dark' ? 'light' : 'dark')
+      }}
+      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-transparent text-text-secondary transition-all duration-150 hover:bg-bg-subtle hover:text-text-primary active:scale-[0.92] md:h-9 md:w-9"
       aria-label="Toggle theme"
+      aria-pressed={mounted ? theme === 'dark' : undefined}
+      suppressHydrationWarning
     >
-      {theme === 'dark' ? (
-        <Sun className="w-5 h-5 md:w-[18px] md:h-[18px] transition-transform duration-150" />
+      {/* Prefer dark-mode sun as default so SSR matches default data-theme="dark" */}
+      {(!mounted || theme === 'dark') ? (
+        <Sun className="h-5 w-5 transition-transform duration-150 md:h-[18px] md:w-[18px]" />
       ) : (
-        <Moon className="w-5 h-5 md:w-[18px] md:h-[18px] transition-transform duration-150" />
+        <Moon className="h-5 w-5 transition-transform duration-150 md:h-[18px] md:w-[18px]" />
       )}
     </button>
   )

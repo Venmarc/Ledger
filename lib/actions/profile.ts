@@ -2,6 +2,7 @@
 
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 export async function syncUserProfile() {
   const { userId, getToken } = await auth()
@@ -13,9 +14,13 @@ export async function syncUserProfile() {
   } catch (err) {
     console.error('Clerk getToken custom template error:', err)
   }
-  const supabase = await createClient(token || undefined)
 
-  // Retrieve Clerk user information and upsert directly (keeps profile details fresh on every sign-in)
+  // Prefer JWT (RLS). Fall back to service role so pause/resume + missing JWT
+  // template cannot block profile creation entirely.
+  const supabase = token
+    ? await createClient(token)
+    : createServiceClient()
+
   const user = await currentUser()
   if (!user) return null
 

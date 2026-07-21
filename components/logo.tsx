@@ -1,46 +1,56 @@
 import React from 'react'
+import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 interface LogoProps {
   className?: string
+  /** Wordmark next to icon. Always hidden below md (mobile = solo). */
   showText?: boolean
   size?: number
+  /** Override home href (default `/`). */
+  href?: string
 }
 
-export function Logo({ className = '', showText = false, size = 32 }: LogoProps) {
+/**
+ * Ledger mark — always loads `/logo.svg` from public.
+ * Entire lockup links to the homepage (mobile + desktop).
+ * Glow / lift behavior lives in globals.css (UIUX_BRIEF §5).
+ */
+export function Logo({
+  className = '',
+  showText = false,
+  size = 32,
+  href = '/',
+}: LogoProps) {
   return (
-    <div className={`logo-lockup flex items-center gap-3 select-none ${className}`}>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 40 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="logo-icon logo-solo transition-all duration-200"
+    <Link
+      href={href}
+      className={cn(
+        'logo-lockup flex items-center gap-3 select-none outline-none focus-visible:outline-none',
+        className
+      )}
+      aria-label="Ledger home"
+    >
+      <span
+        className="logo-container inline-flex shrink-0 items-center justify-center"
+        style={{ width: size, height: size }}
+        aria-hidden={true}
       >
-        {/* Logo geometry from Brandkit: sharp square outline with diagonal path */}
-        <rect
-          x="4"
-          y="4"
-          width="32"
-          height="32"
-          rx="6"
-          stroke="currentColor"
-          strokeWidth="3.5"
-          className="text-text-primary"
+        {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset from public/ */}
+        <img
+          src="/logo.svg"
+          alt=""
+          width={size}
+          height={size}
+          className="logo-icon logo-solo"
+          draggable={false}
         />
-        <path
-          d="M12 28L28 12M28 12H20M28 12V20"
-          stroke="var(--color-orange)"
-          strokeWidth="3.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      </span>
       {showText && (
-        <span className="logo-text font-display font-bold text-xl text-text-primary tracking-tight">
+        <span className="logo-text hidden md:inline font-display font-bold text-xl text-text-primary tracking-tight">
           Ledger
         </span>
       )}
-    </div>
+    </Link>
   )
 }
