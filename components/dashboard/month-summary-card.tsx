@@ -86,7 +86,7 @@ export function MonthSummaryCard({ monthKey }: Props) {
           {income > 0
             ? overspent
               ? `Spending over income by ${formatNGN(Math.abs(balance))}`
-              : `${barPct}% of income spent`
+              : `${formatNGN(expense)} of ${formatNGN(income)} income spent this month`
             : expense > 0
               ? 'No income logged this month'
               : 'No activity this month'}

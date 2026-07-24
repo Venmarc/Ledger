@@ -12,6 +12,11 @@ const mobileNavItems = [
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
 ]
 
+function isNavActive(pathname: string, href: string) {
+  if (href === '/dashboard') return pathname === href
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
 export function BottomNav() {
   const pathname = usePathname()
 
@@ -19,7 +24,7 @@ export function BottomNav() {
     <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[64px] bg-bg-surface border-t border-border flex items-center justify-around z-40 px-2">
       {mobileNavItems.map((item) => {
         const Icon = item.icon
-        const isActive = pathname === item.href
+        const isActive = isNavActive(pathname, item.href)
         return (
           <Link
             key={item.href}

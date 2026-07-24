@@ -42,4 +42,7 @@ yarn-error.log*
 next-env.d.ts
 
 # agent context
-.superpowers/
+/.superpowers/
+
+# Working plan overviews (ephemeral; not product docs — see docs/README.md)
+/docs/

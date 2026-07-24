@@ -200,7 +200,18 @@ Raw spending data becomes actionable. You can set limits and watch them respond 
 - [ ] Dashboard shows budget cards and goals preview with real data.
 - [ ] Budget vs actual numbers match manual calculation from your real transactions.
 - [ ] `npx tsc --noEmit` passes. Zero console errors.
+
+### Phase 2 implementation log
+| Chunk | Completed | What landed |
+|-------|-----------|-------------|
+| P2-A  | 2026-07-21 17:55 WAT | Types (Budget, BudgetWithActual, SavingsGoal, …), Zod budget/goal, query keys, `lib/progress.ts`, ProgressBar, ProgressRing (house motion tokens) |
+| P2-B  | 2026-07-21 18:54 WAT | budgets actions (list+actuals, CRUD, unique/month guards) + `use-budgets` hooks |
+| P2-C  | 2026-07-21 20:28 WAT | /budgets full UI: summary, cards, add/edit/delete sheets, past read-only, MonthSelector |
+| P2-D  | 2026-07-21 20:42 WAT | goals actions (list/get/CRUD, contribute, archive, delete) + use-goals hooks |
+| P2-E  | 2026-07-23 15:10 WAT | /goals + /goals/[id] UI, rings, create/contribute sheets, archive/delete dialogs, completed section reveal |
+
 ---
+
  
 ## Phase 3 — Analytics, Recurring & Completion
 **Duration:** 5–6 days

@@ -123,3 +123,57 @@ export function createEmptyQuickAddDraft(
     isDirty: false,
   }
 }
+
+/** Row shape for public.budgets (SCHEMA.md). amount is PostgREST string. */
+export interface Budget {
+  id: string
+  user_id: string
+  category_id: string
+  period: 'monthly'
+  /** First day of month YYYY-MM-DD */
+  month: string
+  amount: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+/** Budget + query-time actuals + joined category for cards. */
+export interface BudgetWithActual extends Budget {
+  /** Sum of expense transactions for category in month (number for math). */
+  actual: number
+  /** amount as number */
+  limit: number
+  /** actual / limit; Infinity if limit is 0 (should not happen). */
+  ratio: number
+  categories: CategorySummary | null
+}
+
+export interface BudgetMonthSummary {
+  totalBudgeted: number
+  totalSpent: number
+  remaining: number
+}
+
+/** Row shape for public.savings_goals. */
+export interface SavingsGoal {
+  id: string
+  user_id: string
+  title: string
+  description: string | null
+  target_amount: string
+  current_amount: string
+  target_date: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+/** Derived flags for list/detail UI (not DB columns). */
+export interface SavingsGoalView extends SavingsGoal {
+  current: number
+  target: number
+  ratio: number
+  /** current >= target */
+  isCompleted: boolean
+}

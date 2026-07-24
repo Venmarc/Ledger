@@ -66,7 +66,7 @@ export function TransactionRow({
 
       <span
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-text-primary"
-        style={{ backgroundColor: `color-mix(in srgb, ${categoryColor} 28%, transparent)` }}
+        style={{ backgroundColor: 'var(--color-neutral-muted)' }}
         aria-hidden
       >
         <span

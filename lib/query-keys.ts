@@ -27,4 +27,18 @@ export const queryKeys = {
     month: (monthKey: string) =>
       [...queryKeys.summary.all(), 'month', monthKey] as const,
   },
+
+  budgets: {
+    all: () => [...queryKeys.all, 'budgets'] as const,
+    /** monthKey = YYYY-MM (same convention as summary.month) */
+    month: (monthKey: string) =>
+      [...queryKeys.budgets.all(), 'month', monthKey] as const,
+  },
+
+  goals: {
+    all: () => [...queryKeys.all, 'goals'] as const,
+    list: (scope: 'active' | 'archived' | 'all' = 'active') =>
+      [...queryKeys.goals.all(), 'list', scope] as const,
+    detail: (id: string) => [...queryKeys.goals.all(), 'detail', id] as const,
+  },
 } as const

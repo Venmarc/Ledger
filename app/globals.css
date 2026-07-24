@@ -42,6 +42,11 @@
   --color-red-hover: var(--color-red-hover);
   --color-red-muted: var(--color-red-muted);
 
+  --color-neutral: var(--color-neutral);
+  --color-neutral-hover: var(--color-neutral-hover);
+  --color-neutral-muted: var(--color-neutral-muted);
+  --color-neutral-border: var(--color-neutral-border);
+
   --font-display: var(--font-display);
   --font-body: var(--font-body);
 }
@@ -79,6 +84,15 @@
   --color-red: #EF4444;
   --color-red-hover: #DC2626;
   --color-red-muted: #1C0202;
+
+  /* Neutral / system accent — UIUX_BRIEF §2.8.
+     Warm stone family (not cool slate) so it harmonises with the orange palette
+     instead of fighting the azure accent. Backgrounds for category-icon circles
+     and any element that must read as "no category / system / default." */
+  --color-neutral: #57534E;
+  --color-neutral-hover: #6B6560;
+  --color-neutral-muted: #292524;
+  --color-neutral-border: #44403C;
   
   --color-focus-ring: #F97316;
 
@@ -142,6 +156,14 @@
   --color-green-muted: #DCFCE7; /* green-100 */
   --color-amber-muted: #FEF3C7; /* amber-100 */
   --color-red-muted: #FEE2E2; /* red-100 */
+
+  /* Neutral / system accent — light-mode counterpart (UIUX_BRIEF §2.8).
+     Warm stone family. Backgrounds for category-icon circles + system defaults.
+     Picked to keep AA contrast against white surface text/icons. */
+  --color-neutral: #57534E;
+  --color-neutral-hover: #6B6560;
+  --color-neutral-muted: #F1EFEC;
+  --color-neutral-border: #D6D3D1;
 
   --logo-container-bg: #ffffff;
   --logo-glow-rest: drop-shadow(0 0 6px rgba(234, 108, 10, 0.5));

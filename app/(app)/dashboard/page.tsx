@@ -4,12 +4,16 @@ import * as React from 'react'
 import { DashboardHeader } from '@/components/dashboard/dashboard-header'
 import { MonthSummaryCard } from '@/components/dashboard/month-summary-card'
 import { RecentTransactions } from '@/components/dashboard/recent-transactions'
+import { BudgetHealth } from '@/components/dashboard/budget-health'
+import { GoalsPreview } from '@/components/dashboard/goals-preview'
 import { currentMonthKey } from '@/lib/dates'
 
 /**
- * Dashboard v1 (PHASES.md Phase 1 only):
- * greeting, month selector, month summary, recent 8.
- * Budget / goals / insight / recurring deferred to later phases.
+ * Dashboard (PHASES.md Phase 2):
+ * greeting, month selector, month summary, recent 8,
+ * budget health (up to 4 cards bound to month picker),
+ * goals preview (up to 3 active goals). Recent is always latest.
+ * Recurring banner + Key Insight deferred (Phase 3 / not in scope).
  */
 export default function DashboardPage() {
   const [monthKey, setMonthKey] = React.useState(currentMonthKey)
@@ -23,16 +27,9 @@ export default function DashboardPage() {
           <MonthSummaryCard monthKey={monthKey} />
           <RecentTransactions />
         </div>
-        {/* Phase 2 slots: budgets / insight / goals sit here later */}
-        <aside className="hidden lg:col-span-2 lg:block">
-          <div className="rounded-xl border border-dashed border-border bg-bg-surface/50 px-4 py-8 text-center">
-            <p className="text-sm font-medium text-text-secondary">
-              Budgets & goals
-            </p>
-            <p className="mt-1 text-xs text-text-tertiary">
-              Coming in Phase 2 — keep logging transactions.
-            </p>
-          </div>
+        <aside className="space-y-6 lg:col-span-2">
+          <BudgetHealth monthKey={monthKey} />
+          <GoalsPreview />
         </aside>
       </div>
     </div>

@@ -10,6 +10,11 @@ type BottomSheetProps = {
   onOpenChange: (open: boolean) => void
   children: React.ReactNode
   dismissible?: boolean
+  /**
+   * Stacking layer. Use `nested` when opening a sheet over another sheet
+   * (e.g. category picker over Add Budget). Nested sits under AlertDialog (z-130).
+   */
+  layer?: 'base' | 'nested'
 }
 
 const SheetCtx = React.createContext<{
@@ -26,7 +31,10 @@ export function BottomSheet({
   onOpenChange,
   children,
   dismissible = true,
+  layer = 'base',
 }: BottomSheetProps) {
+  const rootRef = React.useRef<HTMLDivElement>(null)
+
   React.useEffect(() => {
     if (!open) return
     const prev = document.body.style.overflow
@@ -35,6 +43,10 @@ export function BottomSheet({
       if (e.key !== 'Escape' || !dismissible) return
       // Nested AlertDialog (z-130) owns Escape while open — do not close the sheet under it
       if (document.querySelector('[data-slot="alert-dialog-overlay"]')) return
+      // Only the topmost open sheet handles Escape (supports nested sheets)
+      const roots = document.querySelectorAll('[data-ledger-sheet-root]')
+      const top = roots[roots.length - 1]
+      if (top && rootRef.current && top !== rootRef.current) return
       onOpenChange(false)
     }
     document.addEventListener('keydown', onKey)
@@ -48,7 +60,15 @@ export function BottomSheet({
 
   return createPortal(
     <SheetCtx.Provider value={{ onOpenChange, dismissible }}>
-      <div className="fixed inset-0 z-[100]" data-ledger-sheet-root="">
+      <div
+        ref={rootRef}
+        className={cn(
+          'fixed inset-0',
+          layer === 'nested' ? 'z-[115]' : 'z-[100]'
+        )}
+        data-ledger-sheet-root=""
+        data-layer={layer}
+      >
         <button
           type="button"
           aria-label="Close sheet"

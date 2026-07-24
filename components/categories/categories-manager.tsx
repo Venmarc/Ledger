@@ -44,7 +44,7 @@ function CategoryRow({
       <span
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
         style={{
-          backgroundColor: `color-mix(in srgb, ${category.color} 28%, transparent)`,
+          backgroundColor: 'var(--color-neutral-muted)',
         }}
         aria-hidden
       >

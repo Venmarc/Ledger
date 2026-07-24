@@ -1,5 +1,6 @@
 import {
   addDays,
+  differenceInCalendarDays,
   format,
   parseISO,
   startOfMonth,
@@ -125,3 +126,42 @@ export function resolveDateRange(
       }
   }
 }
+
+export type GoalTargetLabel = {
+  text: string
+  tone: 'muted' | 'amber' | 'red'
+}
+
+/**
+ * Format target line for goal cards. Lagos-relative calendar days from todayInLagos().
+ * - no date → null
+ * - past: "Past due · {d MMM yyyy}" tone red
+ * - daysLeft <= 7: "X days left" / "Due today" tone red
+ * - daysLeft <= 30: "X days left" tone amber
+ * - else: "Target: {d MMM yyyy}" tone muted
+ */
+export function formatGoalTargetLabel(
+  targetDate: string | null,
+  now?: Date
+): GoalTargetLabel | null {
+  if (!targetDate) return null
+  const todayStr = todayInLagos(now)
+  const target = parseISO(targetDate)
+  const today = parseISO(todayStr)
+  const daysLeft = differenceInCalendarDays(target, today)
+
+  if (daysLeft < 0) {
+    return { text: `Past due · ${format(target, 'd MMM yyyy')}`, tone: 'red' }
+  }
+  if (daysLeft === 0) {
+    return { text: 'Due today', tone: 'red' }
+  }
+  if (daysLeft <= 7) {
+    return { text: `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`, tone: 'red' }
+  }
+  if (daysLeft <= 30) {
+    return { text: `${daysLeft} days left`, tone: 'amber' }
+  }
+  return { text: `Target: ${format(target, 'd MMM yyyy')}`, tone: 'muted' }
+}
+

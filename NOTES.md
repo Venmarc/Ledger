@@ -166,4 +166,21 @@ In my portfolio site [Venmarcstudio](https://venmarcstudio.xyz), I implemented t
 
 **THE DOCS ARE THE SOURCE OF TRUTH**
 
-  
+---
+
+## 21/07/2026 — Goal contributions v1
+
+No `goal_contributions` table. Logging a contribution only increments
+`savings_goals.current_amount`. Goal detail shows total contributed only.
+Contribute sheet is amount-only (no date/note stored).
+Post-v1: itemized history table + date/note fields on the contribute sheet.
+
+---
+
+## 24/07/2026 — Claude Dashboard Review Fixes & Phase 2 P2-F Complete
+
+- **Bug 1 (Month selector glyph bleed):** Fixed by tightening track width (`TRACK_W = 'w-20 min-w-20 sm:w-24 sm:min-w-24'`) in `month-selector.tsx`. Confirmed visually on desktop/mobile.
+- **Bug 2 (Month summary metric ambiguity):** Relabeled sub-bar text in `month-summary-card.tsx` to Option A plain expense-to-income ratio (`"₦X of ₦Y income spent this month"`).
+- **Neutral Accent Tokens:** Added `--color-neutral` (#57534E), `--color-neutral-hover`, `--color-neutral-muted` (#292524 / light #F1EFEC), and `--color-neutral-border` to `globals.css` and Tailwind `@theme`.
+- **Category Icon Circles:** Wired `var(--color-neutral-muted)` into category icon circle backgrounds across `transaction-row.tsx`, `budget-card.tsx`, `budget-form-sheet.tsx`, and `categories-manager.tsx`.
+- **UIUX_BRIEF & Documentation:** Added §2.8 Neutral / System Accent, §12 Reusable UI Patterns, and updated §8 Iconography.

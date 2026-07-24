@@ -7,6 +7,8 @@ import { Logo } from './logo'
 import { usePathname, useRouter } from 'next/navigation'
 import { ChevronLeft, Settings } from 'lucide-react'
 
+import { useGoal } from '@/lib/hooks/use-goals'
+
 export function TopBar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -24,15 +26,25 @@ export function TopBar() {
   // Determine if we are at the main dashboard root
   const isRoot = pathname === '/dashboard' || pathname === '/'
 
+  const segments = pathname.split('/').filter(Boolean)
+  const isGoalDetail = segments.length === 2 && segments[0] === 'goals'
+  const goalId = isGoalDetail ? segments[1] : undefined
+  const { data: goal } = useGoal(goalId)
+
   // Clean title mapping
-  const getPageTitle = (path: string) => {
-    const segments = path.split('/').filter(Boolean)
+  const getPageTitle = () => {
     if (segments.length === 0) return 'Home'
+    if (isGoalDetail) {
+      return goal?.title ?? 'Goal Details'
+    }
+    if (segments.length === 2 && segments[0] === 'transactions') {
+      return 'Transaction Details'
+    }
     const lastSegment = segments[segments.length - 1]
     return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1)
   }
 
-  const pageTitle = getPageTitle(pathname)
+  const pageTitle = getPageTitle()
 
   return (
     <header className="flex h-16 items-center justify-between px-4 md:px-8 border-b border-border bg-bg-surface/80 backdrop-blur-md sticky top-0 z-30">

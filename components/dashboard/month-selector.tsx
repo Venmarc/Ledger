@@ -19,11 +19,13 @@ type Props = {
 /** Product earliest year — year slider lower bound. */
 const MIN_YEAR = 2025
 
-/** Primary slider track (between chevrons) — both year & month use this width. */
-const TRACK_W = 'w-[7.5rem] min-w-[7.5rem] sm:w-[8.5rem] sm:min-w-[8.5rem]'
+/** Primary slider track (between chevrons) — both year & month use this width.
+ *  w-20 (5rem/80px) on mobile, w-24 (6rem/96px) ≥ sm: tight enough that the
+ *  SnapSlider 12% mask fade fully covers neighbour glyphs (no "n"/"A" bleed). */
+const TRACK_W = 'w-20 min-w-20 sm:w-24 sm:min-w-24'
 /** Full pill width: chevron 2.5rem × 2 + track + padding — dropped month matches this. */
 const PILL_W =
-  'w-[calc(2.5rem+7.5rem+2.5rem+0.25rem)] sm:w-[calc(2.5rem+8.5rem+2.5rem+0.25rem)]'
+  'w-[calc(2.5rem+5rem+2.5rem+0.25rem)] sm:w-[calc(2.5rem+6rem+2.5rem+0.25rem)]'
 
 const MONTH_SHORT = [
   'Jan',

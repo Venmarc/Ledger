@@ -127,6 +127,19 @@ The values below are placeholders for the Phase 0 architecture check — expect 
 }
 ```
  
+### 2.8 Neutral / System Accent
+ 
+Used for default category icon backgrounds, neutral badges, and uncolored UI elements. Stone family chosen because warm-toned gray shares the same orange hue family without competing with orange CTAs or clashing with cool-blue azure accents.
+ 
+```css
+--color-neutral: #57534E;          /* Stone-600 — warm-toned gray */
+--color-neutral-hover: #6B6560;
+--color-neutral-muted: #292524;    /* Background for neutral badges/icon circles (dark) */
+--color-neutral-border: #44403C;
+```
+ 
+In light mode: `--color-neutral-muted` resolves to `#F1EFEC` (pale warm tone for AA contrast on white surface), `--color-neutral-border` resolves to `#D6D3D1`.
+ 
 ---
  
 ## 3. Typography
@@ -534,10 +547,8 @@ active/pressed: scale(0.92), duration var(--duration-fast)
 ## 8. Iconography
  
 - **Icon library:** Lucide React. Consistent stroke width, clean geometry.
-- **Standard size:** 20px (nav, cards, buttons). 16px (inline with text). 24px (FAB, empty states).
-- **Color:** inherits from parent text color unless explicitly overridden.
-- **No icon without meaning.** If you're adding an icon for visual interest, remove it.
-Category icons: subset of Lucide icons assigned per category type. Rendered in a colored circle (40px, `border-radius: full`, category color with 20% opacity background, full opacity icon).
+- **Standard size:** 20px (nav, cards, buttons). 16px (inline with text). 24px (FAB- **No icon without meaning.** If you're adding an icon for visual interest, remove it.
+Category icons: subset of Lucide icons assigned per category type. Rendered in a neutral circle (40px, `border-radius: full`, background `var(--color-neutral-muted)`). Default/uncolored categories use `--color-neutral-muted` background + category color dot/icon signal.
  
 ---
  
@@ -604,6 +615,15 @@ md:          768px+     /* Sidebar appears, bottom nav hidden, logo lockup */
 lg:          1024px+    /* Two-column dashboard layout */
 xl:          1280px+    /* Max-width container kicks in, content centered */
 ```
+ 
+---
+ 
+## 12. Reusable UI Patterns
+ 
+- **Card shell pattern:** Title + "View all →" link top-right, consistent padding (`p-4 md:p-5`), radius (`rounded-xl`), and shadow (`shadow-card`).
+- **Empty-state-with-CTA pattern:** Shared empty state layout with subtle icon/heading, action CTA link ("Add a budget →", "Create one →"), and consistent border/background treatment.
+- **Progress ring pattern:** Standardized circular progress indicator using `--color-azure` stroke, `ProgressRing` component.
+- **Flow-line + icon + neutral-amount-color system:** Left accent line encodes flow direction (green = income, amber = expense); neutral background category circle; plain white/neutral amount text for expenses, green text for income.
  
 ---
  

@@ -136,7 +136,7 @@ No test framework installed yet.
 1. `PHASES.md` — active phase and gate conditions
 2. `TRD.md` — stack, Clerk+Supabase integration, data rules
 3. `SCHEMA.md` — tables, RLS, indexes
-4. `DESIGN.md` / `UIUX_BRIEF.md` — tokens, components, contrast
+4. `DESIGN.md` / `UIUX_BRIEF.md` / `app/globals.css` — tokens, components, contrast, everything design related
 5. `APP_FLOW.md` / `PAGE_SPECS.md` — page you're touching
 6. `PRD.md` — product scope and non-goals
 
