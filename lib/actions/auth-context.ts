@@ -27,50 +27,63 @@ export type AuthedContext =
  * pause when the Clerk↔Supabase bridge was never finished).
  */
 export async function getAuthedContext(): Promise<AuthedContext> {
-  const { userId, getToken } = await auth()
-  if (!userId) {
-    return { ok: false, error: 'Not signed in' }
-  }
-
-  let token: string | null = null
-  let tokenError: string | null = null
   try {
-    token = await getToken({ template: 'supabase' })
-  } catch (err) {
-    tokenError = err instanceof Error ? err.message : String(err)
-    console.error('Clerk getToken({ template: "supabase" }) failed:', err)
-  }
-
-  if (token) {
-    const supabase = await createClient(token)
-    return { ok: true, userId, supabase, authMode: 'jwt' }
-  }
-
-  // Fallback path — still requires signed-in Clerk user
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    return {
-      ok: false,
-      error:
-        tokenError
-          ? `Clerk JWT template "supabase" failed (${tokenError}). Also missing SUPABASE_SERVICE_ROLE_KEY fallback.`
-          : 'Could not authorize database access. Create a Clerk JWT template named "supabase" (or set SUPABASE_SERVICE_ROLE_KEY for server fallback).',
+    const { userId, getToken } = await auth()
+    if (!userId) {
+      return { ok: false, error: 'Not signed in' }
     }
-  }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.warn(
-      '[ledger/auth] Using service-role fallback (Clerk JWT template "supabase" returned no token). Queries are still scoped by Clerk userId.'
-    )
-  }
+    let token: string | null = null
+    let tokenError: string | null = null
+    try {
+      token = await getToken({ template: 'supabase' })
+    } catch (err) {
+      tokenError = err instanceof Error ? err.message : String(err)
+      console.error('Clerk getToken({ template: "supabase" }) failed:', err)
+    }
 
-  try {
-    const supabase = createServiceClient()
-    return { ok: true, userId, supabase, authMode: 'service_role' }
+    if (token) {
+      try {
+        const supabase = await createClient(token)
+        return { ok: true, userId, supabase, authMode: 'jwt' }
+      } catch (err) {
+        console.error('createClient(token) failed:', err)
+        tokenError = err instanceof Error ? err.message : String(err)
+      }
+    }
+
+    // Fallback path — still requires signed-in Clerk user
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return {
+        ok: false,
+        error:
+          tokenError
+            ? `Clerk JWT template "supabase" failed (${tokenError}). Also missing SUPABASE_SERVICE_ROLE_KEY fallback.`
+            : 'Could not authorize database access. Create a Clerk JWT template named "supabase" (or set SUPABASE_SERVICE_ROLE_KEY for server fallback).',
+      }
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(
+        '[ledger/auth] Using service-role fallback (Clerk JWT template "supabase" returned no token). Queries are still scoped by Clerk userId.'
+      )
+    }
+
+    try {
+      const supabase = createServiceClient()
+      return { ok: true, userId, supabase, authMode: 'service_role' }
+    } catch (err) {
+      console.error('createServiceClient failed:', err)
+      return {
+        ok: false,
+        error: `Database client creation failed: ${err instanceof Error ? err.message : String(err)}`,
+      }
+    }
   } catch (err) {
-    console.error('createServiceClient failed:', err)
+    console.error('getAuthedContext uncaught error:', err)
     return {
       ok: false,
-      error: 'Database client could not be created. Check SUPABASE env vars.',
+      error: `Auth error: ${err instanceof Error ? err.message : String(err)}`,
     }
   }
 }
