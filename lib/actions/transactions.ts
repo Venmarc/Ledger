@@ -370,4 +370,3 @@ export async function getMonthSummary(
   return ok({ income, expense, balance, expenseRatio })
 }
 
-export type { Transaction, TransactionWithCategory }
