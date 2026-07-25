@@ -3,6 +3,7 @@
 import { cn, formatNGN } from '@/lib/utils'
 import { formatRowDate } from '@/lib/dates'
 import type { TransactionWithCategory } from '@/lib/types/database'
+import { CategoryIcon } from '@/components/categories/category-icon'
 import { MoreHorizontal } from 'lucide-react'
 
 type TransactionRowProps = {
@@ -28,7 +29,6 @@ export function TransactionRow({
 }: TransactionRowProps) {
   const isIncome = transaction.type === 'income'
   const categoryName = transaction.categories?.name ?? 'Uncategorized'
-  const categoryColor = transaction.categories?.color ?? 'var(--color-border-strong)'
   const amount = formatNGN(transaction.amount)
   const signed = isIncome ? `+${amount}` : `−${amount}`
 
@@ -64,16 +64,7 @@ export function TransactionRow({
         aria-hidden
       />
 
-      <span
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-text-primary"
-        style={{ backgroundColor: 'var(--color-neutral-muted)' }}
-        aria-hidden
-      >
-        <span
-          className="h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: categoryColor }}
-        />
-      </span>
+      <CategoryIcon iconName={transaction.categories?.icon} size="sm" />
 
       <div className="min-w-0 flex-1 pl-0.5">
         <div className="flex items-baseline justify-between gap-2">

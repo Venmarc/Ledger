@@ -19,10 +19,13 @@ import {
   useRenameCategory,
 } from '@/lib/hooks/use-categories'
 import {
-  CATEGORY_ICON_OPTIONS,
-  CATEGORY_PALETTE,
-  DEFAULT_CATEGORY_COLOR,
-} from '@/lib/category-palette'
+  DEFAULT_EXPENSE_ICONS,
+  DEFAULT_INCOME_ICONS,
+  CURATED_EXPENSE_ICONS,
+  CURATED_INCOME_ICONS,
+  type IconOption,
+} from '@/lib/category-icons'
+import { CategoryIcon } from '@/components/categories/category-icon'
 import type { Category, TransactionType } from '@/lib/types/database'
 import { cn } from '@/lib/utils'
 
@@ -55,18 +58,30 @@ function CategoryFormInner({
   const [type, setType] = React.useState<TransactionType>(() =>
     isEdit && editing ? editing.type : 'expense'
   )
-  const [color, setColor] = React.useState(() =>
-    isEdit && editing
-      ? editing.color || DEFAULT_CATEGORY_COLOR
-      : DEFAULT_CATEGORY_COLOR
-  )
-  const [icon, setIcon] = React.useState<string | null>(() =>
-    isEdit && editing ? editing.icon : null
-  )
+
+  const availableIcons: IconOption[] = React.useMemo(() => {
+    if (type === 'income') {
+      return [...DEFAULT_INCOME_ICONS, ...CURATED_INCOME_ICONS]
+    }
+    return [...DEFAULT_EXPENSE_ICONS, ...CURATED_EXPENSE_ICONS]
+  }, [type])
+
+  const [icon, setIcon] = React.useState<string>(() => {
+    if (isEdit && editing && editing.icon) return editing.icon
+    return availableIcons[0]?.name || 'CircleDot'
+  })
+
+  // Reset icon selection if selected type changes and current icon is not in new list
+  React.useEffect(() => {
+    if (!availableIcons.some((i) => i.name === icon)) {
+      setIcon(availableIcons[0]?.name || 'CircleDot')
+    }
+  }, [type, availableIcons, icon])
+
   const [nameError, setNameError] = React.useState<string>()
 
   const pending = createMutation.isPending || renameMutation.isPending
-  const canSave = name.trim().length > 0 && !pending
+  const canSave = name.trim().length > 0 && Boolean(icon) && !pending
 
   const handleSave = async () => {
     const trimmed = name.trim()
@@ -80,7 +95,6 @@ function CategoryFormInner({
         await renameMutation.mutateAsync({
           id: editing.id,
           name: trimmed,
-          color,
           icon,
         })
         toast.success('Category updated')
@@ -88,7 +102,6 @@ function CategoryFormInner({
         await createMutation.mutateAsync({
           name: trimmed,
           type,
-          color,
           icon,
         })
         toast.success('Category created')
@@ -109,7 +122,7 @@ function CategoryFormInner({
         </BottomSheetTitle>
         <BottomSheetDescription>
           {isEdit
-            ? 'Rename and restyle. Transactions keep this category.'
+            ? 'Rename and change icon. Transactions keep this category.'
             : 'Used when logging income and expenses.'}
         </BottomSheetDescription>
       </BottomSheetHeader>
@@ -152,68 +165,37 @@ function CategoryFormInner({
         )}
 
         <Field>
-          <FieldLabel id="cat-color-label">Color</FieldLabel>
-          <div
-            role="listbox"
-            aria-labelledby="cat-color-label"
-            className="grid grid-cols-6 gap-2"
-          >
-            {CATEGORY_PALETTE.map((c) => {
-              const selected = color.toLowerCase() === c.toLowerCase()
-              return (
-                <button
-                  key={c}
-                  type="button"
-                  role="option"
-                  aria-selected={selected}
-                  aria-label={`Color ${c}`}
-                  disabled={pending}
-                  onClick={() => setColor(c)}
-                  className={cn(
-                    'flex h-11 w-full items-center justify-center rounded-lg border-2 transition-transform cursor-pointer',
-                    selected
-                      ? 'border-orange scale-105'
-                      : 'border-transparent hover:border-border-strong'
-                  )}
-                >
-                  <span
-                    className="h-7 w-7 rounded-full"
-                    style={{ backgroundColor: c }}
-                  />
-                </button>
-              )
-            })}
-          </div>
-        </Field>
-
-        <Field>
-          <FieldLabel id="cat-icon-label">
-            Icon{' '}
-            <span className="font-normal text-text-tertiary">(optional)</span>
+          <FieldLabel id="cat-icon-label" required>
+            Icon
           </FieldLabel>
           <div
             role="listbox"
             aria-labelledby="cat-icon-label"
-            className="flex flex-wrap gap-2"
+            className="grid grid-cols-4 gap-2 sm:grid-cols-6 max-h-56 overflow-y-auto p-1 rounded-lg border border-border bg-bg-surface"
           >
-            {CATEGORY_ICON_OPTIONS.map((opt) => {
-              const selected = icon === opt.id
+            {availableIcons.map((opt) => {
+              const selected = icon === opt.name
+              const IconComp = opt.icon
               return (
                 <button
-                  key={opt.id}
+                  key={opt.name}
                   type="button"
                   role="option"
                   aria-selected={selected}
+                  aria-label={`Icon ${opt.label}`}
                   disabled={pending}
-                  onClick={() => setIcon(selected ? null : opt.id)}
+                  onClick={() => setIcon(opt.name)}
                   className={cn(
-                    'min-h-10 rounded-full border px-3 text-sm font-medium cursor-pointer',
+                    'flex flex-col items-center justify-center p-2 rounded-lg border text-center transition-colors cursor-pointer',
                     selected
-                      ? 'border-azure bg-azure-muted text-azure'
-                      : 'border-border bg-bg-surface text-text-secondary hover:text-text-primary'
+                      ? 'border-orange bg-neutral-muted text-orange font-medium'
+                      : 'border-transparent text-text-secondary hover:bg-bg-subtle hover:text-text-primary'
                   )}
                 >
-                  {opt.label}
+                  <IconComp className="h-5 w-5 mb-1 shrink-0" />
+                  <span className="text-[10px] leading-tight truncate w-full">
+                    {opt.label}
+                  </span>
                 </button>
               )
             })}

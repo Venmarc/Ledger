@@ -13,22 +13,21 @@ import {
 const DEFAULT_CATEGORY_SEED: Array<{
   name: string
   type: 'income' | 'expense'
-  color: string
   icon: string
 }> = [
-  { name: 'Transport', type: 'expense', color: '#ef4444', icon: 'car' },
-  { name: 'Feeding', type: 'expense', color: '#f59e0b', icon: 'utensils' },
-  { name: 'Rent', type: 'expense', color: '#10b981', icon: 'home' },
-  { name: 'Airtime / Data', type: 'expense', color: '#3b82f6', icon: 'smartphone' },
-  { name: 'NEPA / Electricity', type: 'expense', color: '#6366f1', icon: 'zap' },
-  { name: 'College / School', type: 'expense', color: '#8b5cf6', icon: 'graduation-cap' },
-  { name: 'Groceries', type: 'expense', color: '#ec4899', icon: 'shopping-cart' },
-  { name: 'Household', type: 'expense', color: '#14b8a6', icon: 'home' },
-  { name: 'Health', type: 'expense', color: '#f43f5e', icon: 'heart-pulse' },
-  { name: 'Misc', type: 'expense', color: '#6b7280', icon: 'circle' },
-  { name: 'Salary', type: 'income', color: '#22c55e', icon: 'briefcase' },
-  { name: 'Freelance', type: 'income', color: '#10b981', icon: 'briefcase' },
-  { name: 'Gift', type: 'income', color: '#eab308', icon: 'gift' },
+  { name: 'Transport', type: 'expense', icon: 'Car' },
+  { name: 'Feeding', type: 'expense', icon: 'UtensilsCrossed' },
+  { name: 'Rent', type: 'expense', icon: 'Building2' },
+  { name: 'Airtime / Data', type: 'expense', icon: 'Smartphone' },
+  { name: 'NEPA / Electricity', type: 'expense', icon: 'Zap' },
+  { name: 'College / School', type: 'expense', icon: 'GraduationCap' },
+  { name: 'Groceries', type: 'expense', icon: 'ShoppingCart' },
+  { name: 'Household', type: 'expense', icon: 'House' },
+  { name: 'Health', type: 'expense', icon: 'HeartPulse' },
+  { name: 'Misc', type: 'expense', icon: 'MoreHorizontal' },
+  { name: 'Salary', type: 'income', icon: 'Banknote' },
+  { name: 'Freelance', type: 'income', icon: 'Briefcase' },
+  { name: 'Gift', type: 'income', icon: 'Gift' },
 ]
 
 /** Seed 13 SCHEMA defaults if this user has zero categories (e.g. after empty project). */
@@ -54,7 +53,6 @@ export async function ensureDefaultCategories(): Promise<ActionResult<Category[]
     user_id: ctx.userId,
     name: cat.name,
     type: cat.type,
-    color: cat.color,
     icon: cat.icon,
     is_default: true,
     is_archived: false,
@@ -123,7 +121,7 @@ export async function createCategory(
     return fail(parsed.error.issues[0]?.message ?? 'Invalid category')
   }
 
-  const { name, type, color, icon } = parsed.data
+  const { name, type, icon } = parsed.data
 
   // Unique among active categories of same type for this user
   const { data: existing } = await ctx.supabase
@@ -145,8 +143,7 @@ export async function createCategory(
       user_id: ctx.userId,
       name,
       type,
-      color,
-      icon: icon ?? null,
+      icon,
       is_default: false,
       is_archived: false,
     })
@@ -172,7 +169,7 @@ export async function renameCategory(
     return fail(parsed.error.issues[0]?.message ?? 'Invalid category update')
   }
 
-  const { id, name, color, icon } = parsed.data
+  const { id, name, icon } = parsed.data
 
   const { data: current, error: loadError } = await ctx.supabase
     .from('categories')
@@ -200,7 +197,6 @@ export async function renameCategory(
   }
 
   const patch: Record<string, unknown> = { name }
-  if (color !== undefined) patch.color = color
   if (icon !== undefined) patch.icon = icon
 
   const { data, error } = await ctx.supabase

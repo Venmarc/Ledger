@@ -24,6 +24,7 @@ import {
   useDeleteBudget,
   useUpdateBudget,
 } from '@/lib/hooks/use-budgets'
+import { CategoryIcon } from '@/components/categories/category-icon'
 import type { BudgetWithActual, Category } from '@/lib/types/database'
 
 export type BudgetFormMode =
@@ -148,7 +149,6 @@ function BudgetFormInner({
   }
 
   const editName = editing?.categories?.name ?? 'Category'
-  const editColor = editing?.categories?.color ?? '#64748B'
 
   return (
     <>
@@ -168,18 +168,7 @@ function BudgetFormInner({
           <Field>
             <FieldLabel>Category</FieldLabel>
             <div className="flex h-12 items-center gap-3 rounded-lg border border-border bg-bg-subtle px-3.5">
-              <span
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-                style={{
-                  backgroundColor: 'var(--color-neutral-muted)',
-                }}
-                aria-hidden
-              >
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: editColor }}
-                />
-              </span>
+              <CategoryIcon iconName={editing?.categories?.icon} size="sm" />
               <span className="truncate text-sm font-medium text-text-primary">
                 {editName}
               </span>

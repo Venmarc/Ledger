@@ -508,6 +508,32 @@ active/pressed: scale(0.92), duration var(--duration-fast)
 **Flash prevention:** the stored theme preference must be read and applied to `data-theme` before first paint — via an inline script in `<head>` or Next.js's theme provider pattern that reads `localStorage` synchronously. A flash of the wrong theme on load is a bug, not a cosmetic detail.
  
 **Placement:** see APP_FLOW.md §3.2 for the exact positioning rule (closest to center among top-bar icons, on every page).
+
+### 6.11 Category Pill / Selector
+
+Used anywhere a category must be chosen: Quick Add, Edit Transaction, Add Budget,
+Add Recurring.
+
+Resting state:
+background: var(--color-neutral-muted)
+icon: Lucide icon, var(--color-neutral), 16px
+label: var(--color-text-secondary), --text-sm
+border-radius: var(--radius-full)
+padding: 6px 14px
+
+Selected state:
+border: 1.5px solid var(--color-orange)
+icon: var(--color-orange)
+label: var(--color-orange), --weight-medium
+background: unchanged (still --color-neutral-muted) — the border carries the
+  selection state, not a background change
+
+Hover (unselected):
+background: var(--color-bg-subtle)
+
+All category icons render on the same neutral background regardless of category —
+there is no per-category color. Identification is by icon + label only. See
+UI/UX_BRIEF.md §8.1 for the full default category → icon mapping.
  
 ---
  
@@ -545,17 +571,91 @@ active/pressed: scale(0.92), duration var(--duration-fast)
 ---
  
 ## 8. Iconography
- 
+
 - **Icon library:** Lucide React. Consistent stroke width, clean geometry.
-- **Standard size:** 20px (nav, cards, buttons). 16px (inline with text). 24px (FAB- **No icon without meaning.** If you're adding an icon for visual interest, remove it.
-Category icons: subset of Lucide icons assigned per category type. Rendered in a neutral circle (40px, `border-radius: full`, background `var(--color-neutral-muted)`). Default/uncolored categories use `--color-neutral-muted` background + category color dot/icon signal.
- 
+- **Standard size:** 20px (nav, cards, buttons). 16px (inline with text). 24px (FAB)
+- **No icon without meaning.** If you're adding an icon for visual interest, remove it.
+
+### 8.1 Default Category Icon Assignments
+
+| Category | Type | Lucide icon | Import name |
+|---|---|---|---|
+| Airtime / Data | Expense | Smartphone | `Smartphone` |
+| College / School | Expense | Graduation cap | `GraduationCap` |
+| Feeding | Expense | Crossed utensils | `UtensilsCrossed` |
+| Groceries | Expense | Shopping cart | `ShoppingCart` |
+| Health | Expense | Heart with pulse line | `HeartPulse` |
+| Household | Expense | House | `House` |
+| Misc | Expense | Horizontal ellipsis | `MoreHorizontal` |
+| NEPA / Electricity | Expense | Lightning bolt | `Zap` |
+| Rent | Expense | Building | `Building2` |
+| Transport | Expense | Car | `Car` |
+| Freelance | Income | Briefcase | `Briefcase` |
+| Gift | Income | Gift box | `Gift` |
+| Salary | Income | Banknote | `Banknote` |
+
+These 13 map 1:1 to the default seeded categories in SCHEMA.md. User-created
+custom categories pick from the full curated Lucide set (see the Add Category
+icon picker, PAGE_SPECS.md §13), not restricted to this list.
+
+Category icons: rendered in a neutral circle (40px, `border-radius: full`,
+`--color-neutral-muted` background, icon in `--color-neutral`, full opacity).
+No per-category color. See §8.1 for the default assignment table.
+
+### 8.2 Curated Icon Picker — Additional Options
+
+Shown in the Add Category icon picker (PAGE_SPECS.md §13), alongside the 13
+default icons from §8.1. Covers realistic future categories without requiring
+a live Lucide search feature.
+
+**Expense options:**
+
+| Likely category | Lucide icon | Import name |
+|---|---|---|
+| Subscriptions (Netflix, Spotify) | Monitor play | `MonitorPlay` |
+| Fuel | Fuel pump | `Fuel` |
+| Internet / WiFi | WiFi signal | `Wifi` |
+| Fitness / Gym | Dumbbell | `Dumbbell` |
+| Insurance | Shield check | `ShieldCheck` |
+| Entertainment / Outings | Popcorn | `Popcorn` |
+| Personal Care | Sparkles | `Sparkles` |
+| Clothing | Shirt | `Shirt` |
+| Debt / Loan Repayment | Landmark | `Landmark` |
+| Business Expense | Briefcase | `Briefcase` |
+| Repairs / Maintenance | Wrench | `Wrench` |
+| Travel | Plane | `Plane` |
+| Dining Out (distinct from Feeding/groceries) | Coffee cup | `Coffee` |
+| General / Uncategorized | Circle dot | `CircleDot` |
+
+**Income options:**
+
+| Likely category | Lucide icon | Import name |
+|---|---|---|
+| Bonus | Award | `Award` |
+| Business Income | Store | `Store` |
+| Investment Returns / Interest | Trending up | `TrendingUp` |
+| Refund | Corner-down-left arrow | `CornerDownLeft` |
+| Loan Received | Hand coins | `HandCoins` |
+| Side Hustle (distinct from Freelance) | Rocket | `Rocket` |
+| Cashback | Percent | `Percent` |
+| Other / Uncategorized | Circle dot | `CircleDot` |
+
+**Icon reuse:** `CircleDot` appears in both lists as a genuine fallback for
+anything that doesn't fit — this is the one deliberate duplicate. All other
+icons are unique within their list.
+
+**Adding a new icon later:** if you want an icon not on this list, add one
+entry to this table and the corresponding static array in the icon picker
+component. This is a deliberate one-line code change you make yourself when
+you decide to create a new category — not a runtime search feature. Document
+the addition in NOTES.md with the date and category it was added for.
+
 ---
- 
+
 ## 9. Data Visualization (Charts)
- 
+
 All charts: Recharts. Dark mode by default — background transparent, grid lines `--color-border`, tooltip `--color-bg-elevated`.
- 
+
 ### Chart Colors (Ordered by Usage Frequency)
  
 ```

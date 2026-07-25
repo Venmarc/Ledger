@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import type { Category } from '@/lib/types/database'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { CategoryIcon } from '@/components/categories/category-icon'
 
 type CategoryPillsProps = {
   categories: Category[]
@@ -67,19 +68,19 @@ export function CategoryPills({
                 disabled={disabled}
                 onClick={() => onChange(cat.id)}
                 className={cn(
-                  'inline-flex min-h-10 items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors duration-150 cursor-pointer',
+                  'inline-flex min-h-10 items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors duration-150 cursor-pointer bg-neutral-muted',
                   'disabled:opacity-50 disabled:cursor-not-allowed',
                   selected
-                    ? 'border-orange bg-orange-muted text-text-primary'
-                    : 'border-border bg-bg-surface text-text-secondary hover:border-border-strong hover:text-text-primary'
+                    ? 'border-[1.5px] border-orange font-medium text-orange'
+                    : 'border-transparent text-text-secondary hover:bg-bg-subtle hover:text-text-primary'
                 )}
               >
-                <span
-                  className="h-2.5 w-2.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: cat.color }}
-                  aria-hidden
+                <CategoryIcon
+                  iconName={cat.icon}
+                  size="sm"
+                  className="h-5 w-5 bg-transparent p-0 text-current"
                 />
-                {cat.name}
+                <span className="truncate">{cat.name}</span>
               </button>
             )
           })}

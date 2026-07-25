@@ -27,8 +27,7 @@ export interface Category {
   user_id: string
   name: string
   type: TransactionType
-  color: string
-  icon: string | null
+  icon: string
   is_default: boolean
   is_archived: boolean
   created_at: string
@@ -53,7 +52,7 @@ export interface Transaction {
 
 export type CategorySummary = Pick<
   Category,
-  'id' | 'name' | 'color' | 'icon' | 'type' | 'is_default' | 'is_archived'
+  'id' | 'name' | 'icon' | 'type' | 'is_default' | 'is_archived'
 >
 
 export interface TransactionWithCategory extends Transaction {

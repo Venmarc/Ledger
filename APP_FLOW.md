@@ -81,12 +81,32 @@ Present across the app. Some are protected-only (nav, FAB, recurring banner); th
 - Tapping toggles `data-theme` between `"dark"` and `"light"` and persists the choice to `localStorage` under key `ledger-theme`.
 - **Default on first visit** (no stored preference): always `"dark"`, regardless of the device's OS-level light/dark setting. Ledger does not read `prefers-color-scheme`. This is deliberate — a hiring manager viewing the demo on a light-mode laptop should still see the intended dark aesthetic first, and choose light explicitly if they want it.
 - See TRD.md §6.1 for the flash-prevention requirement on page load.
-### 3.3 Floating Action Button (FAB)
+### 3.3 Back Navigation Pattern
+
+Two distinct classes of page. Do not apply back navigation uniformly across both.
+
+**Primary nav destinations** — Dashboard, Transactions, Budgets, Goals, Analytics,
+Recurring, Settings. These are reachable directly via bottom nav (mobile) or sidebar
+(desktop). They NEVER show a back button or back link in their page header. Adding
+one implies a false hierarchy — the user did not drill down to get here, they
+navigated directly.
+
+**Sub-pages** — pages one level below a primary nav destination, not directly
+reachable from nav: Goal Detail (/goals/[id]), Category Management
+(/settings/categories), Transaction Edit when accessed via direct URL
+(/transactions/[id]). These DO show a back affordance: a plain icon-only chevron
+(no text label), positioned top-left of the page header, returning to the parent
+page.
+
+If you are building a page and unsure which class it belongs to: does it appear
+as an item in the bottom nav or sidebar? If yes, it is a primary destination —
+no back button. If no, it is a sub-page — icon-only chevron back button.
+### 3.4 Floating Action Button (FAB)
 - Present on every protected page except Settings.
 - Position: bottom-right, above bottom nav on mobile.
 - Single tap → opens Quick Add sheet.
 - This is the primary entry point for logging. It must be reachable with one thumb from any screen.
-### 3.4 Recurring Due Banner
+### 3.5 Recurring Due Banner
 - Appears at top of Dashboard when one or more recurring templates have `next_date <= today`.
 - Shows count: "2 recurring transactions are due."
 - Tapping navigates to /recurring filtered to due items.
@@ -104,7 +124,7 @@ User taps FAB (any screen)
   → Form fields in order:
       1. Amount (₦) — numeric keyboard, auto-focused
       2. Type toggle — Income / Expense (default: Expense)
-      3. Category — scrollable pill selector, most-used categories first
+      3. Category — scrollable pill selector, most-used categories first. Each pill: Lucide icon (neutral background at rest) + category name. Selected pill gets an orange (`--color-orange`) border ring — this pattern is already correctly implemented in the live build; codify it here so it isn't reinvented differently elsewhere.
       4. Payment Method — Cash / Card / Transfer / POS / Other
       5. Date — defaults to today, tappable to change
       6. Description — optional, single line

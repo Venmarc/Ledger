@@ -1,5 +1,6 @@
 'use client'
 
+import { CategoryIcon } from '@/components/categories/category-icon'
 import { ProgressBar } from '@/components/shared/progress-bar'
 import { isOverBudget, remainingAmount } from '@/lib/progress'
 import type { BudgetWithActual } from '@/lib/types/database'
@@ -15,7 +16,6 @@ type Props = {
 
 export function BudgetCard({ budget, interactive, onEdit, className }: Props) {
   const name = budget.categories?.name ?? 'Category'
-  const color = budget.categories?.color ?? '#64748B'
   const over = isOverBudget(budget.limit, budget.actual)
   const rem = remainingAmount(budget.limit, budget.actual)
 
@@ -23,18 +23,7 @@ export function BudgetCard({ budget, interactive, onEdit, className }: Props) {
     <>
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-            style={{
-              backgroundColor: 'var(--color-neutral-muted)',
-            }}
-            aria-hidden
-          >
-            <span
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: color }}
-            />
-          </span>
+          <CategoryIcon iconName={budget.categories?.icon} />
           <p className="truncate font-medium text-text-primary">{name}</p>
         </div>
         <p className="shrink-0 text-sm tabular-nums text-text-tertiary">

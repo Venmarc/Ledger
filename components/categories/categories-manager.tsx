@@ -16,9 +16,11 @@ import {
 } from '@/lib/hooks/use-categories'
 import type { Category } from '@/lib/types/database'
 import { cn } from '@/lib/utils'
+import { CategoryIcon } from '@/components/categories/category-icon'
 import {
   Archive,
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   Loader2,
   Pencil,
@@ -41,18 +43,7 @@ function CategoryRow({
 }) {
   return (
     <div className="flex items-center gap-3 rounded-lg border border-border bg-bg-surface px-3 py-3">
-      <span
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-        style={{
-          backgroundColor: 'var(--color-neutral-muted)',
-        }}
-        aria-hidden
-      >
-        <span
-          className="h-3 w-3 rounded-full"
-          style={{ backgroundColor: category.color }}
-        />
-      </span>
+      <CategoryIcon iconName={category.icon} />
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
@@ -65,9 +56,6 @@ function CategoryRow({
             </span>
           ) : null}
         </div>
-        {category.icon ? (
-          <p className="text-xs text-text-tertiary capitalize">{category.icon}</p>
-        ) : null}
       </div>
 
       <div className="flex shrink-0 items-center gap-0.5">
@@ -245,11 +233,12 @@ export function CategoriesManager() {
       <div>
         <Link
           href="/settings"
-          className="inline-flex min-h-10 items-center text-sm font-medium text-azure hover:underline"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full text-text-secondary hover:bg-bg-subtle hover:text-text-primary cursor-pointer -ml-2"
+          aria-label="Back to Settings"
         >
-          ← Settings
+          <ChevronLeft className="h-5 w-5" />
         </Link>
-        <h1 className="mt-2 text-2xl font-bold font-display text-text-primary md:text-3xl">
+        <h1 className="mt-1 text-2xl font-bold font-display text-text-primary md:text-3xl">
           Categories
         </h1>
         <p className="mt-1 text-sm text-text-secondary">

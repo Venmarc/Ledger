@@ -27,6 +27,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
 } from '@/components/ui/bottom-sheet'
+import { CategoryIcon } from '@/components/categories/category-icon'
 import { PrimaryButton, SecondaryButton } from '@/components/transactions/primary-button'
 
 const DATE_PRESETS: { value: DateRangePreset; label: string }[] = [
@@ -428,10 +429,10 @@ function CategoryChipGrid({
                 : 'border-border bg-bg-surface text-text-secondary hover:border-border-strong hover:text-text-primary'
             )}
           >
-            <span
-              className="h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{ backgroundColor: cat.color }}
-              aria-hidden
+            <CategoryIcon
+              iconName={cat.icon}
+              size="sm"
+              className="h-5 w-5 bg-transparent p-0 text-current"
             />
             {cat.name}
           </button>

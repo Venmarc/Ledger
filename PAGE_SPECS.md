@@ -282,7 +282,7 @@ Left column (60%):               Right column (40%):
 - Section heading: "Recent" with "View all →" link to /transactions.
 - Last 8 transactions, sorted by transaction_date desc, then created_at desc.
 - Each row:
-  - Left: category icon (colored circle) + category name
+  - Left: category icon (Lucide icon, `--color-neutral-muted` circle background) + category name
   - Center: description (truncated to 1 line if long)
   - Right: amount with type indicator (+ green for income, - red for expense)
   - Below left: date formatted as "Today", "Yesterday", or "Mon 30 Jun"
@@ -382,7 +382,7 @@ Desktop: list rows are wider with more visible columns (payment method visible w
 - Grouped by date: date label row ("Today", "Yesterday", "Monday 30 Jun") above each day's transactions.
 - Infinite scroll: loads 20 rows at a time. Smooth — no pagination buttons.
 - Each transaction row:
-  - **Left:** category icon (colored circle, 36px) + category name (bold) + description below (muted, truncated)
+  - **Left:** category icon (Lucide icon, `--color-neutral-muted` circle background, 36px) + category name (bold) + description below (muted, truncated)
   - **Right:** amount (bold, green for income / red for expense) + payment method badge below
   - **Far left:** thin colored bar indicating type (green = income, red/amber = expense)
   - **Date:** shown in the day group header, not repeated per row
@@ -615,7 +615,7 @@ Full detail view for a single goal. Log contributions, see history, understand p
 ## Sections
  
 ### BACK NAVIGATION
-- "← Goals" back link. Returns to /goals.
+- Icon-only back chevron (no text), top-left. Returns to /goals. See APP_FLOW.md §3.3 for the global back-navigation rule this follows.
 ### GOAL HEADER
 - Goal title (large, bold)
 - Description (if set, muted text below title)
@@ -882,16 +882,16 @@ Manage the categories used to classify transactions. Add new ones, rename existi
 ## Sections
  
 ### PAGE HEADER + BACK
-- "← Settings" back link.
+- Icon-only back chevron (no text), top-left. Returns to /settings. See APP_FLOW.md §3.3 for the global back-navigation rule this follows.
 - Title: "Categories"
 ### EXPENSE CATEGORIES
 - Heading: "Expenses"
 - List of all active expense categories.
 - Each row:
-  - Colored icon circle (category color) + category name
+  - Icon circle: `--color-neutral-muted` background, Lucide icon in `--color-neutral` (see UI/UX_BRIEF.md §8.1 for the default icon assigned to each category) + category name
   - "Default" badge if `is_default = true`
   - Right: pencil icon (edit) + archive icon (archive, disabled for default categories)
-- Tap pencil → inline edit or bottom sheet with name and color picker.
+- Tap pencil → inline edit or bottom sheet with name and icon picker.
 - Archive confirmation: "Archive [Category]? Existing transactions keep this category. You won't see it in new transaction forms."
 ### INCOME CATEGORIES
 - Heading: "Income"
@@ -903,11 +903,11 @@ Manage the categories used to classify transactions. Add new ones, rename existi
 ### ADD CATEGORY BUTTON
 - "+ New Category"
 - Bottom sheet:
-  - Name (text)
+  - Name (text, required)
   - Type: Income / Expense (toggle)
-  - Color (color picker — limited palette of 12 colors from UI/UX_BRIEF.md)
-  - Icon (optional — icon picker, small predefined set)
+  - Icon (required — icon picker. Grid separated by the selected Type: if "Expense" is toggled, show the 10 default expense icons from §8.1 plus the 14 curated expense options from §8.2; if "Income" is toggled, show the 3 default income icons from §8.1 plus the 8 curated income options from §8.2. Every custom category gets an icon; there is no colorless default state.)
   - "Create" button
+- All category icons — default and user-created — render on the same `--color-neutral-muted` background. There is no per-category color customization.
 - Validation: name required, cannot match an existing active category name for the same type.
 ---
  
