@@ -21,7 +21,6 @@ import {
 const CATEGORY_SELECT = `
   id,
   name,
-  color,
   icon,
   type,
   is_default,
