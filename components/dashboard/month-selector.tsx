@@ -234,30 +234,36 @@ export function MonthSelector({ monthKey, onChange, className }: Props) {
 
       {/*
         Dropped month: overlays content below (absolute) — does not push layout.
-        Same width as the pill; still a physics snap-slider with edge peeks.
+        Outer div: static centering only (left-1/2 + inline translateX so it
+        never conflicts with the animated translateY on the inner div).
+        Inner div: animated translateY + opacity + visibility — no blur to avoid
+        GPU filter stutter.
       */}
       <div
-        className={cn(
-          'absolute left-0 top-full z-30 mt-1.5',
-          PILL_W,
-          'transition-[opacity,transform,filter,visibility] duration-[var(--duration-slow)] [transition-timing-function:var(--ease-smooth)]',
-          yearOpen
-            ? 'pointer-events-auto visible translate-y-0 opacity-100 blur-0'
-            : 'pointer-events-none invisible -translate-y-1 opacity-0 blur-[2px]'
-        )}
-        aria-hidden={!yearOpen}
+        className={cn('absolute left-1/2 top-full z-30 mt-1.5', PILL_W)}
+        style={{ transform: 'translateX(-50%)' }}
       >
-        <div className="overflow-hidden rounded-full border border-border bg-bg-surface p-0.5 shadow-elevated">
-          <SnapSlider
-            items={monthItems}
-            value={selectedMonth}
-            onChange={setMonth}
-            onActiveClick={collapse}
-            itemWidth={64}
-            height={40}
-            size="sm"
-            ariaLabel={`Month ${MONTH_SHORT[selectedMonth - 1]}. Swipe to change, tap to collapse.`}
-          />
+        <div
+          className={cn(
+            'transition-[opacity,transform,visibility] duration-[var(--duration-slow)] [transition-timing-function:var(--ease-smooth)]',
+            yearOpen
+              ? 'pointer-events-auto visible translate-y-0 opacity-100'
+              : 'pointer-events-none invisible -translate-y-1 opacity-0'
+          )}
+          aria-hidden={!yearOpen}
+        >
+          <div className="overflow-hidden rounded-full border border-border bg-bg-surface p-0.5 shadow-elevated">
+            <SnapSlider
+              items={monthItems}
+              value={selectedMonth}
+              onChange={setMonth}
+              onActiveClick={collapse}
+              itemWidth={72}
+              height={40}
+              size="md"
+              ariaLabel={`Month ${MONTH_SHORT[selectedMonth - 1]}. Swipe to change, tap to collapse.`}
+            />
+          </div>
         </div>
       </div>
 
