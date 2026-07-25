@@ -21,12 +21,12 @@ export function BudgetCard({ budget, interactive, onEdit, className }: Props) {
 
   const body = (
     <>
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <CategoryIcon iconName={budget.categories?.icon} />
-          <p className="truncate font-medium text-text-primary">{name}</p>
+          <p className="truncate text-sm font-medium text-text-primary">{name}</p>
         </div>
-        <p className="shrink-0 text-sm tabular-nums text-text-tertiary">
+        <p className="shrink-0 text-xs tabular-nums text-text-tertiary">
           {formatNGN(budget.limit)}
         </p>
       </div>
@@ -37,15 +37,15 @@ export function BudgetCard({ budget, interactive, onEdit, className }: Props) {
         className="mt-3"
       />
 
-      <div className="mt-2 flex items-start justify-between gap-3 text-xs sm:text-sm">
-        <p className="min-w-0 text-text-secondary">
+      <div className="mt-2 flex flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <p className="text-xs text-text-secondary">
           <span className="tabular-nums">{formatNGN(budget.actual)}</span>
           {' spent of '}
           <span className="tabular-nums">{formatNGN(budget.limit)}</span>
         </p>
         <p
           className={cn(
-            'shrink-0 font-medium tabular-nums',
+            'text-xs font-medium tabular-nums',
             over ? 'text-red' : 'text-text-secondary'
           )}
         >

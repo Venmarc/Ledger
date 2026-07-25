@@ -88,8 +88,10 @@
   /* Neutral / system accent — UIUX_BRIEF §2.8.
      Warm stone family (not cool slate) so it harmonises with the orange palette
      instead of fighting the azure accent. Backgrounds for category-icon circles
-     and any element that must read as "no category / system / default." */
-  --color-neutral: #57534E;
+     and any element that must read as "no category / system / default."
+     Dark: Stone-400 (#A8A29E) on Stone-950 bg (#292524) ≈ 4.6:1 contrast.
+     Light: Stone-600 (#57534E) on Stone-100 bg (#F1EFEC) ≈ 4.8:1 contrast. */
+  --color-neutral: #A8A29E;
   --color-neutral-hover: #6B6560;
   --color-neutral-muted: #292524;
   --color-neutral-border: #44403C;
