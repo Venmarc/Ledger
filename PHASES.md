@@ -209,6 +209,8 @@ Raw spending data becomes actionable. You can set limits and watch them respond 
 | P2-C  | 2026-07-21 20:28 WAT | /budgets full UI: summary, cards, add/edit/delete sheets, past read-only, MonthSelector |
 | P2-D  | 2026-07-21 20:42 WAT | goals actions (list/get/CRUD, contribute, archive, delete) + use-goals hooks |
 | P2-E  | 2026-07-23 15:10 WAT | /goals + /goals/[id] UI, rings, create/contribute sheets, archive/delete dialogs, completed section reveal |
+| P2-F  | 2026-07-25 08:30 WAT | Dashboard v2 (BudgetHealth & GoalsPreview), category icons migration, neutral contrast fix, FAB tx budget query invalidation |
+| P2-G  | 2026-07-25 09:00 WAT | BudgetCard responsive mobile layout fix for 375px screens, month selector centering & motion fix |
 
 ---
 
@@ -324,6 +326,7 @@ All doc changes are logged here. Most recent first.
  
 | Date | Document | Change |
 |---|---|---|
+| 25/07/2026 | PHASES.md, PHASE-2-OVERVIEW.md, budget-card.tsx, globals.css | Closed Phase 2 deliverables: applied category icons migration SQL, fixed PostgREST SELECT query strings in budget/transaction actions, resolved dark mode neutral contrast token (#A8A29E), centered month dropdown animation, and fixed BudgetCard responsive flex layout for 375px screens. |
 | 24/07/2026 | SCHEMA.md, PAGE_SPECS.md, UIUX_BRIEF.md, APP_FLOW.md, PHASES.md | Switched categories from per-category custom color to Lucide icon + uniform neutral background. Dropped `color` column from `categories` table, `icon` now required. Added §8.1 default icon mapping, §8.2 curated icon picker (14 expense + 8 income options for realistic future categories), and §6.11 Category Pill component spec to UIUX_BRIEF. Added global back-navigation rule (APP_FLOW §3.3) distinguishing primary nav pages (no back button) from sub-pages (icon-only chevron) — fixes agent confusion that added text back-links to both Category Management and Goal Detail. |
 | 21/07/2026 | PHASES.md, NOTES.md | Phase 1 gate **passed** (Victor). Multi-select filter design note (OR within category/payment; AND across dimensions). Prior same-day: polish + delete confirm z-index/lifecycle. |
 | 21/07/2026 | PHASES.md, NOTES.md | Doc sync: 19/07 polish (SnapSlider month, filter rebuild, sidebar) + 21/07 delete confirm stacking (`z-[130]`) and ⋮ menu lifecycle fix. (Gate later closed same day.) |
