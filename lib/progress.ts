@@ -70,3 +70,18 @@ export function budgetRemainingTextClass(
   if (fractionLeft > 0.25) return 'text-green'
   return 'text-amber'
 }
+
+/**
+ * Per-card remaining figure — mirrors progress bar bands (UIUX §6.6):
+ * ratio < 0.75 → azure
+ * ≥ 0.75 and < 1 → amber
+ * ≥ 1 → red
+ */
+export function budgetStatusTextClass(
+  ratio: number
+): 'text-azure' | 'text-amber' | 'text-red' {
+  const r = clampRatio(ratio)
+  if (r >= 1) return 'text-red'
+  if (r >= BUDGET_WARNING_THRESHOLD) return 'text-amber'
+  return 'text-azure'
+}

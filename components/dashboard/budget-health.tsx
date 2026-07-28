@@ -40,7 +40,7 @@ export function BudgetHealth({ monthKey }: Props) {
           aria-label="Loading budgets"
         >
           {Array.from({ length: 4 }).map((_, i) => (
-            <BudgetCardSkeleton key={i} />
+            <BudgetCardSkeleton key={i} variant="dashboard" />
           ))}
         </div>
       ) : null}
@@ -80,7 +80,12 @@ export function BudgetHealth({ monthKey }: Props) {
       {!isLoading && !isError && budgets.length > 0 ? (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           {top4.map((b) => (
-            <BudgetCard key={b.id} budget={b} interactive={false} />
+            <BudgetCard
+              key={b.id}
+              budget={b}
+              interactive={false}
+              variant="dashboard"
+            />
           ))}
         </div>
       ) : null}

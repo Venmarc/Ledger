@@ -31,7 +31,30 @@ export function BudgetSummarySkeleton() {
   )
 }
 
-export function BudgetCardSkeleton() {
+export function BudgetCardSkeleton({
+  variant = 'list',
+}: {
+  variant?: 'list' | 'dashboard'
+}) {
+  if (variant === 'dashboard') {
+    return (
+      <div className="rounded-xl border border-border bg-bg-surface p-4 shadow-card">
+        <div className="flex min-w-0 items-start gap-2">
+          <Bone className="h-8 w-8 shrink-0 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <Bone className="h-4 w-24" />
+            <Bone className="h-3 w-14" />
+          </div>
+        </div>
+        <Bone className="mt-3 h-1.5 w-full rounded-full" />
+        <div className="mt-2 space-y-1.5">
+          <Bone className="h-3 w-32" />
+          <Bone className="h-3 w-20" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="rounded-xl border border-border bg-bg-surface p-4 shadow-card">
       <div className="flex items-center justify-between gap-3">
