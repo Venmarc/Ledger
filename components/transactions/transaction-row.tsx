@@ -1,7 +1,7 @@
 'use client'
 
 import { cn, formatNGN } from '@/lib/utils'
-import { formatRowDate } from '@/lib/dates'
+import { formatDateLabel, formatRowDateShort } from '@/lib/dates'
 import type { TransactionWithCategory } from '@/lib/types/database'
 import { CategoryIcon } from '@/components/categories/category-icon'
 import { MoreHorizontal } from 'lucide-react'
@@ -82,15 +82,18 @@ export function TransactionRow({
           </p>
         </div>
         <div className="mt-0.5 flex items-center justify-between gap-2">
-          <p className="truncate text-sm text-text-tertiary">
+          <p className="min-w-0 flex-1 truncate text-sm text-text-tertiary">
             {transaction.description?.trim() || '—'}
-            {showDate ? (
-              <span className="text-text-tertiary">
-                {' · '}
-                {formatRowDate(transaction.transaction_date)}
-              </span>
-            ) : null}
           </p>
+          {showDate ? (
+            <time
+              dateTime={transaction.transaction_date}
+              aria-label={formatDateLabel(transaction.transaction_date)}
+              className="shrink-0 tabular-nums text-xs font-medium text-text-tertiary sm:ml-auto"
+            >
+              {formatRowDateShort(transaction.transaction_date)}
+            </time>
+          ) : null}
           {transaction.payment_method ? (
             <span className="hidden shrink-0 rounded-md border border-border bg-bg-subtle px-1.5 py-0.5 text-[11px] font-medium text-text-secondary sm:inline">
               {transaction.payment_method}

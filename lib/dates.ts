@@ -72,6 +72,24 @@ export function formatRowDate(dateStr: string, now: Date = new Date()): string {
   return format(parseISO(dateStr), 'EEE d MMM')
 }
 
+/**
+ * Anchored short row date for dashboard recent — "Tue 07/28" (weekday abbrev +
+ * numeric MM/DD, no year). Locked format per dashboard mini-row spec.
+ * Today / Yesterday still take precedence so the freshest rows read naturally.
+ */
+export function formatRowDateShort(dateStr: string, now: Date = new Date()): string {
+  const today = todayInLagos(now)
+  if (dateStr === today) return 'Today'
+  const yesterday = format(addDays(parseISO(today), -1), 'yyyy-MM-dd')
+  if (dateStr === yesterday) return 'Yesterday'
+  return format(parseISO(dateStr), 'EEE MM/dd')
+}
+
+/** Long-form date for screen readers, includes year even when not shown. */
+export function formatDateLabel(dateStr: string): string {
+  return format(parseISO(dateStr), 'EEEE, MMMM d, yyyy')
+}
+
 /** delta: +1 next month, -1 previous month */
 export function shiftMonthKey(monthKey: string, delta: number): string {
   const base = startOfMonth(parseISO(monthStart(monthKey)))
