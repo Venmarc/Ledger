@@ -41,4 +41,18 @@ export const queryKeys = {
       [...queryKeys.goals.all(), 'list', scope] as const,
     detail: (id: string) => [...queryKeys.goals.all(), 'detail', id] as const,
   },
+
+  recurring: {
+    all: () => [...queryKeys.all, 'recurring'] as const,
+    list: () => [...queryKeys.recurring.all(), 'list'] as const,
+    due: () => [...queryKeys.recurring.all(), 'due'] as const,
+    detail: (id: string) =>
+      [...queryKeys.recurring.all(), 'detail', id] as const,
+  },
+
+  analytics: {
+    all: () => [...queryKeys.all, 'analytics'] as const,
+    spending: (monthKey: string) =>
+      [...queryKeys.analytics.all(), 'spending', monthKey] as const,
+  },
 } as const

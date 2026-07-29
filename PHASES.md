@@ -1,7 +1,7 @@
 # PHASES.md — Implementation Roadmap
 **Project:** Ledger
 **Last Updated:** 21/07/2026
-**Status:** Phase 1 **gate passed** (Victor, 21/07/2026). Ready for Phase 2 (Budgets & Savings Goals). Multi-select filter enhancement noted in NOTES.md (backlog, not Phase 2 scope).
+**Status:** Phase 1 **gate passed** (Victor, 21/07/2026). Phase 2 **gate passed** (Victor, 28/07/2026). Ready for Phase 3 (Analytics, Recurring & Completion). Multi-select filter enhancement noted in NOTES.md (backlog, not Phase 2 scope).
  
 **References:** PRD.md · TRD.md · SCHEMA.md · APP_FLOW.md · PAGE_SPECS.md · UI/UX_BRIEF.md · NOTES.md
  
@@ -74,20 +74,20 @@ Do not build features in Phase 0. The temptation will be there. Resist it.
 - Supabase client utility created with correct anon key and URL
 - Seed script for default categories executable (creates the 13 categories from SCHEMA.md for a given user_id)
 ### Phase 0 Gate — All Must Pass
-- [ ] Sign up with a new account. Profile row exists in Supabase `profiles` table.
-- [ ] Sign out. Attempt to navigate to `/dashboard`. Redirected to `/sign-in`.
-- [ ] Sign back in. Land on `/dashboard`.
-- [ ] Open on mobile viewport. Bottom nav visible. Sidebar hidden.
-- [ ] Open on desktop viewport. Sidebar visible. Bottom nav hidden.
-- [ ] Dark mode is the rendered default. No flash of light mode on load.
-- [ ] Tap the Theme Toggle. `data-theme` switches to `"light"`. Background, text, and border colors visibly change across the whole app — even if the light values are rough placeholders. This confirms every component is reading CSS variables, not hardcoded colors.
-- [ ] Reload the page after switching to light. Theme stays light (localStorage persistence confirmed). No flash of dark mode before light applies.
-- [ ] Toggle is positioned correctly per APP_FLOW.md §3.2 on at least 3 different pages (e.g. Dashboard, Transactions, Landing) — closest to center among top-bar icons on each.
-- [ ] Grep the codebase for hardcoded hex values in component files (`#[0-9A-Fa-f]{3,6}`). Only `globals.css` (or the theme definition file) should contain raw hex. Any hex found in a component is a violation of TRD.md §6.1 and must be fixed before the gate passes.
-- [ ] Run seed script. 13 categories exist in `categories` table for your user_id.
-- [ ] Attempt to query another user's data directly in Supabase SQL editor using your JWT. RLS blocks it.
-- [ ] `npx tsc --noEmit` passes with zero errors.
-- [ ] Zero console errors in browser on any protected route.
+- [x] Sign up with a new account. Profile row exists in Supabase `profiles` table.
+- [x] Sign out. Attempt to navigate to `/dashboard`. Redirected to `/sign-in`.
+- [x] Sign back in. Land on `/dashboard`.
+- [x] Open on mobile viewport. Bottom nav visible. Sidebar hidden.
+- [x] Open on desktop viewport. Sidebar visible. Bottom nav hidden.
+- [x] Dark mode is the rendered default. No flash of light mode on load.
+- [x] Tap the Theme Toggle. `data-theme` switches to `"light"`. Background, text, and border colors visibly change across the whole app — even if the light values are rough placeholders. This confirms every component is reading CSS variables, not hardcoded colors.
+- [x] Reload the page after switching to light. Theme stays light (localStorage persistence confirmed). No flash of dark mode before light applies.
+- [x] Toggle is positioned correctly per APP_FLOW.md §3.2 on at least 3 different pages (e.g. Dashboard, Transactions, Landing) — closest to center among top-bar icons on each.
+- [x] Grep the codebase for hardcoded hex values in component files (`#[0-9A-Fa-f]{3,6}`). Only `globals.css` (or the theme definition file) should contain raw hex. Any hex found in a component is a violation of TRD.md §6.1 and must be fixed before the gate passes.
+- [x] Run seed script. 13 categories exist in `categories` table for your user_id.
+- [x] Attempt to query another user's data directly in Supabase SQL editor using your JWT. RLS blocks it.
+- [x] `npx tsc --noEmit` passes with zero errors.
+- [x] Zero console errors in browser on any protected route.
 ---
  
 ## Phase 1 — Core Transactions
@@ -192,14 +192,16 @@ Raw spending data becomes actionable. You can set limits and watch them respond 
 - Goals preview section: up to 3 active goals with mini progress rings
 - Budget health section now live with real data
 ### Phase 2 Gate — All Must Pass
-- [ ] Set a budget for Transport and one other category.
-- [ ] Log 3 transport transactions via FAB. Budget card progress bar updates correctly after each one.
-- [ ] Spend past the Transport budget. Card turns red. Amount over budget shown.
-- [ ] Navigate to a past month. Budget data is read-only (no edit/add buttons visible).
-- [ ] Create a savings goal (e.g. Smartwatch). Log 2 contributions. Progress ring updates.
-- [ ] Dashboard shows budget cards and goals preview with real data.
-- [ ] Budget vs actual numbers match manual calculation from your real transactions.
-- [ ] `npx tsc --noEmit` passes. Zero console errors.
+- [x] Set a budget for Transport and one other category.
+- [x] Log 3 transport transactions via FAB. Budget card progress bar updates correctly after each one.
+- [x] Spend past the Transport budget. Card turns red. Amount over budget shown.
+- [x] Navigate to a past month. Budget data is read-only (no edit/add buttons visible).
+- [x] Create a savings goal (e.g. Smartwatch). Log 2 contributions. Progress ring updates.
+- [x] Dashboard shows budget cards and goals preview with real data.
+- [x] Budget vs actual numbers match manual calculation from your real transactions.
+- [x] `npx tsc --noEmit` passes. Zero console errors.
+
+**Gate closed:** 28/07/2026 — Victor: "I declare phase 2 complete for now."
 
 ### Phase 2 implementation log
 | Chunk | Completed | What landed |
@@ -211,6 +213,7 @@ Raw spending data becomes actionable. You can set limits and watch them respond 
 | P2-E  | 2026-07-23 15:10 WAT | /goals + /goals/[id] UI, rings, create/contribute sheets, archive/delete dialogs, completed section reveal |
 | P2-F  | 2026-07-25 08:30 WAT | Dashboard v2 (BudgetHealth & GoalsPreview), category icons migration, neutral contrast fix, FAB tx budget query invalidation |
 | P2-G  | 2026-07-25 09:00 WAT | BudgetCard responsive mobile layout fix for 375px screens, month selector centering & motion fix |
+| P2-H  | 2026-07-28 | Dashboard budget mini-card content layout (compact NGN K/M bands, remaining-text status color mirroring bar bands, label/limit/bur/spent/remaining hierarchy) + dashboard transaction-row date slot fix (anchored bottom-right of line 2, `<time>` w/ aria-label, desktop date-left-of-capsule). /budgets list rows keep kobo. |
 
 ---
 
@@ -275,7 +278,7 @@ The app becomes a complete tool. Analytics turns your data into insight. Recurri
 - [ ] Create a recurring template for your data bundle or transport. Confirm it when due. Transaction appears in list with `recurring_id` set.
 - [ ] Currency widget converts ₦50,000 to USD/GBP/EUR. API failure shows fallback message gracefully.
 - [ ] Landing page loads on mobile. Both CTAs work. Meta tags present in page source.
-- [ ] App is live on Vercel. Sign up via production URL. Log a transaction. Confirm it appears.
+- [x] App is live on Vercel. Sign up via production URL. Log a transaction. Confirm it appears.
 - [ ] Share the production URL. It loads without a 500 error.
 - [ ] You have at least 30 real transactions logged across at least 3 categories.
 - [ ] `npx tsc --noEmit` passes on production branch. Zero console errors in production.
@@ -326,6 +329,7 @@ All doc changes are logged here. Most recent first.
  
 | Date | Document | Change |
 |---|---|---|
+| 28/07/2026 | PHASES.md, components/budgets/budget-card.tsx, components/transactions/transaction-row.tsx, lib/utils.ts, lib/progress.ts, lib/dates.ts, components/dashboard/budget-health.tsx, components/budgets/skeletons.tsx | Closed Phase 2 implementation: dashboard budget mini-card content layout (compact NGN K/M bands, status-colored remaining text mirroring bar bands, limit-under-label cluster); transaction-row date slot anchored bottom-right of line 2 with `<time datetime>` + `aria-label` long form and tabular-nums; /budgets list rows revert to kobo per claude_review.md "Not in scope". |
 | 25/07/2026 | PHASES.md, PHASE-2-OVERVIEW.md, budget-card.tsx, globals.css | Closed Phase 2 deliverables: applied category icons migration SQL, fixed PostgREST SELECT query strings in budget/transaction actions, resolved dark mode neutral contrast token (#A8A29E), centered month dropdown animation, and fixed BudgetCard responsive flex layout for 375px screens. |
 | 24/07/2026 | SCHEMA.md, PAGE_SPECS.md, UIUX_BRIEF.md, APP_FLOW.md, PHASES.md | Switched categories from per-category custom color to Lucide icon + uniform neutral background. Dropped `color` column from `categories` table, `icon` now required. Added §8.1 default icon mapping, §8.2 curated icon picker (14 expense + 8 income options for realistic future categories), and §6.11 Category Pill component spec to UIUX_BRIEF. Added global back-navigation rule (APP_FLOW §3.3) distinguishing primary nav pages (no back button) from sub-pages (icon-only chevron) — fixes agent confusion that added text back-links to both Category Management and Goal Detail. |
 | 21/07/2026 | PHASES.md, NOTES.md | Phase 1 gate **passed** (Victor). Multi-select filter design note (OR within category/payment; AND across dimensions). Prior same-day: polish + delete confirm z-index/lifecycle. |

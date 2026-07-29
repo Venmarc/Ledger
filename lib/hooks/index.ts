@@ -34,3 +34,5 @@ export {
   useArchiveGoal,
   useDeleteGoal,
 } from './use-goals'
+
+export { useSpendingAnalytics } from './use-analytics'

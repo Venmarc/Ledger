@@ -184,3 +184,20 @@ Post-v1: itemized history table + date/note fields on the contribute sheet.
 - **Neutral Accent Tokens:** Added `--color-neutral` (#57534E), `--color-neutral-hover`, `--color-neutral-muted` (#292524 / light #F1EFEC), and `--color-neutral-border` to `globals.css` and Tailwind `@theme`.
 - **Category Icon Circles:** Wired `var(--color-neutral-muted)` into category icon circle backgrounds across `transaction-row.tsx`, `budget-card.tsx`, `budget-form-sheet.tsx`, and `categories-manager.tsx`.
 - **UIUX_BRIEF & Documentation:** Added §2.8 Neutral / System Accent, §12 Reusable UI Patterns, and updated §8 Iconography.
+
+---
+
+## 29/07/2026 — Lint error outside PHASE 3
+
+- `npm run lint` has pre-existing errors in non-P3-A files (`category-form-sheet.tsx`, `category-icon.tsx`, `theme-toggle.tsx`).
+- I'll have to check out those files and see wagwan. 
+
+---
+
+## 29/07/2026 — Plan-review technique (reusable prompt)
+
+Before saving any chunk plan, run this prompt against the drafted plan to surface ambiguity. The planner writes the plan, then switches hats and reads it as a cold implementer with no other context. Output is a holes list (no fixes) — then the planner rewrites the plan to close every hole before saving.
+
+> Re-read the plan you just wrote as if you are the implementer, not the planner. List every place where you had to make an assumption, every edge case not explicitly covered, every ambiguous term, and every decision you'd have to guess at if you had zero other context. Don't fix anything yet — just list the holes.
+
+Reasoning: plans written for high-class models leave implicit gaps those models fill correctly. When the same plan is handed to a low-class model (Deepseek V4, Mimo 2.5) those gaps get filled with the weaker model's own taste — which is where the bugs live. Surfacing holes explicitly, then pinning them, lets a weak model implement with zero conception space.

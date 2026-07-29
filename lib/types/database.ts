@@ -176,3 +176,74 @@ export interface SavingsGoalView extends SavingsGoal {
   /** current >= target */
   isCompleted: boolean
 }
+
+/** Row shape for public.recurring_templates (SCHEMA.md). */
+export interface RecurringTemplate {
+  id: string
+  user_id: string
+  category_id: string
+  amount: string
+  type: TransactionType
+  description: string | null
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly'
+  next_date: string
+  is_active: boolean
+  created_at: string
+}
+
+export interface RecurringTemplateWithCategory extends RecurringTemplate {
+  categories: CategorySummary | null
+}
+
+/** Analytics: spending by category for a single month. */
+export interface CategoryBreakdown {
+  category: CategorySummary
+  amount: number
+  percentOfTotal: number
+}
+
+/** Analytics: per-category this-month vs last-month comparison. */
+export interface CategoryMonthComparison {
+  category: CategorySummary
+  currentAmount: number
+  previousAmount: number
+  delta: number
+}
+
+/** Analytics: month-over-month comparison. */
+export interface MonthComparison {
+  currentMonthKey: string
+  previousMonthKey: string
+  currentTotal: number
+  previousTotal: number
+  delta: number
+  deltaPercent: number
+  perCategory: CategoryMonthComparison[]
+}
+
+/** Analytics: one day in the daily spending trend line chart. */
+export interface DailyTrendPoint {
+  date: string
+  dayLabel: string
+  amount: number
+}
+
+/** Analytics: a category that exceeded budget in 2+ of the last 3 months. */
+export interface MoneyLeak {
+  category: CategorySummary
+  monthsOverBudget: number
+  averageOverspend: number
+}
+
+/** Analytics: aggregated data payload for /analytics. */
+export interface SpendingAnalytics {
+  monthKey: string
+  income: number
+  expense: number
+  balance: number
+  categoryBreakdown: CategoryBreakdown[]
+  topCategories: CategoryBreakdown[]
+  monthComparison: MonthComparison | null
+  moneyLeaks: MoneyLeak[]
+  dailyTrend: DailyTrendPoint[]
+}

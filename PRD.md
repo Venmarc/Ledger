@@ -2,6 +2,8 @@
 
 **Project Name:** Ledger
 **Tagline:** Personal finance OS for tracking every Naira, killing bad spending, hitting budgets, and building real financial clarity.
+**Live URL:** [Ledger](https://ledgerix.vercel.app)
+**Repo URL:** [Ledger](https://github.com/Venmarc/Ledger)
 
 ### 1. Vision & Objectives
 Build a fast, trustworthy, and insightful expense tracker tailored for Nigerian realities that you will actually use daily for all transactions.
