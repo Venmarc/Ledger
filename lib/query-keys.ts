@@ -52,7 +52,15 @@ export const queryKeys = {
 
   analytics: {
     all: () => [...queryKeys.all, 'analytics'] as const,
-    spending: (monthKey: string) =>
-      [...queryKeys.analytics.all(), 'spending', monthKey] as const,
+    incomeExpense: (monthKey: string) =>
+      [...queryKeys.analytics.all(), 'incomeExpense', monthKey] as const,
+    breakdown: (monthKey: string) =>
+      [...queryKeys.analytics.all(), 'breakdown', monthKey] as const,
+    comparison: (monthKey: string) =>
+      [...queryKeys.analytics.all(), 'comparison', monthKey] as const,
+    leaks: (monthKey: string) =>
+      [...queryKeys.analytics.all(), 'leaks', monthKey] as const,
+    trend: (monthKey: string) =>
+      [...queryKeys.analytics.all(), 'trend', monthKey] as const,
   },
 } as const

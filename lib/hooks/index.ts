@@ -35,4 +35,10 @@ export {
   useDeleteGoal,
 } from './use-goals'
 
-export { useSpendingAnalytics } from './use-analytics'
+export {
+  useMonthIncomeExpense,
+  useCategoryBreakdown,
+  useMonthComparison,
+  useMoneyLeaks,
+  useDailyTrend,
+} from './use-analytics'

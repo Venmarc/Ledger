@@ -13,8 +13,6 @@ export function CategoryIcon({
   size = 'md',
   className,
 }: CategoryIconProps) {
-  const Icon = getCategoryIconComponent(iconName)
-
   const containerSizes = {
     sm: 'h-8 w-8 min-w-8',
     md: 'h-10 w-10 min-w-10',
@@ -36,7 +34,7 @@ export function CategoryIcon({
       )}
       aria-hidden
     >
-      <Icon className={iconSizes[size]} />
+      {React.createElement(getCategoryIconComponent(iconName), { className: iconSizes[size] })}
     </span>
   )
 }

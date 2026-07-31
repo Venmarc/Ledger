@@ -71,12 +71,14 @@ function CategoryFormInner({
     return availableIcons[0]?.name || 'CircleDot'
   })
 
-  // Reset icon selection if selected type changes and current icon is not in new list
-  React.useEffect(() => {
-    if (!availableIcons.some((i) => i.name === icon)) {
-      setIcon(availableIcons[0]?.name || 'CircleDot')
-    }
-  }, [type, availableIcons, icon])
+  const handleTypeChange = (newType: TransactionType) => {
+    setType(newType)
+    const icons =
+      newType === 'income'
+        ? [...DEFAULT_INCOME_ICONS, ...CURATED_INCOME_ICONS]
+        : [...DEFAULT_EXPENSE_ICONS, ...CURATED_EXPENSE_ICONS]
+    setIcon(icons[0]?.name || 'CircleDot')
+  }
 
   const [nameError, setNameError] = React.useState<string>()
 
@@ -153,7 +155,7 @@ function CategoryFormInner({
         </Field>
 
         {!isEdit ? (
-          <TypeToggle value={type} onChange={setType} disabled={pending} />
+          <TypeToggle value={type} onChange={handleTypeChange} disabled={pending} />
         ) : (
           <p className="text-sm text-text-secondary">
             Type:{' '}

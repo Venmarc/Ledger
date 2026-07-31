@@ -11,7 +11,6 @@ import type {
   DailyTrendPoint,
   MoneyLeak,
   MonthComparison,
-  SpendingAnalytics,
   TransactionWithCategory,
 } from '@/lib/types/database'
 
@@ -46,10 +45,10 @@ function round2dp(n: number): number {
   return Math.round(n * 100) / 100
 }
 
-/** Income / expense totals for a month. */
+/** Income / expense totals for a month. `count` drives the analytics insight banner. */
 export async function getMonthIncomeExpense(
   monthKey: string
-): Promise<ActionResult<{ income: number; expense: number }>> {
+): Promise<ActionResult<{ income: number; expense: number; count: number }>> {
   const ctx = await getAuthedContext()
   if (!ctx.ok) return fail(ctx.error)
 
@@ -76,7 +75,11 @@ export async function getMonthIncomeExpense(
     else if (row.type === 'expense') expense += amt
   }
 
-  return ok({ income: round2dp(income), expense: round2dp(expense) })
+  return ok({
+    income: round2dp(income),
+    expense: round2dp(expense),
+    count: data?.length ?? 0,
+  })
 }
 
 /** Spending grouped by category, sorted by amount desc. */
@@ -230,10 +233,14 @@ export async function getMonthComparison(
   })
 }
 
-/** Categories that exceeded budget in 2+ of the last 3 months. */
+/**
+ * Categories that exceeded budget in 2+ of the last 3 months.
+ * Returns `null` when the user has no active budgets at all — the section
+ * hides in that case. Returns `[]` when budgets exist but nothing leaks.
+ */
 export async function getMoneyLeaks(
   monthKey: string
-): Promise<ActionResult<MoneyLeak[]>> {
+): Promise<ActionResult<MoneyLeak[] | null>> {
   const ctx = await getAuthedContext()
   if (!ctx.ok) return fail(ctx.error)
 
@@ -254,6 +261,10 @@ export async function getMoneyLeaks(
   if (budgetError) {
     console.error('getMoneyLeaks budgets:', budgetError)
     return fail('Could not load budgets')
+  }
+
+  if (!budgetRows || budgetRows.length === 0) {
+    return ok(null)
   }
 
   // Load expense transactions for the last 3 months
@@ -377,42 +388,4 @@ export async function getDailyTrend(
   }
 
   return ok(points)
-}
-
-/** Aggregate analytics payload for /analytics. */
-export async function getSpendingAnalytics(
-  monthKey: string
-): Promise<ActionResult<SpendingAnalytics>> {
-  const ctx = await getAuthedContext()
-  if (!ctx.ok) return fail(ctx.error)
-
-  const [totalsResult, breakdownResult, comparisonResult, leaksResult, trendResult] =
-    await Promise.all([
-      getMonthIncomeExpense(monthKey),
-      getCategoryBreakdown(monthKey),
-      getMonthComparison(monthKey),
-      getMoneyLeaks(monthKey),
-      getDailyTrend(monthKey),
-    ])
-
-  if (!totalsResult.ok) return totalsResult
-  if (!breakdownResult.ok) return breakdownResult
-  if (!comparisonResult.ok) return comparisonResult
-  if (!leaksResult.ok) return leaksResult
-  if (!trendResult.ok) return trendResult
-
-  const { income, expense } = totalsResult.data
-  const balance = round2dp(income - expense)
-
-  return ok({
-    monthKey,
-    income,
-    expense,
-    balance,
-    categoryBreakdown: breakdownResult.data,
-    topCategories: breakdownResult.data.slice(0, 5),
-    monthComparison: comparisonResult.data,
-    moneyLeaks: leaksResult.data,
-    dailyTrend: trendResult.data,
-  })
 }

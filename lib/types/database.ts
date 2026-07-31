@@ -199,6 +199,7 @@ export interface RecurringTemplateWithCategory extends RecurringTemplate {
 export interface CategoryBreakdown {
   category: CategorySummary
   amount: number
+  /** Ratio of category total to month expense total. Range: 0..1 (not percent). Display: multiply by 100. */
   percentOfTotal: number
 }
 
@@ -233,17 +234,4 @@ export interface MoneyLeak {
   category: CategorySummary
   monthsOverBudget: number
   averageOverspend: number
-}
-
-/** Analytics: aggregated data payload for /analytics. */
-export interface SpendingAnalytics {
-  monthKey: string
-  income: number
-  expense: number
-  balance: number
-  categoryBreakdown: CategoryBreakdown[]
-  topCategories: CategoryBreakdown[]
-  monthComparison: MonthComparison | null
-  moneyLeaks: MoneyLeak[]
-  dailyTrend: DailyTrendPoint[]
 }
