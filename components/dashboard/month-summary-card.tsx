@@ -42,9 +42,11 @@ export function MonthSummaryCard({ monthKey }: Props) {
   const ratio = data?.expenseRatio ?? 0
   // Cap visual bar at 100%; overspend shown via red track end
   const barPct = Math.min(100, Math.round(ratio * 100))
-  // This month's own net (not cumulative) — the bar/copy describe this
-  // month's spending behavior, independent of the carried-in Balance.
-  const overspent = income - expense < 0
+  // Funds available this month = new income plus whatever carried over from
+  // prior months — a positive carried-in balance is real money and must
+  // count toward health, not just this month's income.
+  const available = income + carriedIn
+  const overspent = available - expense < 0
   const balanceIndicator: ReactNode =
     carriedIn === 0 ? null : (
       <span className={carriedIn > 0 ? 'text-green' : 'text-red'}>
@@ -94,12 +96,14 @@ export function MonthSummaryCard({ monthKey }: Props) {
           />
         </div>
         <p className="text-xs text-text-tertiary">
-          {income > 0
+          {available > 0
             ? overspent
-              ? `Spending over income by ${formatNGN(Math.abs(income - expense))}`
-              : `${formatNGN(expense)} of ${formatNGN(income)} income spent this month`
+              ? `Spending over available funds by ${formatNGN(Math.abs(available - expense))}`
+              : carriedIn > 0 && income === 0
+                ? `${formatNGN(expense)} of ${formatNGN(available)} available spent (${formatNGN(carriedIn)} carried over)`
+                : `${formatNGN(expense)} of ${formatNGN(available)} available spent this month`
             : expense > 0
-              ? 'No income logged this month'
+              ? 'Spending with no income or balance available'
               : 'No activity this month'}
         </p>
       </div>

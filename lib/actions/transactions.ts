@@ -374,7 +374,11 @@ export async function getMonthSummary(
   const thisMonthNet = Math.round((income - expense) * 100) / 100
   let carriedIn = Math.round((balance - thisMonthNet) * 100) / 100
   if (Math.abs(carriedIn) < 0.005) carriedIn = 0
-  const expenseRatio = income > 0 ? expense / income : expense > 0 ? 1 : 0
+  // Funds available this month = new income plus whatever carried over from
+  // prior months. A positive carried-in balance is real, spendable money —
+  // it must count toward the health ratio, not just this month's income.
+  const available = Math.round((income + carriedIn) * 100) / 100
+  const expenseRatio = available > 0 ? expense / available : expense > 0 ? 1 : 0
 
   return ok({ income, expense, balance, carriedIn, expenseRatio })
 }
