@@ -42,6 +42,7 @@ function invalidateTransactionReads(
   // FAB-driven expense mutations must also refresh budget cards
   // (actuals are computed at query time from expense transactions).
   void queryClient.invalidateQueries({ queryKey: queryKeys.budgets.all() })
+  void queryClient.invalidateQueries({ queryKey: queryKeys.analytics.all() })
 }
 
 export function useInfiniteTransactions(filters: TransactionListFilters) {

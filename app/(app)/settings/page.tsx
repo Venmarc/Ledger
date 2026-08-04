@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { ChevronRight, Tags } from 'lucide-react'
+import { CurrencyWidget } from '@/components/settings/currency-widget'
 
 export default function SettingsPage() {
   return (
@@ -32,6 +33,8 @@ export default function SettingsPage() {
           <ChevronRight className="h-5 w-5 shrink-0 text-text-tertiary" />
         </Link>
       </nav>
+
+      <CurrencyWidget />
     </div>
   )
 }

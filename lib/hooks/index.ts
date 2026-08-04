@@ -42,3 +42,13 @@ export {
   useMoneyLeaks,
   useDailyTrend,
 } from './use-analytics'
+
+export {
+  useRecurringTemplates,
+  useDueRecurringTemplates,
+  useCreateRecurringTemplate,
+  useUpdateRecurringTemplate,
+  useDeleteRecurringTemplate,
+  useConfirmRecurringTemplate,
+  useSkipRecurringTemplate,
+} from './use-recurring'

@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { useMonthSummary } from '@/lib/hooks/use-transactions'
 import { MonthSummarySkeleton } from '@/components/transactions/skeletons'
 import { cn, formatNGN } from '@/lib/utils'
@@ -37,10 +38,19 @@ export function MonthSummaryCard({ monthKey }: Props) {
   const income = data?.income ?? 0
   const expense = data?.expense ?? 0
   const balance = data?.balance ?? 0
+  const carriedIn = data?.carriedIn ?? 0
   const ratio = data?.expenseRatio ?? 0
   // Cap visual bar at 100%; overspend shown via red track end
   const barPct = Math.min(100, Math.round(ratio * 100))
-  const overspent = balance < 0
+  // This month's own net (not cumulative) — the bar/copy describe this
+  // month's spending behavior, independent of the carried-in Balance.
+  const overspent = income - expense < 0
+  const balanceIndicator: ReactNode =
+    carriedIn === 0 ? null : (
+      <span className={carriedIn > 0 ? 'text-green' : 'text-red'}>
+        {carriedIn > 0 ? '▲' : '▼'} previous
+      </span>
+    )
 
   return (
     <section
@@ -62,6 +72,7 @@ export function MonthSummaryCard({ monthKey }: Props) {
           label="Balance"
           value={formatNGN(balance)}
           className={balance >= 0 ? 'text-green' : 'text-red'}
+          indicator={balanceIndicator}
         />
       </div>
 
@@ -85,7 +96,7 @@ export function MonthSummaryCard({ monthKey }: Props) {
         <p className="text-xs text-text-tertiary">
           {income > 0
             ? overspent
-              ? `Spending over income by ${formatNGN(Math.abs(balance))}`
+              ? `Spending over income by ${formatNGN(Math.abs(income - expense))}`
               : `${formatNGN(expense)} of ${formatNGN(income)} income spent this month`
             : expense > 0
               ? 'No income logged this month'
@@ -100,14 +111,19 @@ function Metric({
   label,
   value,
   className,
+  indicator,
 }: {
   label: string
   value: string
   className?: string
+  indicator?: ReactNode
 }) {
   return (
     <div className="min-w-0">
-      <p className="text-xs font-medium text-text-tertiary">{label}</p>
+      <p className="flex items-center gap-1 text-xs font-medium text-text-tertiary">
+        <span>{label}</span>
+        {indicator}
+      </p>
       <p
         className={cn(
           'mt-1 truncate text-base font-semibold tabular-nums md:text-lg',

@@ -44,5 +44,12 @@ next-env.d.ts
 # agent context
 /.superpowers/
 
+# obsidian vault config (not app content)
+/.obsidian/
+
+# demo/seed data — local only, not needed for the app to run
+/lib/supabase/seed-spidey-demo-data.ts
+/lib/supabase/test-data.csv
+
 # Working plan overviews (ephemeral; not product docs — see docs/README.md)
 /docs/

@@ -63,6 +63,8 @@ export interface MonthSummary {
   income: number
   expense: number
   balance: number
+  /** carried in from all months before this one (= balance - (income - expense)); 0 if nothing to carry */
+  carriedIn: number
   /** expense / income; 0 when income is 0 */
   expenseRatio: number
 }

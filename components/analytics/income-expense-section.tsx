@@ -1,6 +1,6 @@
 'use client'
 
-import { useMonthIncomeExpense } from '@/lib/hooks'
+import { useMonthIncomeExpense, useMonthSummary } from '@/lib/hooks'
 import { SectionShell } from '@/components/analytics/section-shell'
 import { ErrorState } from '@/components/analytics/error-state'
 import { IncomeExpenseSkeleton } from '@/components/analytics/skeletons'
@@ -38,6 +38,7 @@ export function IncomeExpenseSection({
   className?: string
 }) {
   const { data, isLoading, isError, error, refetch } = useMonthIncomeExpense(monthKey)
+  const { data: summary } = useMonthSummary(monthKey)
 
   if (isLoading) return <IncomeExpenseSkeleton className={className} />
   if (isError) {
@@ -52,7 +53,7 @@ export function IncomeExpenseSection({
 
   const income = data?.income ?? 0
   const expense = data?.expense ?? 0
-  const balance = income - expense
+  const balance = summary?.balance ?? income - expense
 
   return (
     <SectionShell title="Income vs Expenses" className={className}>
@@ -62,7 +63,7 @@ export function IncomeExpenseSection({
       </div>
       <div className="mt-4 border-t border-border pt-4">
         <Metric
-          label="Net"
+          label="Balance"
           value={balance}
           valueClassName={balance >= 0 ? 'text-green' : 'text-red'}
         />

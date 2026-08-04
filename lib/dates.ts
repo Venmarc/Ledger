@@ -1,5 +1,8 @@
 import {
   addDays,
+  addMonths,
+  addWeeks,
+  addYears,
   differenceInCalendarDays,
   format,
   parseISO,
@@ -9,7 +12,7 @@ import {
   startOfYear,
   endOfYear,
 } from 'date-fns'
-import type { DateRangePreset } from '@/lib/types/database'
+import type { DateRangePreset, RecurringTemplate } from '@/lib/types/database'
 
 export const LAGOS_TZ = 'Africa/Lagos'
 
@@ -181,5 +184,61 @@ export function formatGoalTargetLabel(
     return { text: `${daysLeft} days left`, tone: 'amber' }
   }
   return { text: `Target: ${format(target, 'd MMM yyyy')}`, tone: 'muted' }
+}
+
+/**
+ * Advance a YYYY-MM-DD date by one interval of a recurring template's frequency.
+ * Advances from the template's stored `next_date`, not from "today" — an
+ * overdue template advances one period per confirm/skip, not straight to today.
+ */
+export function advanceRecurringDate(
+  dateStr: string,
+  frequency: RecurringTemplate['frequency']
+): string {
+  const date = parseISO(dateStr)
+  const next =
+    frequency === 'daily'
+      ? addDays(date, 1)
+      : frequency === 'weekly'
+        ? addWeeks(date, 1)
+        : frequency === 'monthly'
+          ? addMonths(date, 1)
+          : addYears(date, 1)
+  return format(next, 'yyyy-MM-dd')
+}
+
+export const RECURRING_FREQUENCY_LABEL: Record<
+  RecurringTemplate['frequency'],
+  string
+> = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+  yearly: 'Yearly',
+}
+
+export type RecurringDueLabel = {
+  text: string
+  tone: 'amber' | 'red'
+}
+
+/**
+ * Due Now row label per PAGE_SPECS.md PAGE 11: "Due today" or "X days overdue".
+ * `nextDate` is always <= today for rows in the due list.
+ */
+export function formatRecurringDueLabel(
+  nextDate: string,
+  now?: Date
+): RecurringDueLabel {
+  const todayStr = todayInLagos(now)
+  const daysOverdue = differenceInCalendarDays(
+    parseISO(todayStr),
+    parseISO(nextDate)
+  )
+  if (daysOverdue <= 0) return { text: 'Due today', tone: 'amber' }
+  return {
+    text: `${daysOverdue} ${daysOverdue === 1 ? 'day' : 'days'} overdue`,
+    tone: 'red',
+  }
 }
 

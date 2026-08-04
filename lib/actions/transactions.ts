@@ -327,9 +327,12 @@ export async function listRecentTransactions(
 }
 
 /**
- * Month income/expense totals.
- * Loads amount+type for the month only (narrow columns). Personal volume is small;
- * promote to SQL RPC if months ever grow huge.
+ * Month income/expense totals, plus a cumulative Balance carried forward
+ * from all prior months. Loads amount+type+date up to month end (no lower
+ * bound) since Balance is a running total, not scoped to one month; this
+ * scans all-time transactions on every call. Fine at personal-tracker
+ * volume (AGENTS.md scope) — promote to a SQL-side running-total aggregate
+ * if transaction volume grows significantly.
  */
 export async function getMonthSummary(
   monthKey: string
@@ -342,9 +345,8 @@ export async function getMonthSummary(
 
   const { data, error } = await ctx.supabase
     .from('transactions')
-    .select('amount, type')
+    .select('amount, type, transaction_date')
     .eq('user_id', ctx.userId)
-    .gte('transaction_date', from)
     .lte('transaction_date', to)
 
   if (error) {
@@ -354,18 +356,26 @@ export async function getMonthSummary(
 
   let income = 0
   let expense = 0
+  let cumulativeNet = 0
   for (const row of data ?? []) {
     const amt = parseAmount(row.amount as string)
-    if (row.type === 'income') income += amt
-    else if (row.type === 'expense') expense += amt
+    const signed = row.type === 'income' ? amt : row.type === 'expense' ? -amt : 0
+    cumulativeNet += signed
+    if ((row.transaction_date as string) >= from) {
+      if (row.type === 'income') income += amt
+      else if (row.type === 'expense') expense += amt
+    }
   }
 
   // Round to 2 dp to avoid float noise from summing
   income = Math.round(income * 100) / 100
   expense = Math.round(expense * 100) / 100
-  const balance = Math.round((income - expense) * 100) / 100
+  const balance = Math.round(cumulativeNet * 100) / 100
+  const thisMonthNet = Math.round((income - expense) * 100) / 100
+  let carriedIn = Math.round((balance - thisMonthNet) * 100) / 100
+  if (Math.abs(carriedIn) < 0.005) carriedIn = 0
   const expenseRatio = income > 0 ? expense / income : expense > 0 ? 1 : 0
 
-  return ok({ income, expense, balance, expenseRatio })
+  return ok({ income, expense, balance, carriedIn, expenseRatio })
 }
 
