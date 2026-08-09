@@ -2,7 +2,60 @@
 
 ## CREATED: 05/07/2026
 
-## LAST UPDATED: 21/07/2026 (phase 1 gate closed + multi-filter design note)
+## LAST UPDATED: 09/08/2026 (Gate 1 landing page remediation — IN PROGRESS, checkpoint below)
+
+---
+
+## 05/08/2026 — Gate 1 (landing page audit remediation) — CHECKPOINT, updated 09/08/2026
+
+**Status: IN PROGRESS, not closed.** This is a mid-session checkpoint, not a gate-close —
+do not treat Gate 1 as done. Full plan: `~/.claude/plans/i-created-a-ledger-abundant-shell.md`.
+Source audit (immutable): `SecondBrain/raw/2026-08-04-ledger-landing-page-audit.md`.
+
+**Done (committed 09/08/2026):**
+- GitHub CTAs fixed everywhere (header, hero, CTA strip) → real `https://github.com/Venmarc/Ledger`,
+  `target="_blank"`, `rel="noopener noreferrer"`.
+- Header nav restructured: `Theme Toggle → GitHub → Sign In` — **deliberate deviation** from
+  `PAGE_SPECS.md`'s `Theme Toggle → GitHub → View Demo`. Confirmed explicitly by Victor mid-session.
+  View Demo stays only in hero/CTA-strip buttons, not the header.
+- Hero right column + Preview section: real screenshots (`public/dashboard.png`, `public/mobile.png`)
+  replace the empty "Screenshot coming soon" placeholder.
+- `app/layout.tsx`: full OG/canonical metadata. **Canonical = `https://ledgerix.vercel.app`** per
+  Victor (differs from `PAGE_SPECS.md:37-45`'s `https://ledger-demo.vercel.app`); update PAGE_SPECS
+  when the gate closes.
+- **force-static now works.** Server-side Clerk `<Show>` (async, calls `auth()` at prerender) was
+  breaking the static export, so nav/CTA auth-branches moved to a client component
+  (`components/landing/auth-show.tsx`) that resolves auth after mount. PRERENDER PASSES.
+- Verification: `npm run lint` 0 errors (4 pre-existing warnings), `npx tsc --noEmit` clean,
+  `npm run build` succeeds and `/` renders as **○ Static**. GitHub repo URL verified
+  live (HTTP 200).
+
+**Demo-account walkaround — DEAD AND REMOVED (09/08/2026). Do not revive.**
+- Live "sign in with demo credentials" is dead by design. **Clerk Device Trust** (auto-enabled for
+  apps created after 2025-11-14) forces an email-code OTP on any new-device password sign-in, and
+  the demo address was a fake domain with no mailbox (code unreachable). Disabling Device Trust
+  would weaken security for all users — rejected.
+- Account fully reverted to Victor's real `nbmichael97@gmail.com` (verified + primary); the fake
+  `spidey@bnd.man` was deleted. Password was overwritten during the attempt and is unrecoverable —
+  Victor resets it himself via Dashboard.
+- **All read-only demo guard code was removed** (09/08/2026): `lib/demo.ts`, the
+  `requireWrite`/`DEMO_USER_ID` wiring across `lib/actions/*`, and
+  `scripts/migrations/20260807_demo_account_readonly.sql`. RLS migration was **never applied** to
+  Supabase; `package-lock.json` churn reverted.
+- Showcase route (in force): screenshots + a screen recording captured from **Victor's own trusted
+  browser session** (no OTP), CTA "View the demo". Demo-login cred strip removed from
+  `app/page.tsx` CTA.
+
+**Remaining for Gate 1:**
+- Confirm the deployed landing click-through / 375px no-horizontal-scroll / OG image render on
+  `ledgerix.vercel.app`, then close the gate here and in `SecondBrain/06-Agent-Sessions/`.
+  Plan: `~/.claude/plans/i-created-a-ledger-abundant-shell.md`.
+
+Full technical detail, file-by-file diff summary, and remaining task list are recoverable from:
+this NOTES.md entry + the plan file + `git diff` (the old `/tmp/claude-1003/…/scratchpad/
+ledger-gate1-handoff-2026-08-05.md` was in `/tmp` and is gone).
+
+---
 
 I reverted Momentum back to it's freshest state. I have some important info that will help it during a build, so that I won't experience recurring problems like in my previous projects. Most of these below are rules that should be in TRD.md, PRD.md or PHASES.md as they guide the user and agents to a functioning project.
 

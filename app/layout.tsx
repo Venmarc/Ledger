@@ -17,9 +17,22 @@ const inter = Inter({
   variable: "--font-body"
 });
 
+const SITE_URL = "https://ledgerix.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Ledger — Personal Finance Tracker for Nigerian Professionals",
-  description: "Personal finance OS for tracking every Naira, killing bad spending, hitting budgets, and building real financial clarity.",
+  description:
+    "An open-source personal finance tracker built for NGN-first expense tracking, budgeting, and savings goals. Built with Next.js, Supabase, and Clerk.",
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    title: "Ledger",
+    description: "Track every ₦. Kill bad spending. Build financial clarity.",
+    url: SITE_URL,
+    images: [{ url: "/dashboard.png" }],
+  },
   icons: {
     icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
     // apple-touch-logo.png — add when the PNG is ready; do not invent a placeholder.

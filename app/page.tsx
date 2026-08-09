@@ -1,5 +1,6 @@
-import { Show, UserButton } from '@clerk/nextjs'
+import { UserButton } from '@clerk/nextjs'
 import { Logo } from '@/components/logo'
+import { AuthShow } from '@/components/landing/auth-show'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { CursorGlowCard } from '@/components/landing/cursor-glow-card'
 import {
@@ -13,6 +14,10 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+
+export const dynamic = 'force-static'
+
+const GITHUB_URL = 'https://github.com/Venmarc/Ledger'
 
 /** Lucide removed brand logos; inline GitHub mark keeps CTA honest. */
 function GitHubIcon({ className }: { className?: string }) {
@@ -117,22 +122,27 @@ export default function Home() {
           <div className="flex items-center gap-3 md:gap-4">
             <ThemeToggle />
 
-            <Show when="signed-out">
-              {/* Mobile: Sign In only. Desktop: Sign In + Sign Up (no View Demo in header). */}
+            <AuthShow when="signed-out">
+              {/* Nav = Theme Toggle -> GitHub -> Sign In (deliberate deviation from
+                  PAGE_SPECS.md's View Demo primary CTA — see NOTES.md Gate 1 entry).
+                  Real sign-up stays reachable via the hero CTA and /sign-in itself. */}
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md border border-border-strong bg-transparent px-4 text-sm font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle md:h-10 md:px-5"
+              >
+                <GitHubIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">GitHub</span>
+              </a>
               <Link
                 href="/sign-in"
-                className="inline-flex h-11 cursor-pointer items-center justify-center rounded-md border border-border-strong bg-transparent px-4 text-sm font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle md:h-10 md:px-5"
+                className="inline-flex h-11 cursor-pointer items-center justify-center rounded-md bg-orange px-5 text-sm font-semibold text-orange-btn-text shadow-[0_4px_12px_rgba(249,115,22,0.2)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0 md:h-10"
               >
                 Sign In
               </Link>
-              <Link
-                href="/sign-up"
-                className="hidden h-11 cursor-pointer items-center justify-center rounded-md bg-orange px-5 text-sm font-semibold text-orange-btn-text shadow-[0_4px_12px_rgba(249,115,22,0.2)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0 md:inline-flex md:h-10"
-              >
-                Sign Up
-              </Link>
-            </Show>
-            <Show when="signed-in">
+            </AuthShow>
+            <AuthShow when="signed-in">
               <Link
                 href="/dashboard"
                 className="inline-flex h-11 cursor-pointer items-center justify-center rounded-md border border-border-strong bg-transparent px-5 text-sm font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle md:h-10"
@@ -140,7 +150,7 @@ export default function Home() {
                 Dashboard
               </Link>
               <UserButton />
-            </Show>
+            </AuthShow>
           </div>
         </header>
 
@@ -168,7 +178,7 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <Show when="signed-out">
+                  <AuthShow when="signed-out">
                     <Link
                       href="/sign-up"
                       className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
@@ -176,16 +186,17 @@ export default function Home() {
                       Log First Transaction
                       <ArrowRight className="h-5 w-5" />
                     </Link>
-                    {/* Repo URL not set in project docs yet — wire real href when known */}
                     <a
-                      href="#github"
+                      href={GITHUB_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md border border-border-strong bg-transparent px-6 text-base font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle"
                     >
                       <GitHubIcon className="h-5 w-5" />
                       View on GitHub
                     </a>
-                  </Show>
-                  <Show when="signed-in">
+                  </AuthShow>
+                  <AuthShow when="signed-in">
                     <Link
                       href="/dashboard"
                       className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
@@ -193,16 +204,24 @@ export default function Home() {
                       Go to Dashboard
                       <ArrowRight className="h-5 w-5" />
                     </Link>
-                  </Show>
+                  </AuthShow>
                 </div>
               </div>
 
-              {/* Right column: blank card + cursor glow (content deliberately empty) */}
+              {/* Right column: dashboard screenshot inside the cursor-glow frame */}
               <div className="hidden lg:col-span-5 lg:block">
                 <CursorGlowCard
                   className="border-border bg-bg-surface/80 transition-[border-color] duration-300 hover:border-border-strong"
-                  aria-label="Preview surface — content coming soon"
-                />
+                  aria-label="Ledger dashboard preview"
+                >
+                  <Image
+                    src="/dashboard.png"
+                    alt="Ledger dashboard showing monthly spending, budgets, and recent transactions"
+                    fill
+                    sizes="(min-width: 1024px) 40vw, 0px"
+                    className="object-cover object-top"
+                  />
+                </CursorGlowCard>
               </div>
             </div>
           </div>
@@ -255,18 +274,33 @@ export default function Home() {
             </ul>
           </section>
 
-          {/* Preview placeholder — PAGE_SPECS: no broken images */}
+          {/* Preview — real product screenshots (PAGE_SPECS: no broken images) */}
           <section className="space-y-4">
             <h2 className="border-b border-border pb-3 font-display text-2xl font-bold tracking-tight text-text-primary">
               Preview
             </h2>
-            <div className="flex aspect-[16/9] w-full items-center justify-center rounded-lg border border-border bg-bg-surface">
-              <p className="font-mono text-sm text-text-tertiary">
-                Screenshot coming soon
-              </p>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto]">
+              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-bg-surface">
+                <Image
+                  src="/dashboard.png"
+                  alt="Ledger dashboard showing monthly spending, budgets, and recent transactions"
+                  fill
+                  sizes="(min-width: 768px) 70vw, 100vw"
+                  className="object-cover object-top"
+                />
+              </div>
+              <div className="relative mx-auto aspect-[9/16] w-full max-w-[220px] overflow-hidden rounded-lg border border-border bg-bg-surface">
+                <Image
+                  src="/mobile.png"
+                  alt="Ledger mobile quick-add flow for logging a transaction"
+                  fill
+                  sizes="220px"
+                  className="object-cover object-top"
+                />
+              </div>
             </div>
             <p className="text-center text-sm text-text-tertiary">
-              Dashboard showing real spending data
+              Dashboard and mobile quick-add, showing real spending data
             </p>
           </section>
 
@@ -276,16 +310,16 @@ export default function Home() {
               See it in action
             </h2>
             <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
-              <Show when="signed-out">
+              <AuthShow when="signed-out">
                 <Link
-                  href="/sign-up"
+                  href="/sign-in"
                   className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
                 >
                   View Demo
                   <ArrowRight className="h-5 w-5" />
                 </Link>
-              </Show>
-              <Show when="signed-in">
+              </AuthShow>
+              <AuthShow when="signed-in">
                 <Link
                   href="/dashboard"
                   className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md bg-orange px-8 text-base font-bold text-orange-btn-text shadow-[0_4px_16px_rgba(249,115,22,0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:bg-orange-hover active:translate-y-0"
@@ -293,9 +327,11 @@ export default function Home() {
                   Go to Dashboard
                   <ArrowRight className="h-5 w-5" />
                 </Link>
-              </Show>
+              </AuthShow>
               <a
-                href="#github"
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-md border border-border-strong bg-transparent px-6 text-base font-semibold text-text-primary transition-colors duration-150 hover:bg-bg-subtle"
               >
                 <GitHubIcon className="h-5 w-5" />
@@ -303,7 +339,7 @@ export default function Home() {
               </a>
             </div>
             <p className="text-sm text-text-tertiary">
-              Built by Venmarc · Open source · No sign-up required for demo
+              Built by Venmarc · Open source
             </p>
           </section>
         </main>
