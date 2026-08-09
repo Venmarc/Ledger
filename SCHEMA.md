@@ -23,13 +23,14 @@ Synced from Clerk on first sign-in. One row per user.
  
 ```sql
 create table public.profiles (
-  id            text primary key,              -- Clerk user ID (e.g. user_2abc...)
-  full_name     text,
-  avatar_url    text,
-  base_currency text not null default 'NGN',
-  timezone      text not null default 'Africa/Lagos',
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now()
+  id                     text primary key,              -- Clerk user ID (e.g. user_2abc...)
+  full_name              text,
+  avatar_url             text,
+  base_currency          text not null default 'NGN',
+  timezone               text not null default 'Africa/Lagos',
+  default_payment_method text check (default_payment_method in ('Cash', 'Card', 'Transfer', 'POS', 'Other')),
+  created_at             timestamptz not null default now(),
+  updated_at             timestamptz not null default now()
 );
 ```
  
@@ -37,6 +38,7 @@ create table public.profiles (
 - `id` is the Clerk user ID stored directly as text. No separate `clerk_id` column needed — the Clerk ID is the primary key.
 - No `auth.users` foreign key reference. Clerk owns auth. Supabase owns data.
 - Upserted (not inserted) on every sign-in to keep `full_name` and `avatar_url` fresh.
+- `default_payment_method` (added P3-G, `scripts/migrations/20260804_default_payment_method.sql`): nullable settings preference, same enum as `transactions.payment_method`. Pre-fills the Quick Add form's payment method chip. Not touched by the Clerk sign-in upsert.
 ---
  
 ### `categories`

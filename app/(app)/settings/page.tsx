@@ -2,7 +2,10 @@
 
 import Link from 'next/link'
 import { ChevronRight, Tags } from 'lucide-react'
+import { AccountSection } from '@/components/settings/account-section'
 import { CurrencyWidget } from '@/components/settings/currency-widget'
+import { PreferencesSection } from '@/components/settings/preferences-section'
+import { ProfileSection } from '@/components/settings/profile-section'
 
 export default function SettingsPage() {
   return (
@@ -15,6 +18,8 @@ export default function SettingsPage() {
           Profile, categories, and preferences. More options in later phases.
         </p>
       </div>
+
+      <ProfileSection />
 
       <nav className="space-y-2" aria-label="Settings">
         <Link
@@ -34,7 +39,11 @@ export default function SettingsPage() {
         </Link>
       </nav>
 
+      <PreferencesSection />
+
       <CurrencyWidget />
+
+      <AccountSection />
     </div>
   )
 }

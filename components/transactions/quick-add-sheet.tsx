@@ -23,6 +23,7 @@ import {
   TypeToggle,
 } from '@/components/transactions'
 import { useCategoriesByType } from '@/lib/hooks/use-categories'
+import { useProfile } from '@/lib/hooks/use-profile'
 import { useCreateTransaction } from '@/lib/hooks/use-transactions'
 import { getMruCategoryIds, pushMruCategoryId } from '@/lib/mru-categories'
 import { useQuickAddDraftStore, useUIStore } from '@/lib/store'
@@ -55,6 +56,7 @@ export function QuickAddSheet() {
   const { categories, isLoading: categoriesLoading } = useCategoriesByType(
     draft.type
   )
+  const { data: profile } = useProfile()
   const createMutation = useCreateTransaction()
 
   // Focus amount when sheet opens — delay past Vaul's focus trap so the input
@@ -145,7 +147,7 @@ export function QuickAddSheet() {
 
   const handleOpenChange = (next: boolean) => {
     if (next) {
-      ensureDraftForOpen()
+      ensureDraftForOpen(profile?.default_payment_method)
       setAmountError(undefined)
       setCategoryError(undefined)
     } else {

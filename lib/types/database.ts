@@ -18,6 +18,7 @@ export interface Profile {
   avatar_url: string | null
   base_currency: string
   timezone: string
+  default_payment_method: PaymentMethod | null
   created_at: string
   updated_at: string
 }

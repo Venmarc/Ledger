@@ -3,6 +3,10 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
+import { getAuthedContext } from '@/lib/actions/auth-context'
+import { fail, ok, type ActionResult } from '@/lib/actions/result'
+import { paymentMethodSchema } from '@/lib/validations/transaction'
+import type { Profile } from '@/lib/types/database'
 
 export async function syncUserProfile() {
   const { userId, getToken } = await auth()
@@ -45,4 +49,47 @@ export async function syncUserProfile() {
   }
 
   return profile
+}
+
+export async function getProfile(): Promise<ActionResult<Profile>> {
+  const ctx = await getAuthedContext()
+  if (!ctx.ok) return fail(ctx.error)
+
+  const { data, error } = await ctx.supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', ctx.userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('getProfile:', error)
+    return fail('Could not load profile')
+  }
+  if (!data) return fail('Profile not found')
+
+  return ok(data as Profile)
+}
+
+export async function updateDefaultPaymentMethod(
+  method: string | null
+): Promise<ActionResult<Profile>> {
+  const ctx = await getAuthedContext()
+  if (!ctx.ok) return fail(ctx.error)
+
+  const parsed = paymentMethodSchema.nullable().safeParse(method)
+  if (!parsed.success) return fail('Invalid payment method')
+
+  const { data, error } = await ctx.supabase
+    .from('profiles')
+    .update({ default_payment_method: parsed.data })
+    .eq('id', ctx.userId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('updateDefaultPaymentMethod:', error)
+    return fail('Could not update default payment method')
+  }
+
+  return ok(data as Profile)
 }

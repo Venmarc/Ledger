@@ -254,3 +254,18 @@ Before saving any chunk plan, run this prompt against the drafted plan to surfac
 > Re-read the plan you just wrote as if you are the implementer, not the planner. List every place where you had to make an assumption, every edge case not explicitly covered, every ambiguous term, and every decision you'd have to guess at if you had zero other context. Don't fix anything yet — just list the holes.
 
 Reasoning: plans written for high-class models leave implicit gaps those models fill correctly. When the same plan is handed to a low-class model (Deepseek V4, Mimo 2.5) those gaps get filled with the weaker model's own taste — which is where the bugs live. Surfacing holes explicitly, then pinning them, lets a weak model implement with zero conception space.
+
+---
+
+## 04/08/2026 — Default payment method storage decision (P3-G)
+
+PAGE_SPECS PAGE 12 and `docs/PHASE-3-OVERVIEW.md` both flagged this as TBD: store the "Default payment method" preference in the `profiles` table, or in Zustand/localStorage?
+
+**Decision: `profiles.default_payment_method` (nullable text column, migration `scripts/migrations/20260804_default_payment_method.sql`).**
+
+Reasoning:
+- It's a durable per-user preference, not transient UI/draft state. TRD §4.2 reserves Zustand for UI state (modals, filters, selected range) — a "default" that's supposed to persist and follow the user is a different category.
+- It needs to survive across devices/sessions the same way `base_currency` and `timezone` already do on `profiles` — Zustand's `persist` middleware is per-browser (localStorage), so a phone/desktop split would silently diverge.
+- The spec requires it to pre-fill Quick Add's payment method chip. `lib/store.ts`'s `ensureDraftForOpen` now takes an optional `defaultPaymentMethod` param, applied only when seeding a fresh (non-dirty) draft — `quick-add-sheet.tsx` passes it from `useProfile().data?.default_payment_method`.
+
+Reused the existing `paymentMethodSchema` enum (`lib/validations/transaction.ts`) for both the DB check constraint and server-side validation on update — same five values as `transactions.payment_method` (Cash/Card/Transfer/POS/Other), so no new enum surface.

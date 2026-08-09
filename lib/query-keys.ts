@@ -50,6 +50,10 @@ export const queryKeys = {
       [...queryKeys.recurring.all(), 'detail', id] as const,
   },
 
+  profile: {
+    all: () => [...queryKeys.all, 'profile'] as const,
+  },
+
   analytics: {
     all: () => [...queryKeys.all, 'analytics'] as const,
     incomeExpense: (monthKey: string) =>

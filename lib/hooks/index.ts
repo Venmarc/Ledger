@@ -43,6 +43,8 @@ export {
   useDailyTrend,
 } from './use-analytics'
 
+export { useProfile, useUpdateDefaultPaymentMethod } from './use-profile'
+
 export {
   useRecurringTemplates,
   useDueRecurringTemplates,

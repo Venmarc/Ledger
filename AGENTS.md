@@ -77,6 +77,7 @@ If your changes move away from that goal → stop, flag it, and wait.
 - **Profile sync:** client `<ProfileSync />` in `useEffect` — never `await syncUserProfile()` in a Server Component layout.
 - **Optional record lookups:** use `.maybeSingle()` or direct `.upsert()` — not `.single()` on existence checks.
 - **Timestamps:** UTC in DB; display in `Africa/Lagos`.
+- **Migrations** live in `scripts/migrations/` as hand-written SQL, applied against the live project by Victor (or an agent with explicit go-ahead) — not the Supabase CLI's `supabase/migrations`. Write every migration with `IF NOT EXISTS` / `IF EXISTS` guards so a duplicate run is a no-op, not an error. Before treating a migration as pending or applied, verify against the live DB (`select=*&limit=1` on the affected table via the REST API) rather than trusting docs alone.
 
 ### 1.5 Performance & Tooling
 

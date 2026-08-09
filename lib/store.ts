@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import {
   createEmptyQuickAddDraft,
   DEFAULT_TRANSACTION_FILTERS,
+  type PaymentMethod,
   type QuickAddDraft,
   type TransactionListFilters,
 } from '@/lib/types/database'
@@ -61,7 +62,9 @@ interface QuickAddDraftState {
   markDirty: () => void
   clearDraft: () => void
   /** Call on sheet open (event handler): keep dirty draft or seed fresh today. */
-  ensureDraftForOpen: () => { restored: boolean }
+  ensureDraftForOpen: (defaultPaymentMethod?: PaymentMethod | null) => {
+    restored: boolean
+  }
 }
 
 export const useQuickAddDraftStore = create<QuickAddDraftState>()(
@@ -85,14 +88,17 @@ export const useQuickAddDraftStore = create<QuickAddDraftState>()(
           draft: createEmptyQuickAddDraft(todayInLagos()),
           openedWithDraft: false,
         }),
-      ensureDraftForOpen: () => {
+      ensureDraftForOpen: (defaultPaymentMethod) => {
         const { draft } = get()
         if (draft.isDirty) {
           set({ openedWithDraft: true })
           return { restored: true }
         }
         set({
-          draft: createEmptyQuickAddDraft(todayInLagos()),
+          draft: {
+            ...createEmptyQuickAddDraft(todayInLagos()),
+            payment_method: defaultPaymentMethod ?? null,
+          },
           openedWithDraft: false,
         })
         return { restored: false }
