@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
-    // apple-touch-logo.png — add when the PNG is ready; do not invent a placeholder.
+    apple: "/apple-touch-logo.png",
   },
 };
 
