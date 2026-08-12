@@ -9,6 +9,7 @@ import {
   Landmark,
   Target,
   BarChart3,
+  RefreshCw,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -24,6 +25,7 @@ const navItems = [
   { label: 'Budgets', href: '/budgets', icon: Landmark },
   { label: 'Goals', href: '/goals', icon: Target },
   { label: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { label: 'Recurring', href: '/recurring', icon: RefreshCw },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
@@ -54,14 +56,14 @@ export function Sidebar() {
         willChange: 'width',
       }}
       className={cn(
-        'fixed left-0 top-0 z-30 hidden h-screen flex-col justify-between border-r border-border bg-bg-surface py-5 md:flex',
+        'fixed left-0 top-0 z-30 hidden h-screen flex-col justify-between border-r border-border bg-bg-surface pb-5 md:flex',
         'transition-[width] duration-[var(--duration-normal)] [transition-timing-function:var(--ease-smooth)]'
       )}
     >
       <button
         type="button"
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        className="absolute top-6 -right-3 z-40 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary shadow-sm transition-colors duration-[var(--duration-fast)] hover:bg-bg-subtle hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
+        className="absolute top-1/2 -translate-y-1/2 -right-3 z-[10000] flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary shadow-sm transition-colors duration-[var(--duration-fast)] hover:bg-bg-subtle hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {isCollapsed ? (
@@ -72,9 +74,11 @@ export function Sidebar() {
       </button>
 
       <div className="flex min-h-0 flex-1 flex-col space-y-6 overflow-hidden">
-        {/* Logo: always left-aligned at the icon rail — never centered */}
-        <div className={cn('flex shrink-0 items-center', ICON_INSET, 'pr-3')}>
-          <Logo showText={!isCollapsed} size={36} />
+        {/* Logo band: fixed 64px height matches TopBar's h-16 so the logo's
+            vertical center lines up with the topbar's bottom border across
+            the sidebar/topbar boundary — never centered horizontally. */}
+        <div className={cn('flex h-16 shrink-0 items-center', ICON_INSET, 'pr-3.5')}>
+          <Logo showText={!isCollapsed} size={28} />
         </div>
 
         <nav
@@ -101,7 +105,7 @@ export function Sidebar() {
                     // Always start-aligned — icons never re-center on collapse
                     'flex items-center gap-3 rounded-md py-2.5 text-sm',
                     ICON_INSET,
-                    'pr-3',
+                    'pr-3.5',
                     'transition-[background-color,color] duration-[var(--duration-fast)] [transition-timing-function:var(--ease-smooth)]',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 focus-visible:ring-offset-bg-surface',
                     isActive

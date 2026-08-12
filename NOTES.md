@@ -2,7 +2,7 @@
 
 ## CREATED: 05/07/2026
 
-## LAST UPDATED: 09/08/2026 (Gate 1 landing page remediation — IN PROGRESS, checkpoint below)
+## LAST UPDATED: 12/08/2026 (Recurring nav placement + mobile top-bar refactor shipped for verification)
 
 ---
 
@@ -269,3 +269,71 @@ Reasoning:
 - The spec requires it to pre-fill Quick Add's payment method chip. `lib/store.ts`'s `ensureDraftForOpen` now takes an optional `defaultPaymentMethod` param, applied only when seeding a fresh (non-dirty) draft — `quick-add-sheet.tsx` passes it from `useProfile().data?.default_payment_method`.
 
 Reused the existing `paymentMethodSchema` enum (`lib/validations/transaction.ts`) for both the DB check constraint and server-side validation on update — same five values as `transactions.payment_method` (Cash/Card/Transfer/POS/Other), so no new enum surface.
+
+---
+
+## 12/08/2026 — Recurring nav placement + mobile top-bar refactor (P3 gate, shipped for verification)
+
+**Problem:** `/recurring` existed but was unreachable through normal navigation. Not in the desktop
+sidebar (`components/sidebar.tsx` had 6 items, missing Recurring), not in mobile bottom-nav
+(`components/bottom-nav.tsx`), and not in the Clerk avatar dropdown. Only reachable via direct URL or
+the `RecurringDueBanner` — which only renders when templates are already *due*. New users with zero
+templates hit a discoverability deadlock: no banner → no link → no way to set up the first recurring
+template without knowing the URL. `APP_FLOW.md §3.1` had always specified the desktop sidebar should
+include Recurring; the sidebar was simply a bug.
+
+**Tier reframe (from Victor's brainstorming docs):** Recurring is *config-tier*, not primary-nav
+material on mobile — the same usage shape as Categories: set up once, then live via the due-banner
+nudge. Its primary-vs-sub-page status is now **device-conditional**: it's sidebar-primary on desktop
+and Settings-sub-page on mobile. Showing it at two different weights on the same screen would
+contradict itself, so the Settings row is mobile-only and the sidebar item is desktop-only.
+
+**Full design spec:** `docs/superpowers/specs/2026-08-12-recurring-nav-design.md`.
+**Source brainstorming docs (Victor):** `~/Recurring_Page_Brainstorming.md`,
+`~/Recurring_Fix_Continued.md`.
+
+**Changes shipped:**
+1. `components/sidebar.tsx` — added `RefreshCw` import and a `Recurring` nav item between Analytics
+   and Settings (canonical APP_FLOW §1 route order). Now 7 items desktop.
+2. `app/(app)/settings/page.tsx` — new **mobile-only** Recurring row (`md:hidden`) inserted after
+   the Categories row, identical card treatment, `RefreshCw` icon. Settings order becomes
+   Profile → Categories → Recurring → Preferences → Currency → Account. Subtitle copy updated to
+   "Profile, categories, recurring, and preferences. More options in later phases."
+3. `components/top-bar.tsx` — three coordinated changes:
+   - New mobile-only Settings icon button (`<Link href="/settings">`, `md:hidden`) inserted between
+     `ThemeToggle` and `UserButton`. Cluster now: Toggle → Settings → Avatar. Matches the
+     `ThemeToggle` button style (44px mobile). Borrowed the `TransitionRow`-style active-stripe look
+     implicitly via the existing Toggle style. Desktop unchanged (Settings lives in the sidebar).
+   - Deleted the mobile-only `Settings` link from `UserButton.MenuItems` so the avatar dropdown is
+     pure identity (Clerk defaults: manage account / sign out). Removes the AGENTS.md §1.3
+     "empty MenuItems on desktop" hazard entirely (no MenuItems rendered at all).
+   - Back-nav "fix-now": `isRoot` no longer the sole gate. Added `isDesktopPrimary` =
+     `!isMobile && pathname === '/recurring'` so desktop `/recurring` shows the title (like the
+     other sidebar-primary pages) instead of a back chevron. Mobile keeps the back chevron since
+     `/recurring` is reached via Settings there. **Full route-classification pass deferred — see
+     backlog item below.**
+4. `components/dashboard/month-summary-card.tsx` — wrapped the "previous" word in
+   `<span className="hidden md:inline">` so mobile shows just the ▲/▼ arrow (the word crowded the
+   metric at 375px). Desktop unchanged.
+5. `NOTES.md` — this entry; reference to the brainstorming docs preserved.
+
+**Verification:** `npx tsc --noEmit` clean. `npm run lint` 0 errors, 4 pre-existing warnings (none
+in touched files; the same 4 noted in the 29/07 entry). `npm run build` succeeds; all 13 routes
+compile; `/` static.
+
+**Out of scope — backlog (do NOT build now):**
+- **Onboarding / first-run discoverability nudge** for Recurring — a surface that lights up when a
+  user has zero recurring templates so they learn the feature exists without the due-banner having
+  to be the only path. Logged here, not built this phase per phase-gate discipline. Touch when
+  Phase 3 gate closes and the onboarding pass is scoped.
+- **TopBar back-nav full rework** — replace the single boolean with breakpoint-aware route
+  classification (two lists: primary vs sub-page per breakpoint) plus a session nav counter + safe
+  `router.back()` fallback to per-page floors (Categories → `/settings`, Goal Detail → `/goals`,
+  mobile Recurring → `/settings`, etc.). Today's `router.back()` can walk a deep-link visitor out
+  of the app; the `isDesktopPrimary` guard above is a one-route patch, not a fix for the underlying
+  class problem. Tracked here, not built this phase.
+
+**Decision trail (from `~/Recurring_Fix_Continued.md` Q&A):**
+- Q1 desktop redundancy → **mobile-only Settings row** (sidebar covers desktop).
+- Q2 top-bar refactor scope → **ship together** with the placement.
+- Q3 onboarding → **defer to backlog** (this entry).

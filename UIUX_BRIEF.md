@@ -245,7 +245,7 @@ All interactive elements minimum 44×44px on mobile. Non-negotiable for accessib
  
 ### 5.1 Structure
  
-All Ledger logos are stored as SVG with no background fill. The logo container has no border, no outline, no shadow of its own — the glow effect is applied via CSS `filter: drop-shadow()` or `box-shadow` on the container.
+All Ledger logos are stored as SVG with no background fill. The logo container has no border, no outline — the glow effect is applied via CSS `box-shadow` **on the container itself**, not on the icon. The container and icon behave as one unit: the container glows and lifts on hover/focus; the icon inside never glows on its own.
  
 ### 5.2 Glow System
  
@@ -263,24 +263,24 @@ The glow is never purely white or purely black. It is always tinted with the acc
 ### 5.3 Solo Logo — Resting State
  
 ```css
-.logo-solo {
-  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.35));
-  transition: filter 200ms ease, transform 200ms ease;
+.logo-container {
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.35);
+  transition: box-shadow 200ms ease, transform 200ms ease;
 }
 ```
  
-Subtle. Visible but not demanding attention.
+Subtle. Visible but not demanding attention. The glow sits on the container box, not the icon glyph.
  
 ### 5.4 Solo Logo — Hover State
  
 ```css
-.logo-solo:hover {
-  filter: drop-shadow(0 0 14px rgba(249, 115, 22, 0.6));
+.logo-lockup:hover .logo-container {
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.6);
   transform: translateY(-2px);
 }
 ```
  
-More noticeable glow. Lifts 2px. Not brighter in a glaring way — wider spread, higher opacity. The difference between resting and hover should be readable, not dramatic.
+More noticeable glow. Container lifts 2px as one unit with the icon inside it. Not brighter in a glaring way — wider spread, higher opacity. The difference between resting and hover should be readable, not dramatic.
  
 ### 5.5 Logo + Text (Desktop Only)
  
@@ -299,21 +299,21 @@ Logo and text sit in a shared invisible container. The interaction area spans fr
   transform: translateY(-2px);
 }
  
-.logo-lockup:hover .logo-icon {
-  filter: drop-shadow(0 0 14px rgba(249, 115, 22, 0.6));
+.logo-lockup:hover .logo-container {
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.6);
 }
  
 .logo-lockup:hover .logo-text {
   /* Text lifts with the container. No glow on text. */
 }
  
-.logo-icon {
-  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.35));
-  transition: filter 200ms ease;
+.logo-container {
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.35);
+  transition: box-shadow 200ms ease;
 }
 ```
  
-On hover: the entire lockup lifts. Only the icon glows. Text rides along.
+On hover: the entire lockup lifts. Only the container glows (the icon inside it never glows on its own). Text rides along.
  
 ### 5.6 Mobile Behavior
  
@@ -326,7 +326,7 @@ Logo is always solo on mobile. The lockup (logo + text) is never used in the mob
 | `#0A0A0A` / `#141414` (dark) | `#000000` or `#111111` |
 | `#FAFAFA` / `#FFFFFF` (light) | `#FFFFFF` |
  
-The container is a plain rectangle — no border, no visible background unless you are looking for it. Its purpose is to give the SVG a defined rendering surface, not to create a visual element.
+The container is a plain rectangle with a **visible** themed background — no border, no outline, no shadow of its own (the glow lives on the icon, not the container). It sits with fixed padding around the glyph (9px in the current implementation) so the container reads as a distinct surface the icon sits inside, not merely a hit-box that happens to match the icon's own bounds.
  
 ### 5.8 Visibility in Any Theme
  

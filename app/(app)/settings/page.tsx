@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ChevronRight, Tags } from 'lucide-react'
+import { ChevronRight, RefreshCw, Tags } from 'lucide-react'
 import { AccountSection } from '@/components/settings/account-section'
 import { CurrencyWidget } from '@/components/settings/currency-widget'
 import { PreferencesSection } from '@/components/settings/preferences-section'
@@ -15,7 +15,7 @@ export default function SettingsPage() {
           Settings
         </h1>
         <p className="mt-1 text-sm text-text-secondary">
-          Profile, categories, and preferences. More options in later phases.
+          Profile, categories, recurring, and preferences. More options in later phases.
         </p>
       </div>
 
@@ -33,6 +33,21 @@ export default function SettingsPage() {
             <p className="font-medium text-text-primary">Categories</p>
             <p className="text-sm text-text-secondary">
               Add, rename, or archive expense and income categories
+            </p>
+          </div>
+          <ChevronRight className="h-5 w-5 shrink-0 text-text-tertiary" />
+        </Link>
+        <Link
+          href="/recurring"
+          className="md:hidden flex min-h-14 items-center gap-3 rounded-xl border border-border bg-bg-surface px-4 py-3 transition-colors hover:bg-bg-elevated hover:border-border-strong"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-azure-muted text-azure">
+            <RefreshCw className="h-5 w-5" aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-medium text-text-primary">Recurring</p>
+            <p className="text-sm text-text-secondary">
+              Manage scheduled expense and income templates
             </p>
           </div>
           <ChevronRight className="h-5 w-5 shrink-0 text-text-tertiary" />

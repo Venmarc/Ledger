@@ -4,6 +4,7 @@ import React from 'react'
 import { UserButton } from '@clerk/nextjs'
 import { ThemeToggle } from './theme-toggle'
 import { Logo } from './logo'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ChevronLeft, Settings } from 'lucide-react'
 
@@ -25,6 +26,11 @@ export function TopBar() {
 
   // Determine if we are at the main dashboard root
   const isRoot = pathname === '/dashboard' || pathname === '/'
+  // /recurring is sidebar-primary on desktop, so it should not show a back
+  // chevron there. On mobile it is reached via Settings (sub-page) and keeps
+  // the back chevron. Full route-classification pass is deferred (see NOTES).
+  const isDesktopPrimary = !isMobile && pathname === '/recurring'
+  const showBack = !isRoot && !isDesktopPrimary
 
   const segments = pathname.split('/').filter(Boolean)
   const isGoalDetail = segments.length === 2 && segments[0] === 'goals'
@@ -50,7 +56,7 @@ export function TopBar() {
     <header className="flex h-16 items-center justify-between px-4 md:px-8 border-b border-border bg-bg-surface/80 backdrop-blur-md sticky top-0 z-30">
       {/* Left side: Back Button or Logo (Mobile) / Page Title (Desktop) */}
       <div className="flex items-center gap-3">
-        {!isRoot ? (
+        {showBack ? (
           <button
             onClick={() => router.back()}
             className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-bg-subtle text-text-secondary hover:text-text-primary active:scale-[0.95] transition-all duration-150 cursor-pointer border border-border"
@@ -70,20 +76,19 @@ export function TopBar() {
         </h1>
       </div>
 
-      {/* Right side cluster: Toggle sits closest to center, UserButton on far right */}
+      {/* Right side cluster: Toggle sits closest to center, Settings icon
+          (mobile-only) and UserButton on far right. Desktop has Settings in
+          the sidebar so no top-bar icon there. */}
       <div className="flex items-center gap-4">
         <ThemeToggle />
-        <UserButton>
-          <UserButton.MenuItems>
-            {isMobile && (
-              <UserButton.Link
-                label="Settings"
-                labelIcon={<Settings className="w-4 h-4" />}
-                href="/settings"
-              />
-            )}
-          </UserButton.MenuItems>
-        </UserButton>
+        <Link
+          href="/settings"
+          aria-label="Settings"
+          className="md:hidden flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-transparent text-text-secondary transition-all duration-150 hover:bg-bg-subtle hover:text-text-primary active:scale-[0.92]"
+        >
+          <Settings className="h-5 w-5" />
+        </Link>
+        <UserButton />
       </div>
     </header>
   )

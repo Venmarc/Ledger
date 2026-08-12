@@ -50,7 +50,7 @@ export function MonthSummaryCard({ monthKey }: Props) {
   const balanceIndicator: ReactNode =
     carriedIn === 0 ? null : (
       <span className={carriedIn > 0 ? 'text-green' : 'text-red'}>
-        {carriedIn > 0 ? '▲' : '▼'} previous
+        {carriedIn > 0 ? '▲' : '▼'}<span className="hidden md:inline">&nbsp;previous</span>
       </span>
     )
 

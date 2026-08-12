@@ -66,7 +66,7 @@ If your changes move away from that goal → stop, flag it, and wait.
 - **Dedicated auth pages** at `/sign-in` and `/sign-up` — not Clerk modals on other routes.
 - **Auth layout:** render the Clerk card cleanly; keep **"Back to home"** footer below the card, deferred until client mount (fade in with the card).
 - **Wrap `getToken({ template: 'supabase' })` in try/catch** — missing JWT template must not crash profile sync.
-- **Mobile-only Settings link** inside `<UserButton.MenuItems>` when viewport `< 768px`; never render an empty `MenuItems` container on desktop.
+- **Mobile-only Settings entry point:** a `<Link href="/settings">` icon button in `components/top-bar.tsx` rendered only at `< 768px` (`md:hidden`). The `<UserButton>` avatar dropdown is pure identity (Clerk defaults: manage account, sign out) — do **not** add a Settings link back into `UserButton.MenuItems`. See `components/top-bar.tsx` and `docs/superpowers/specs/2026-08-12-recurring-nav-design.md`.
 - **No `middleware.ts`.** Use `proxy.ts` only (Next.js 16).
 
 ### 1.4 Data & Supabase
@@ -81,7 +81,7 @@ If your changes move away from that goal → stop, flag it, and wait.
 
 ### 1.5 Performance & Tooling
 
-- **`next dev --webpack`** for local dev (Turbopack unstable on Victor's machine).
+- **`next dev`** for local dev (Turbopack, Next 16.3+). Victor migrated off `--webpack` on 2026-08-12 — Turbopack is now stable on his machine and the `--webpack` flag is gone from `package.json`. Do **not** re-add `--webpack`.
 - **`.superpowers/`** is agent workspace — in `.gitignore`, not part of the app.
 
 ### 1.6 Scope
@@ -110,7 +110,7 @@ If your changes move away from that goal → stop, flag it, and wait.
 | Database | Supabase (Postgres + RLS) |
 | Styling | Tailwind CSS + shadcn/ui (Radix / Nova preset) |
 | State | Zustand (UI) + TanStack Query (server cache) |
-| Local dev | `next dev --webpack` |
+| Local dev | `next dev` (Turbopack, Next 16.3+ — migrated off `--webpack` 2026-08-12) |
 | Middleware | `proxy.ts` only — never `middleware.ts` |
 | Profile sync | Client `<ProfileSync />`, not blocking server layout |
 | Currency | NGN only |

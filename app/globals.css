@@ -99,9 +99,9 @@
   --color-focus-ring: #F97316;
 
   /* Logo glow — orange-tinted (UIUX_BRIEF §5 / logo_behavior.md). Hex only here. */
-  --logo-container-bg: #111111;
-  --logo-glow-rest: drop-shadow(0 0 8px rgba(249, 115, 22, 0.35));
-  --logo-glow-hover: drop-shadow(0 0 14px rgba(249, 115, 22, 0.6));
+  --logo-container-bg: #111212;
+  --logo-glow-rest: 0 0 6px #bf550a;
+  --logo-glow-hover: 0 0 12px #733408;
 
   /*
    * Hero film (landing): RGB triplet + opacity.
@@ -168,8 +168,8 @@
   --color-neutral-border: #D6D3D1;
 
   --logo-container-bg: #ffffff;
-  --logo-glow-rest: drop-shadow(0 0 6px rgba(234, 108, 10, 0.5));
-  --logo-glow-hover: drop-shadow(0 0 12px rgba(234, 108, 10, 0.65));
+  --logo-glow-rest: 0 0 6px #FDF3C7;
+  --logo-glow-hover: 0 0 12px #FDF3C7;
 
   /* Light mode: heavier pale veil so pastel art never fights dark type */
   --hero-film-rgb: 250 250 250;
@@ -426,22 +426,23 @@ body::-webkit-scrollbar-thumb:hover,
   background-color: var(--logo-container-bg);
   border: none;
   outline: none;
-  box-shadow: none;
-  border-radius: 0;
+  border-radius: var(--radius-md);
   line-height: 0;
+  padding: 8px;
+  box-sizing: content-box;
+  box-shadow: var(--logo-glow-rest);
+  transition: box-shadow 200ms ease, transform 200ms ease;
 }
 
 .logo-icon {
   display: block;
-  filter: var(--logo-glow-rest);
-  transition: filter 200ms ease, transform 200ms ease;
   color: var(--color-text-primary);
 }
 
-/* Mobile / solo default: icon lifts + stronger glow (wordmark is hidden < md) */
-.logo-lockup:hover .logo-icon,
-.logo-lockup:focus-visible .logo-icon {
-  filter: var(--logo-glow-hover);
+/* Mobile / solo default: container glows + lifts as one unit with the icon (wordmark is hidden < md) */
+.logo-lockup:hover .logo-container,
+.logo-lockup:focus-visible .logo-container {
+  box-shadow: var(--logo-glow-hover);
   transform: translateY(-2px);
 }
 
@@ -450,30 +451,30 @@ body::-webkit-scrollbar-thumb:hover,
   filter: none;
 }
 
-/* Desktop lockup: whole group lifts; only icon glow intensifies (no double lift) */
+/* Desktop lockup: whole group lifts; only the container glow intensifies (no double lift) */
 @media (min-width: 768px) {
   .logo-lockup:has(.logo-text):hover,
   .logo-lockup:has(.logo-text):focus-visible {
     transform: translateY(-2px);
   }
 
-  .logo-lockup:has(.logo-text):hover .logo-icon,
-  .logo-lockup:has(.logo-text):focus-visible .logo-icon {
-    filter: var(--logo-glow-hover);
+  .logo-lockup:has(.logo-text):hover .logo-container,
+  .logo-lockup:has(.logo-text):focus-visible .logo-container {
+    box-shadow: var(--logo-glow-hover);
     transform: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .logo-lockup,
-  .logo-icon {
+  .logo-container {
     transition: none;
   }
 
   .logo-lockup:hover,
   .logo-lockup:focus-visible,
-  .logo-lockup:hover .logo-icon,
-  .logo-lockup:focus-visible .logo-icon {
+  .logo-lockup:hover .logo-container,
+  .logo-lockup:focus-visible .logo-container {
     transform: none;
   }
 }
