@@ -2,7 +2,7 @@
 
 ## CREATED: 05/07/2026
 
-## LAST UPDATED: 12/08/2026 (Recurring nav placement + mobile top-bar refactor shipped for verification)
+## LAST UPDATED: 14/08/2026 (Page titles "Ledger — Page" on all routes)
 
 ---
 
@@ -337,3 +337,69 @@ compile; `/` static.
 - Q1 desktop redundancy → **mobile-only Settings row** (sidebar covers desktop).
 - Q2 top-bar refactor scope → **ship together** with the placement.
 - Q3 onboarding → **defer to backlog** (this entry).
+
+---
+
+## 12/08/2026 (later, same day) — Chevron fix shipped + Clerk data-bleed logged (addendum)
+
+Two observations raised after the entry above shipped; both documented here so a fresh session can
+pick them up from `NOTES.md`.
+
+### Chevron vertical-center (shipped in commit `574c7bb`)
+- **Source doc:** `~/Sidebar_Chevron_Placement.md` (full reasoning).
+- **Problem:** the sidebar collapse chevron sat `top-6 -right-3` — pinned near the logo and, on
+  collapsed-rail + sub-page, in the same top band as TopBar's back-chevron button. Two circular
+  chevrons near the top-left = visual collision.
+- **Fix shipped:** `components/sidebar.tsx` — `top-6` → `top-1/2 -translate-y-1/2`, `z-40` →
+  `z-[10000]`. No new interaction model (rejected hover-reveal and click-anywhere-to-expand
+  alternatives from that doc — consistent with the rest of the app's always-visible controls).
+- **Worth a look at 375px/1280px:** at vertical-center the chevron can sit level with whichever nav
+  icon is mid-list (Goals/Analytics) — it floats outside the rail at `-right-3` so no overlap, but
+  confirm once in the browser.
+
+### Clerk data-bleed bug (NEW — not built, backlog)
+- **Observation:** sign out of one account (e.g. Krypto), sign into another (e.g. Spidey) in the
+  same browser — the dashboard briefly shows the previous account's data before swapping to the new
+  user's data. Reached via direct observation on 12/08/2026.
+- **Why it's deferred:** Victor's direction is to do only what's required to close the Phase 3 gate
+  now, then address all remaining items before Phase 4 is declared started. So this is **logged,
+  not built** — do NOT fix during the gate.
+- **Likely suspects to start the diagnosis (unverified):** TanStack Query cache not being cleared on
+  `user_id` change (stale queries keyed without user scope, or `gcTime`/`staleTime` surviving the
+  sign-in swap), plus Clerk `useUser()`/profile sync hydration racing the previous session's cached
+  keys. Root cause not yet established — diagnose before fixing (AGENTS.md §1.8).
+- **When to touch:** immediately after Phase 3 gate closes, before Phase 4 is declared started.
+
+---
+
+## 14/08/2026 — Page titles: "Ledger — Page" on every route (Victor request)
+
+Every tab previously showed the full landing title (`Ledger — Personal Finance Tracker for Nigerian
+Professionals`) on **all** pages. Fixed with the Next.js title template:
+
+- `app/layout.tsx`: single `title` string → `title: { default: "Ledger — …Professionals", template: "Ledger — %s" }`.
+  Landing `/` keeps the long text (inherits `default`); every child route that sets its own title
+  renders `Ledger — <page>`.
+- **Format (final):** product identity first — "Ledger", em dash, then the page (Stripe/Linear/Figma
+  convention). No pipes ever. Same day the template first landed as "Ledger | %s", got inverted to
+  "%s — Ledger", then Victor reversed it to product-first "Ledger — %s". Per-page `metadata.title`
+  strings are bare page names only; the template supplies "Ledger — ".
+- Per-page titles added (`export const metadata: Metadata = { title }`):
+  Dashboard, Analytics, Transactions, Budgets, Goals, Recurring, Settings, Categories,
+  Sign in, Sign up. Detail pages (`/transactions/[id]`, `/goals/[id]`) reuse Transactions/Goals.
+- **Metadata is Server-Component-only in Next 16**, so pages that were `'use client'` became thin
+  server pages (behavior unchanged — all interactive content lives in `components/` client children):
+  - `transactions|budgets|goals|recurring|settings|settings/categories/page.tsx` — removed `'use client'`, added metadata.
+  - `app/(app)/dashboard/page.tsx` — inline client code moved to new
+    `components/dashboard/dashboard-view.tsx` (`DashboardPage` → `DashboardView`); page is now a
+    server wrapper + `title: "Dashboard"`.
+  - `transactions/[id]/page.tsx` + `goals/[id]/page.tsx` — server pages, `const { id } = await params`
+    (was `use(params)`), same child components/props.
+- `analytics/page.tsx`, `sign-in`, `sign-up` were already server components — metadata added only.
+
+**Verification:** `npx tsc --noEmit` clean; `npm run lint` 0 errors (same 4 pre-existing warnings,
+untouched); `npm run build` succeeds (13/13 routes, `/` ○ Static). Curled the production server:
+`/` → long title, `/sign-in` → "Ledger — Sign in", `/sign-up` → "Ledger — Sign up". App routes
+(`/dashboard`, etc.) 307-redirect to `/sign-in` when unauthenticated, so their titles render only
+after sign-in — mechanism identical to sign-in/sign-up (proven), plus per-page strings are
+type-checked and compiled. Confirm visually in a logged-in browser tab.

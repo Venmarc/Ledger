@@ -1,13 +1,15 @@
-'use client'
-
-import { use } from 'react'
+import type { Metadata } from 'next'
 import { GoalDetailView } from '@/components/goals/goal-detail-view'
 
-export default function GoalDetailPage({
+export const metadata: Metadata = {
+  title: 'Goals',
+}
+
+export default async function GoalDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = use(params)
+  const { id } = await params
   return <GoalDetailView id={id} />
 }

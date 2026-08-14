@@ -1,11 +1,14 @@
-'use client'
-
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ChevronRight, RefreshCw, Tags } from 'lucide-react'
 import { AccountSection } from '@/components/settings/account-section'
 import { CurrencyWidget } from '@/components/settings/currency-widget'
 import { PreferencesSection } from '@/components/settings/preferences-section'
 import { ProfileSection } from '@/components/settings/profile-section'
+
+export const metadata: Metadata = {
+  title: 'Settings',
+}
 
 export default function SettingsPage() {
   return (

@@ -21,7 +21,10 @@ const SITE_URL = "https://ledgerix.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Ledger — Personal Finance Tracker for Nigerian Professionals",
+  title: {
+    default: "Ledger — Personal Finance Tracker for Nigerian Professionals",
+    template: "Ledger — %s",
+  },
   description:
     "An open-source personal finance tracker built for NGN-first expense tracking, budgeting, and savings goals. Built with Next.js, Supabase, and Clerk.",
   alternates: {

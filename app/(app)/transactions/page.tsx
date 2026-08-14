@@ -1,10 +1,13 @@
-'use client'
-
+import type { Metadata } from 'next'
 import { TransactionFilterBar } from '@/components/transactions/filter-bar'
 import {
   TransactionList,
   TransactionListHeader,
 } from '@/components/transactions/transaction-list'
+
+export const metadata: Metadata = {
+  title: 'Transactions',
+}
 
 export default function TransactionsPage() {
   return (
