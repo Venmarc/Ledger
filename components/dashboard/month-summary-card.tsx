@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import { useMonthSummary } from '@/lib/hooks/use-transactions'
 import { MonthSummarySkeleton } from '@/components/transactions/skeletons'
-import { cn, formatNGN } from '@/lib/utils'
+import { cn, formatNGN, formatNGNCompact } from '@/lib/utils'
 
 type Props = {
   monthKey: string
@@ -62,17 +62,17 @@ export function MonthSummaryCard({ monthKey }: Props) {
       <div className="grid grid-cols-3 gap-3">
         <Metric
           label="Income"
-          value={formatNGN(income)}
+          value={income}
           className="text-green"
         />
         <Metric
           label="Expenses"
-          value={formatNGN(expense)}
+          value={expense}
           className="text-amber"
         />
         <Metric
           label="Balance"
-          value={formatNGN(balance)}
+          value={balance}
           className={balance >= 0 ? 'text-green' : 'text-red'}
           indicator={balanceIndicator}
         />
@@ -118,10 +118,13 @@ function Metric({
   indicator,
 }: {
   label: string
-  value: string
+  value: number
   className?: string
   indicator?: ReactNode
 }) {
+  const exactValue = formatNGN(value)
+  const compactValue = value === 0 ? exactValue : formatNGNCompact(value)
+
   return (
     <div className="min-w-0">
       <p className="flex items-center gap-1 text-xs font-medium text-text-tertiary">
@@ -134,7 +137,13 @@ function Metric({
           className
         )}
       >
-        {value}
+        <span className="sr-only">{exactValue}</span>
+        <span aria-hidden="true" className="md:hidden">
+          {compactValue}
+        </span>
+        <span aria-hidden="true" className="hidden md:inline">
+          {exactValue}
+        </span>
       </p>
     </div>
   )
