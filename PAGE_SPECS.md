@@ -41,7 +41,7 @@ Portfolio front door. Communicates what Ledger is, why it was built, and what it
 <meta property="og:title" content="Ledger" />
 <meta property="og:description" content="Track every ₦. Kill bad spending. Build financial clarity." />
 <meta property="og:image" content="/og-image.png" />
-<link rel="canonical" href="https://ledger-demo.vercel.app" />
+<link rel="canonical" href="https://ledgerix.vercel.app" />
 ```
  
 Structured enough that an LLM given the URL understands: what it is, who built it, what stack it uses.

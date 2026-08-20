@@ -1,7 +1,7 @@
 # PHASES.md — Implementation Roadmap
 **Project:** Ledger
-**Last Updated:** 21/07/2026
-**Status:** Phase 1 **gate passed** (Victor, 21/07/2026). Phase 2 **gate passed** (Victor, 28/07/2026). Ready for Phase 3 (Analytics, Recurring & Completion). Multi-select filter enhancement noted in NOTES.md (backlog, not Phase 2 scope).
+**Last Updated:** 19/08/2026
+**Status:** Phase 1 **gate passed** (Victor, 21/07/2026). Phase 2 **gate passed** (Victor, 28/07/2026). **Phase 3 gate passed** (Victor, 19/08/2026 — items 1–9 confirmed; item 10 deferred to Phase 4 by Victor). Phase 4 unblocked.
  
 **References:** PRD.md · TRD.md · SCHEMA.md · APP_FLOW.md · PAGE_SPECS.md · UI/UX_BRIEF.md · NOTES.md
  
@@ -285,16 +285,16 @@ The app becomes a complete tool. Analytics turns your data into insight. Recurri
 - All protected routes work in production (Clerk redirect URLs configured for production domain)
 - RLS confirmed working in production (not just local)
 ### Phase 3 Gate — All Must Pass
-- [ ] Every route in APP_FLOW.md §1 exists and renders without crashing.
-- [ ] Analytics page shows real data from your logged transactions. Charts are correct.
-- [ ] Create a recurring template for your data bundle or transport. Confirm it when due. Transaction appears in list with `recurring_id` set.
-- [ ] Currency widget converts ₦50,000 to USD/GBP/EUR. API failure shows fallback message gracefully.
-- [ ] Landing page loads on mobile. Both CTAs work. Meta tags present in page source.
+- [x] Every route in APP_FLOW.md §1 exists and renders without crashing. *(Victor, 19/08/2026)*
+- [x] Analytics page shows real data from your logged transactions. Charts are correct. *(Victor, 19/08/2026)*
+- [x] Create a recurring template for your data bundle or transport. Confirm it when due. Transaction appears in list with `recurring_id` set. *(Victor, 19/08/2026)*
+- [x] Currency widget converts ₦50,000 to USD/GBP/EUR. API failure shows fallback message gracefully. *(Victor, 19/08/2026)*
+- [x] Landing page loads on mobile. Both CTAs work. Meta tags present in page source. *(Victor, 19/08/2026)*
 - [x] App is live on Vercel. Sign up via production URL. Log a transaction. Confirm it appears.
-- [ ] Share the production URL. It loads without a 500 error.
-- [ ] You have at least 30 real transactions logged across at least 3 categories.
-- [ ] `npx tsc --noEmit` passes on production branch. Zero console errors in production.
-- [ ] A hiring manager could open the live demo right now and understand what it is within 60 seconds.
+- [x] Share the production URL. It loads without a 500 error. *(Victor, 19/08/2026)*
+- [x] You have at least 30 real transactions logged across at least 3 categories. *(Victor, 19/08/2026: 50+ actual)*
+- [x] `npx tsc --noEmit` passes on production branch. Zero console errors in production. *(Victor's pre-push workflow + prod browser check, 19/08/2026)*
+- [ ] A hiring manager could open the live demo right now and understand what it is within 60 seconds. **Deferred to Phase 4 per Victor 19/08/2026.**
 ---
  
 ## Phase 4 — Polish, PWA & Export
@@ -342,6 +342,7 @@ All doc changes are logged here. Most recent first.
 | Date | Document | Change |
 |---|---|---|
 | 31/07/2026 | PHASES.md, docs/PHASE-3-OVERVIEW.md, lib/actions/analytics.ts, lib/hooks/use-analytics.ts, components/analytics/skeletons.tsx, components/analytics/*.tsx (new), app/(app)/analytics/page.tsx | Closed P3-B (Analytics UI): built `/analytics` page per PAGE_SPECS §10 — six independently-loading sections, shared `SectionShell`/`EmptyState`/`ErrorState`/`ChartTooltip` primitives. `getMonthIncomeExpense` now returns transaction `count`; `getMoneyLeaks` returns `null` (no budgets, hide) vs `[]` (budgets, no leaks, show green state). Fixed all applicable holes from `docs/P3-B-HOLES.md`: per-section grid className (no empty cells), zero-delta copy branch, truncating Y-axis tick, stale-flash guard on sections that can hide, Recharts tooltip typing. tsc/lint/build pass. |
+| 19/08/2026 | AGENTS.md, NOTES.md | Webpack decision reversal: `next dev --webpack` is now policy (reverted from Turbopack on 2026-08-19 — Turbopack still slow on Victor's machine; production build keeps Turbopack). `AGENTS.md:84,113` updated to "Do not remove `--webpack`". `package.json` dirty change from earlier session is now policy-aligned. `TRD.md` already correct. P3-G migration `20260804_default_payment_method.sql` applied via `supabase db query --linked`; column + CHECK constraint verified. **Phase 3 gate closed** by Victor: items 1–9 confirmed (tsc clean per pre-push workflow, zero console errors in prod browser); item 10 (hiring-manager 60s gut check) explicitly deferred to Phase 4. Phase 4 unblocked. Landing-page screenshot inventory: 13 PNGs in `~/Downloads/Ledger-sc/`, only 1 mobile (Dashboard), ~6 missing desktop pages, OG-image still absent. Mobile screenshot reshoot (13 routes × 2 themes = 26 PNGs) requested by Victor for pre-Phase-4 polish — auth decision pending.
 | 30/07/2026 | PHASES.md, docs/PHASE-3-OVERVIEW.md, lib/types/database.ts, lib/query-keys.ts, lib/actions/analytics.ts, lib/analytics.ts, lib/hooks/use-analytics.ts, lib/hooks/index.ts, components/analytics/skeletons.tsx | Closed P3-A (Analytics Foundations): removed aggregate `getSpendingAnalytics` action + `SpendingAnalytics` type + `useSpendingAnalytics` hook in favor of 5 per-section hooks (useMonthIncomeExpense / useCategoryBreakdown / useMonthComparison / useMoneyLeaks / useDailyTrend) with matching `analytics.*` query sub-keys; tokenized `CHART_COLORS` to UIUX_BRIEF §9 resolved-hex literals (Recharts SVG `fill` does not resolve `var()` reliably); analytics skeletons adopt budgets' `Bone` helper + `aria-busy`/`aria-label`; JSDoc on `percentOfTotal` documents 0..1 ratio. tsc/lint/build all pass. |
 | 28/07/2026 | PHASES.md, components/budgets/budget-card.tsx, components/transactions/transaction-row.tsx, lib/utils.ts, lib/progress.ts, lib/dates.ts, components/dashboard/budget-health.tsx, components/budgets/skeletons.tsx | Closed Phase 2 implementation: dashboard budget mini-card content layout (compact NGN K/M bands, status-colored remaining text mirroring bar bands, limit-under-label cluster); transaction-row date slot anchored bottom-right of line 2 with `<time datetime>` + `aria-label` long form and tabular-nums; /budgets list rows revert to kobo per claude_review.md "Not in scope". |
 | 25/07/2026 | PHASES.md, PHASE-2-OVERVIEW.md, budget-card.tsx, globals.css | Closed Phase 2 deliverables: applied category icons migration SQL, fixed PostgREST SELECT query strings in budget/transaction actions, resolved dark mode neutral contrast token (#A8A29E), centered month dropdown animation, and fixed BudgetCard responsive flex layout for 375px screens. |

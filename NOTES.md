@@ -2,7 +2,7 @@
 
 ## CREATED: 05/07/2026
 
-## LAST UPDATED: 14/08/2026 (Page titles "Ledger — Page" on all routes)
+## LAST UPDATED: 19/08/2026 (Phase 3 gate closed; webpack reverted; default payment method migration applied; landing-page screenshots inventoried)
 
 ---
 
@@ -400,6 +400,160 @@ Professionals`) on **all** pages. Fixed with the Next.js title template:
 **Verification:** `npx tsc --noEmit` clean; `npm run lint` 0 errors (same 4 pre-existing warnings,
 untouched); `npm run build` succeeds (13/13 routes, `/` ○ Static). Curled the production server:
 `/` → long title, `/sign-in` → "Ledger — Sign in", `/sign-up` → "Ledger — Sign up". App routes
-(`/dashboard`, etc.) 307-redirect to `/sign-in` when unauthenticated, so their titles render only
 after sign-in — mechanism identical to sign-in/sign-up (proven), plus per-page strings are
 type-checked and compiled. Confirm visually in a logged-in browser tab.
+
+---
+
+## 19/08/2026 — Webpack reverted, default payment method migration applied, Phase 3 gate audit
+
+### Webpack decision reversal
+
+The 12/08 migration to Turbopack-only (`next dev`) is **reversed**. Next 16.3 Turbopack is
+technically stable but still produces slow compile times on Victor's machine; `npm run dev` is
+back to `next dev --webpack`. Production build (`next build`) keeps Turbopack via Vercel.
+
+- `AGENTS.md:84,113` updated. The "Do not re-add `--webpack`" rule is now "Do not remove `--webpack`
+  from the dev script."
+- `package.json` (the dirty worktree item from earlier) is now policy-aligned.
+- `TRD.md` was already correct (`§1 row Dev server` + `§8 §9`); no edit needed.
+
+### Default payment method migration applied (P3-G)
+
+`scripts/migrations/20260804_default_payment_method.sql` — created 04/08, sitting in the repo but
+not yet applied to Supabase. Applied today via `supabase db query --linked -f <path>` (the
+Supabase CLI has no `db execute` in v2.113.0; `db query --linked -f` is the equivalent).
+
+Verified post-apply:
+- Column exists: `public.profiles.default_payment_method` — `text`, nullable, no default.
+- CHECK constraint `profiles_default_payment_method_check` enforces
+  `{Cash, Card, Transfer, POS, Other}` (same enum as `transactions.payment_method`).
+- Migration is idempotent (`ADD COLUMN IF NOT EXISTS`) — safe re-runs.
+
+Quick-add now persists your `default_payment_method` choice (Card by default per your current
+Settings page) across devices, instead of silently resetting per-browser via Zustand.
+
+### Phase 3 gate — Victor's verification pass (19/08/2026)
+
+Victor walked through every gate item in `PHASES.md:287-297` and confirmed:
+
+| Gate item | Status |
+|---|---|
+| Every route in APP_FLOW §1 renders | ✅ |
+| Analytics shows real data, charts correct | ✅ |
+| Recurring template → confirm → tx with `recurring_id` | ✅ |
+| Currency widget ₦→USD/GBP/EUR | ✅ |
+| Landing CTAs both work | ✅ |
+| Production URL works (no 500) | ✅ |
+| 30+ real transactions (50+ actual) | ✅ |
+
+Open items: production-branch `tsc --noEmit` clean (unverified post-deploy), console errors in
+production (judgement call), hiring-manager 60s gut check (judgement call). All three depend on
+Victor's next browser pass; no code required.
+
+### Landing-page screenshot inventory (catalogued 19/08/2026)
+
+`~/Downloads/Ledger-sc/` — 13 PNGs (Aug 14 batch). Vision-checked:
+
+| Coverage | Pages captured |
+|---|---|
+| **Mobile (375px)** | Dashboard only — **1/13**. ~12 pages missing mobile coverage. |
+| **Landing** | Hero (desktop), Full (desktop) — 2 |
+| **Dashboard** | 3 desktop variants (with/without due banner, with/without budgets+goals rail) |
+| **Transactions** | 2 desktop (incl. full scroll) |
+| **Goals** | 1 desktop |
+| **Analytics** | 1 desktop (long) |
+| **Recurring** | 1 desktop |
+| **Settings** | 2 desktop (top, + currency widget) |
+| **Missing desktop** | Budgets, Categories, Transaction Detail, Goal Detail, Sign-in, Sign-up |
+
+Victor flagged mobile-first as the priority gap (he captured mostly desktop). Plan: reshoot ~12
+mobile pages + the 6 missing desktop pages, then build a landing-page carousel from the mobile
+set (the carousel replaces the "View Demo" concept — demo account removed 09/08, "View Demo" CTA
+now misleading since it links to /sign-in).
+
+### OG-image status
+
+`app/layout.tsx` references `/og-image.png`. Currently absent from `public/` (verified by
+directory listing). Needs capture after hero is finalized (Victor wants hero fixed first). 1200×630
+standard, served as PNG/JPG, must render the headline + a real screenshot preview. Plan: capture
+hero at production URL after hero fix lands, then export to `public/og-image.png`.
+
+### Backlog (post-P3, not blocking)
+
+- **Clerk data-bleed bug** (NOTES.md 12/08) — sign out/in briefly shows previous user's data.
+  Root cause not yet diagnosed; suspected TanStack cache not clearing on `user_id` change +
+  Clerk `useUser()`/profile-sync hydration racing.
+- **TopBar back-nav full rework** — `isDesktopPrimary` is one-route patch; underlying class
+  problem (router.back() can walk deep-link visitors out) not fixed.
+- **Recurring `next_date` past-dated on create** — accepted but undocumented as intentional.
+- **Recurring confirm/skip** — two sequential writes (no DB transaction); money + duplicate-tx
+  risk on partial failure. Matches existing codebase pattern but flagged.
+
+### Pending landing-page work (awaiting Victor approval)
+
+- Hero page fix (before OG capture).
+- Replace "View Demo" / 2-image preview with screenshot carousel/gallery from the mobile set.
+- Capture hero screenshot at production URL → `public/og-image.png`.
+- Mobile screenshot reshoot (~12 pages) + missing desktop pages (~6).
+
+Plan to follow once Victor approves scope.
+
+### Phase 3 gate closed (19/08/2026)
+
+Per AGENTS.md §1.8, Victor confirmed gate items individually across this session:
+
+- **Items 1–5** (routes, analytics, recurring, currency, landing CTAs + mobile + meta tags) — visually confirmed by Victor.
+- **Item 6** (Vercel live + sign up + log tx + appears) — pre-existing, confirmed by Victor.
+- **Items 7–8** (30+ trsx; tsc clean on prod branch) — confirmed by Victor; 50+ actual trsx logged; tsc is part of every agent's pre-push workflow per Victor.
+- **Item 9** (zero console errors in production) — confirmed by Victor; the localhost Clerk API error is the expected dev-mode handshake warning, not a prod issue.
+- **Item 10** (hiring-manager 60s gut check) — **deferred to Phase 4** at Victor's explicit direction. Treated as out-of-scope for P3.
+
+`PHASES.md` gate checklist updated. `npx tsc --noEmit` clean on local main (19/08); `npm run lint` 0 errors, same 4 pre-existing warnings noted in earlier entries (budgets-view, category-form-sheet, goals-view, transactions.ts). No new findings from this session's verification.
+
+Phase 4 is now unblocked. Per `PHASES.md:300-302`: PWA manifest + service worker + offline viewing, CSV export, light-mode value refinement (architecture already in place from Phase 0), Lighthouse audit, responsive polish, logo design, product tour, README via readme-generator.
+
+### Pre-Phase-4 backlog carried forward (not closed by P3)
+
+- **Clerk data-bleed** (12/08 NOTES.md) — sign out/in briefly shows previous user's data; root cause not yet diagnosed.
+- **TopBar back-nav full rework** — `isDesktopPrimary` is one-route patch, not the class fix.
+- **Recurring `next_date` past-dated** accepted on create (decision: intentional or bug? undecided).
+- **Recurring confirm/skip** — two sequential writes, no DB transaction (duplicate-tx risk on partial failure).
+
+### Mobile screenshot capture (post-P3)
+
+Victor asked (19/08): 13 routes × 2 themes (dark + light) = 26 mobile screenshots at 375px, before landing-page polish lands. Flagged dark-screenshot-on-light-page aesthetic concern but said "let's just put a pin on it."
+
+#### Auth blocker discovered 20/08/2026
+
+Programmatic Clerk login does **not** work end-to-end against the production Vercel deploy: Clerk's sign-in form routes any "new device" through `/sign-in/client-trust`, which emails a 6-digit OTP. Headless Playwright contexts always look like new devices, and the OTP goes to Victor's email (the Spidey account's underlying address is `nbmichael97@gmail.com` per the masked value shown on the trust page). Without mailbox access there is no way for an agent to satisfy that step.
+
+Workaround (chosen): reuse Victor's existing trusted session. Two-script flow:
+- `scripts/export-storage-state.mjs` — connects to Victor's live Brave via Chrome DevTools Protocol (`--remote-debugging-port=9222`), opens a tab on `/dashboard`, confirms auth, writes cookies + localStorage to `scripts/storageState.json`.
+- `scripts/capture-mobile-screenshots.mjs` — launches a fresh incognito Brave, loads the storageState, captures 13 routes × 2 themes = 26 PNGs at 375px into `public/mobile-{dark,light}-{route}.png`.
+
+Both scripts share the same incognito-no-extensions convention as `~/.agents/playwright-core/clean-context.mjs`.
+
+#### Captured 20/08/2026
+
+Victor closed Brave, agent launched it with `--remote-debugging-port=9222`, exported storageState, and ran the capture script.
+
+- 26 PNGs written to `public/mobile-{dark,light}-{route}.png` (375×812 @ 2x DPR, full viewport).
+- All 13 routes × 2 themes captured. Auth succeeded via the Spidey Clerk session loaded from `scripts/storageState.json`.
+- Sign-in / sign-up captured in a separate unauthenticated context so Clerk doesn't redirect them to /dashboard.
+- Theme applied via `context.addInitScript` writing `localStorage['ledger-theme']` BEFORE the page's inline script in `app/layout.tsx` reads it — no flash, no theme drift.
+
+Route list (13):
+- `/sign-in`, `/sign-up` (public, logged-out)
+- `/dashboard`, `/transactions`, `/transactions/a07b4f9e-8419-4535-91eb-a820c71e6636` (Aug 16 tx), `/budgets`, `/goals`, `/goals/fc94f197-8b86-4147-b15c-1b1f34b21f13` (Washing Machine), `/analytics`, `/recurring`, `/settings`, `/settings/categories`, `/` (landing) — all authenticated
+
+Detail-route IDs sampled 19/08 from Supabase via service-role (most-recent transaction and an active Washing Machine goal).
+
+#### Notes for Phase 4 integration
+
+- The hero Naira glyph on the landing page (e.g. `Track every ₦.`) renders with subtle kerning artefacts at 375px — captured as-is. Phase 4 polish (or font tuning) may address.
+- Sign-in screenshot still shows the orange "Development mode" badge at the bottom — that's a Clerk instance-level message (this project is on a dev Clerk instance, `included-mallard-13.accounts.dev`), not a theme artifact. Will go away once the Clerk instance is upgraded to production; out of scope here.
+- Files are not yet committed. Awaiting Victor's call: commit + integrate into a landing-page carousel (P4), or leave them as raw assets.
+- Victor's flagged dark-screenshot-on-light-page aesthetic concern is **still open** — Phase 4 must decide treatment before publishing the captures anywhere.
+
+Spidey creds (`Spidey` / `KrispyK40!`) were provided as a fallback during exploration; the storageState path made them unnecessary.

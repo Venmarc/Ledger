@@ -81,7 +81,7 @@ If your changes move away from that goal → stop, flag it, and wait.
 
 ### 1.5 Performance & Tooling
 
-- **`next dev`** for local dev (Turbopack, Next 16.3+). Victor migrated off `--webpack` on 2026-08-12 — Turbopack is now stable on his machine and the `--webpack` flag is gone from `package.json`. Do **not** re-add `--webpack`.
+- **`next dev --webpack`** for local dev. Next 16.3 Turbopack is stable in principle but compile times on Victor's machine are still slow enough that webpack is preferred for dev iteration. `package.json` `dev` script reverts to `next dev --webpack`. Production build remains Turbopack via `next build`. Do **not** remove `--webpack` from the dev script.
 - **`.superpowers/`** is agent workspace — in `.gitignore`, not part of the app.
 
 ### 1.6 Scope
@@ -110,7 +110,7 @@ If your changes move away from that goal → stop, flag it, and wait.
 | Database | Supabase (Postgres + RLS) |
 | Styling | Tailwind CSS + shadcn/ui (Radix / Nova preset) |
 | State | Zustand (UI) + TanStack Query (server cache) |
-| Local dev | `next dev` (Turbopack, Next 16.3+ — migrated off `--webpack` 2026-08-12) |
+| Local dev | `next dev --webpack` (reverted from Turbopack 2026-08-19 — Turbopack still slow on Victor's machine; production build keeps Turbopack via `next build`) |
 | Middleware | `proxy.ts` only — never `middleware.ts` |
 | Profile sync | Client `<ProfileSync />`, not blocking server layout |
 | Currency | NGN only |

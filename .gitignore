@@ -54,5 +54,8 @@ next-env.d.ts
 /lib/supabase/seed-spidey-demo-data.ts
 /lib/supabase/test-data.csv
 
+# Playwright storage state — contains Clerk auth cookies; rotate before re-generating
+/scripts/storageState.json
+
 # Working plan overviews (ephemeral; not product docs — see docs/README.md)
 /docs/
