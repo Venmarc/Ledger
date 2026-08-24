@@ -557,3 +557,17 @@ Detail-route IDs sampled 19/08 from Supabase via service-role (most-recent trans
 - Victor's flagged dark-screenshot-on-light-page aesthetic concern is **still open** — Phase 4 must decide treatment before publishing the captures anywhere.
 
 Spidey creds (`Spidey` / `KrispyK40!`) were provided as a fallback during exploration; the storageState path made them unnecessary.
+
+## 24/08/2026 — Phase 4 PWA implemented (manifest + service worker + offline)
+
+Executed `docs/P4-PWA-PLAN.md` (the durable execution artifact — read it for the full record incl. deviations).
+
+- Manifest (`app/manifest.ts`), iOS standalone meta + viewport (`app/layout.tsx` appleWebApp / themeColor), service worker (`app/sw.ts` + `app/serwist/[path]/route.ts`), offline fallback page (`app/~offline`).
+- Offline data: TanStack Query cache persisted per-user to localStorage (`ledger-query-cache-<clerkUserId>`) and hydrated on boot — implemented manually in `components/providers.tsx` (NOT `PersistQueryClientProvider`, which can't re-key per user after mount). Added `refetchOnMount: () => navigator.onLine` so offline boot renders the cached data instead of an error state.
+- SW: `@serwist/turbopack` (works under Next 16.3 Turbopack), `skipWaiting`+`clientsClaim`, NetworkOnly for POST server-actions + Clerk hosts, precache scoped to app shell + icons (excludes the untracked `mobile-*.png` screenshots).
+- Icons 192/512/maskable generated via `scripts/generate-pwa-icons.mjs` replicating the apple-touch composition.
+- Deps added: `@serwist/turbopack`, `@serwist/window`, `serwist`, `@tanstack/react-query-persist-client`, `@tanstack/query-sync-storage-persister`; dev `esbuild`; `@tanstack/react-query` bumped to `^5.102.2`.
+
+Verification: `tsc`, `lint`, `build` all pass. Runtime (next start + Playwright/Brave): SW registers/activates/controls, precache correct, offline reload of visited page works, `/~offline` fallback works, SW headers + manifest + head tags correct.
+
+**BLOCKED — not yet verified:** authenticated offline dashboard render. Spidey sign-in now hits Clerk `client-trust` requiring an emailed verification code (can't receive in this environment); no `scripts/storageState.json` available. Also unverified: iOS standalone launch, Android install prompt, cross-user cache check (device/prod only). TODO for a later session or Victor's device: `next build && next start`, sign in once, force offline, reload `/dashboard` → must render last-viewed dashboard + recent transactions.

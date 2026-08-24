@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
@@ -6,6 +6,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "@/components/providers";
+import { PwaRegister } from "@/components/pwa-register";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -40,6 +41,15 @@ export const metadata: Metadata = {
     icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
     apple: "/apple-touch-logo.png",
   },
+  appleWebApp: {
+    capable: true,
+    title: "Ledger",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0A0A0A",
 };
 
 export default function RootLayout({
@@ -70,6 +80,7 @@ export default function RootLayout({
           />
         </head>
         <body className="min-h-full flex flex-col bg-bg-base text-text-primary">
+          <PwaRegister />
           <ThemeProvider>
             <Providers>
               {children}
