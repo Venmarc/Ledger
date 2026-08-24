@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ChevronRight, RefreshCw, Tags } from 'lucide-react'
 import { AccountSection } from '@/components/settings/account-section'
 import { CurrencyWidget } from '@/components/settings/currency-widget'
+import { ExportSection } from '@/components/settings/export-section'
 import { PreferencesSection } from '@/components/settings/preferences-section'
 import { ProfileSection } from '@/components/settings/profile-section'
 
@@ -60,6 +61,8 @@ export default function SettingsPage() {
       <PreferencesSection />
 
       <CurrencyWidget />
+
+      <ExportSection />
 
       <AccountSection />
     </div>

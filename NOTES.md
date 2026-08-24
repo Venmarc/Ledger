@@ -571,3 +571,19 @@ Executed `docs/P4-PWA-PLAN.md` (the durable execution artifact — read it for t
 Verification: `tsc`, `lint`, `build` all pass. Runtime (next start + Playwright/Brave): SW registers/activates/controls, precache correct, offline reload of visited page works, `/~offline` fallback works, SW headers + manifest + head tags correct.
 
 **BLOCKED — not yet verified:** authenticated offline dashboard render. Spidey sign-in now hits Clerk `client-trust` requiring an emailed verification code (can't receive in this environment); no `scripts/storageState.json` available. Also unverified: iOS standalone launch, Android install prompt, cross-user cache check (device/prod only). TODO for a later session or Victor's device: `next build && next start`, sign in once, force offline, reload `/dashboard` → must render last-viewed dashboard + recent transactions.
+
+## 24/08/2026 — Phase 4 P4-CSV: Export Data on /settings
+
+Implemented `docs/P4-CSV.md` (approved "proceed"). Two authenticated GET route handlers + a Settings section:
+
+- `app/api/export/transactions/route.ts` — all transactions in an inclusive date range, chronological; columns `Date, Type, Amount (₦), Category, Payment Method, Description, Notes, Tags`.
+- `app/api/export/summary/route.ts` — income / expense / net per calendar month (zero rows for empty months); columns `Month, Income (₦), Expense (₦), Net (₦)`.
+- Output: UTF-8 BOM, CRLF, RFC-4180 escaping; filename `ledger-<prefix>-<from>_<to>.csv`; `Cache-Control: no-store`.
+- Pure helpers in `lib/export/csv.ts` + `lib/export/summary.ts` (node-unit-tested via esbuild bundle, 25/25 assertions); validation: missing/bad/from>to → 400, no session → 401.
+- `components/settings/export-section.tsx` (SectionShell "Export Data") between CurrencyWidget and AccountSection; default range = 11 months back → today (Lagos); fetch→blob download with inline error state.
+- `app/sw.ts`: added `NetworkOnly` for `/api/export/` so offline never serves a stale CSV (verified in built SW).
+- PAGE_SPECS §12 updated (export was explicitly reserved for Phase 4 there); PHASES.md changelog row added.
+
+Verification: tsc clean, lint 0 errors (4 pre-existing warnings), build passes, live 400/401 smoke all correct.
+
+**Residual (same blocker as PWA):** authenticated download of actual file contents not verifiable locally — Clerk `client-trust` needs an emailed code. Verify post-deploy on Victor's device: Settings → Export Data → pick a known range → open CSV in Numbers/Excel; check rows, headers, ₦ columns as numbers, BOM (no mojibake on ₦).

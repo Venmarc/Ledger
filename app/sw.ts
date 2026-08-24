@@ -41,6 +41,11 @@ const runtimeCaching: RuntimeCaching[] = [
     matcher: isClerkHost,
     handler: new NetworkOnly(),
   },
+  // Exports must always be fresh — never serve a stale CSV from cache.
+  {
+    matcher: ({ url }) => url.pathname.startsWith("/api/export/"),
+    handler: new NetworkOnly(),
+  },
   ...defaultCache,
 ];
 

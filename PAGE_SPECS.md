@@ -812,6 +812,7 @@ User preferences and account management. Minimal. Does not need to be impressive
 [PROFILE SECTION]
 [PREFERENCES SECTION]
 [CURRENCY WIDGET]
+[EXPORT DATA]
 [DANGER ZONE]
 ```
  
@@ -848,11 +849,23 @@ User preferences and account management. Minimal. Does not need to be impressive
 - Conversion is calculated client-side: `userInput * rate`. No additional API calls per keystroke.
 - If `/api/rates` returns an error or times out: widget shows error state. No retry loop. User reloads if needed.
 - `CURRENCY_API_KEY` and `CURRENCY_API_BASE_URL` have no `NEXT_PUBLIC_` prefix. They are server-only. See TRD.md §4.4.
+### EXPORT DATA
+- Heading: "Export Data"
+- Subheading: "Download your transactions or a monthly income and expense summary as a CSV file."
+- Two blocks, each with a From / To date range and a "Download CSV" button:
+  - **Transactions** — every transaction between the selected dates. `GET /api/export/transactions?from=YYYY-MM-DD&to=YYYY-MM-DD`
+  - **Monthly Summary** — income, expense, and net per calendar month. `GET /api/export/summary?from=YYYY-MM-DD&to=YYYY-MM-DD`
+- Default range: From = first day of the month 11 months back; To = today (Lagos).
+- Output: RFC-4180 CSV, UTF-8 BOM, CRLF rows; filename `ledger-transactions-<from>_<to>.csv` / `ledger-monthly-summary-<from>_<to>.csv`.
+- Transactions columns: `Date, Type, Amount (₦), Category, Payment Method, Description, Notes, Tags`. Amount fixed 2dp, no separators. Nulls empty; tags joined with ` | `.
+- Summary columns: `Month, Income (₦), Expense (₦), Net (₦)`. One row per calendar month in range, zeros for empty months.
+- Buttons show "Exporting…" while fetching; error state "Could not export. Check your connection and try again." Rest of settings page unaffected.
+- Data is generated server-side from the user's own transactions via an authenticated route handler; no CSV content reaches the client except the requested download.
 ### DANGER ZONE
 - Heading: "Account"
 - "Sign out" button — full width, secondary styling.
 - On tap: Clerk signs out, redirect to `/`.
-- No account deletion in v1. No data export from settings in v1 (export is Phase 4).
+- No account deletion in v1.
 ---
  
 ---
