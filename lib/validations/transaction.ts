@@ -42,6 +42,11 @@ export const restoreTransactionSchema = createTransactionSchema.extend({
   id: z.string().uuid(),
 })
 
+export const importTransactionsSchema = z
+  .array(createTransactionSchema)
+  .min(1, 'Select at least one valid transaction to import')
+  .max(500, 'Maximum 500 transactions per import')
+
 export type CreateTransactionInput = z.infer<typeof createTransactionSchema>
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>
 export type RestoreTransactionInput = z.infer<typeof restoreTransactionSchema>

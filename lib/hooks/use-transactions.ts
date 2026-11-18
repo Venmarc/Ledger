@@ -13,6 +13,7 @@ import {
   deleteTransaction,
   getMonthSummary,
   getTransaction,
+  importTransactions,
   listRecentTransactions,
   listTransactions,
   restoreTransaction,
@@ -205,6 +206,21 @@ export function useCreateTransaction() {
         }
       )
 
+      invalidateTransactionReads(queryClient)
+    },
+  })
+}
+
+export function useImportTransactions() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (rows: CreateTransactionInput[]) => {
+      const result = await importTransactions(rows)
+      if (!result.ok) throw new Error(result.error)
+      return result.data
+    },
+    onSuccess: () => {
       invalidateTransactionReads(queryClient)
     },
   })

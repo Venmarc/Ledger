@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { FileSpreadsheet } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   BottomSheet,
@@ -15,6 +16,7 @@ import {
   AmountInput,
   CategoryPills,
   CategoryPillsSkeleton,
+  CsvImportPanel,
   DateField,
   DescriptionInput,
   PaymentMethodSelect,
@@ -44,6 +46,7 @@ export function QuickAddSheet() {
   const clearDraft = useQuickAddDraftStore((s) => s.clearDraft)
   const ensureDraftForOpen = useQuickAddDraftStore((s) => s.ensureDraftForOpen)
 
+  const [mode, setMode] = React.useState<'single' | 'import'>('single')
   const [showAdvanced, setShowAdvanced] = React.useState(false)
   const [mruIds, setMruIds] = React.useState(() =>
     typeof window !== 'undefined' ? getMruCategoryIds() : []
@@ -148,12 +151,14 @@ export function QuickAddSheet() {
   const handleOpenChange = (next: boolean) => {
     if (next) {
       ensureDraftForOpen(profile?.default_payment_method)
+      setMode('single')
       setAmountError(undefined)
       setCategoryError(undefined)
     } else {
       if (!draft.isDirty) {
         clearDraft()
       }
+      setMode('single')
       setShowAdvanced(false)
       setAmountError(undefined)
       setCategoryError(undefined)
@@ -177,11 +182,27 @@ export function QuickAddSheet() {
     >
       <BottomSheetContent showClose>
         <BottomSheetHeader className="pr-12">
-          <BottomSheetTitle>Log transaction</BottomSheetTitle>
+          <div className="flex items-center justify-between gap-2">
+            <BottomSheetTitle>
+              {mode === 'import' ? 'Import CSV' : 'Log transaction'}
+            </BottomSheetTitle>
+            {mode === 'single' ? (
+              <button
+                type="button"
+                onClick={() => setMode('import')}
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-bg-surface px-2.5 text-xs font-semibold text-text-secondary transition-colors hover:border-border-strong hover:text-text-primary cursor-pointer"
+              >
+                <FileSpreadsheet className="h-3.5 w-3.5 text-orange" aria-hidden />
+                Import CSV
+              </button>
+            ) : null}
+          </div>
           <BottomSheetDescription>
-            Amount first — save in under 10 seconds.
+            {mode === 'import'
+              ? 'Bulk-add transactions from a CSV file.'
+              : 'Amount first — save in under 10 seconds.'}
           </BottomSheetDescription>
-          {openedWithDraft && draft.isDirty ? (
+          {mode === 'single' && openedWithDraft && draft.isDirty ? (
             <div className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-amber/40 bg-amber-muted px-3 py-2">
               <p className="text-xs font-medium text-amber">Draft restored</p>
               <button
@@ -195,95 +216,107 @@ export function QuickAddSheet() {
           ) : null}
         </BottomSheetHeader>
 
-        <BottomSheetBody>
-          <AmountInput
-            ref={amountRef}
-            value={draft.amount}
-            onChange={(amount) => {
-              setDraft({ amount })
-              if (amountError) setAmountError(undefined)
+        {mode === 'import' ? (
+          <CsvImportPanel
+            onBack={() => setMode('single')}
+            onSuccess={() => {
+              setMode('single')
+              setQuickAddOpen(false)
             }}
-            error={amountError}
           />
-
-          <TypeToggle value={draft.type} onChange={handleTypeChange} />
-
-          {categoriesLoading ? (
-            <CategoryPillsSkeleton />
-          ) : (
-            <CategoryPills
-              categories={categories}
-              value={draft.category_id}
-              mruIds={mruIds}
-              error={categoryError}
-              onChange={(category_id) => {
-                setDraft({ category_id })
-                if (categoryError) setCategoryError(undefined)
-              }}
-            />
-          )}
-
-          <PaymentMethodSelect
-            value={draft.payment_method}
-            onChange={(payment_method: PaymentMethod | null) =>
-              setDraft({ payment_method })
-            }
-          />
-
-          <DateField
-            value={draft.transaction_date}
-            onChange={(transaction_date) => setDraft({ transaction_date })}
-          />
-
-          <DescriptionInput
-            value={draft.description}
-            onChange={(description) => setDraft({ description })}
-          />
-
-          <button
-            type="button"
-            onClick={() => setShowAdvanced((v) => !v)}
-            className="self-start text-sm font-medium text-azure hover:underline cursor-pointer min-h-10"
-          >
-            {showAdvanced ? 'Hide notes' : 'Add notes'}
-          </button>
-
-          {showAdvanced ? (
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="quick-add-notes"
-                className="text-sm font-medium text-text-secondary"
-              >
-                Notes{' '}
-                <span className="font-normal text-text-tertiary">(optional)</span>
-              </label>
-              <textarea
-                id="quick-add-notes"
-                value={draft.notes}
-                onChange={(e) => setDraft({ notes: e.target.value })}
-                rows={3}
-                maxLength={2000}
-                placeholder="Extra context…"
-                className="w-full rounded-lg border border-border bg-bg-surface px-3.5 py-3 text-base text-text-primary placeholder:text-text-tertiary focus:border-orange focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-orange resize-y min-h-[88px]"
+        ) : (
+          <>
+            <BottomSheetBody>
+              <AmountInput
+                ref={amountRef}
+                value={draft.amount}
+                onChange={(amount) => {
+                  setDraft({ amount })
+                  if (amountError) setAmountError(undefined)
+                }}
+                error={amountError}
               />
-            </div>
-          ) : null}
-        </BottomSheetBody>
 
-        <BottomSheetFooter className="flex-col sm:flex-col">
-          <PrimaryButton
-            onClick={() => void submit()}
-            disabled={!canSave}
-            loading={createMutation.isPending}
-          >
-            Save
-          </PrimaryButton>
-          {draft.isDirty ? (
-            <SecondaryButton type="button" onClick={handleDiscard}>
-              Discard draft
-            </SecondaryButton>
-          ) : null}
-        </BottomSheetFooter>
+              <TypeToggle value={draft.type} onChange={handleTypeChange} />
+
+              {categoriesLoading ? (
+                <CategoryPillsSkeleton />
+              ) : (
+                <CategoryPills
+                  categories={categories}
+                  value={draft.category_id}
+                  mruIds={mruIds}
+                  error={categoryError}
+                  onChange={(category_id) => {
+                    setDraft({ category_id })
+                    if (categoryError) setCategoryError(undefined)
+                  }}
+                />
+              )}
+
+              <PaymentMethodSelect
+                value={draft.payment_method}
+                onChange={(payment_method: PaymentMethod | null) =>
+                  setDraft({ payment_method })
+                }
+              />
+
+              <DateField
+                value={draft.transaction_date}
+                onChange={(transaction_date) => setDraft({ transaction_date })}
+              />
+
+              <DescriptionInput
+                value={draft.description}
+                onChange={(description) => setDraft({ description })}
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowAdvanced((v) => !v)}
+                className="self-start text-sm font-medium text-azure hover:underline cursor-pointer min-h-10"
+              >
+                {showAdvanced ? 'Hide notes' : 'Add notes'}
+              </button>
+
+              {showAdvanced ? (
+                <div className="flex flex-col gap-1.5">
+                  <label
+                    htmlFor="quick-add-notes"
+                    className="text-sm font-medium text-text-secondary"
+                  >
+                    Notes{' '}
+                    <span className="font-normal text-text-tertiary">(optional)</span>
+                  </label>
+                  <textarea
+                    id="quick-add-notes"
+                    value={draft.notes}
+                    onChange={(e) => setDraft({ notes: e.target.value })}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Extra context…"
+                    className="w-full rounded-lg border border-border bg-bg-surface px-3.5 py-3 text-base text-text-primary placeholder:text-text-tertiary focus:border-orange focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-orange resize-y min-h-[88px]"
+                  />
+                </div>
+              ) : null}
+            </BottomSheetBody>
+
+            <BottomSheetFooter className="flex-col sm:flex-col">
+              <PrimaryButton
+                onClick={() => void submit()}
+                disabled={!canSave}
+                loading={createMutation.isPending}
+              >
+                Save
+              </PrimaryButton>
+              {draft.isDirty ? (
+                <SecondaryButton type="button" onClick={handleDiscard}>
+                  Discard draft
+                </SecondaryButton>
+              ) : null}
+            </BottomSheetFooter>
+          </>
+        )}
       </BottomSheetContent>
     </BottomSheet>
   )
