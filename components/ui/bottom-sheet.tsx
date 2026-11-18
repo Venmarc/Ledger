@@ -23,7 +23,7 @@ const SheetCtx = React.createContext<{
 } | null>(null)
 
 /**
- * Mobile: full-width bottom sheet.
+ * Mobile: full-width bottom sheet with swipe-down-to-dismiss.
  * Desktop (md+): centered card with side gutters + blurred backdrop.
  */
 export function BottomSheet({
@@ -34,9 +34,41 @@ export function BottomSheet({
   layer = 'base',
 }: BottomSheetProps) {
   const rootRef = React.useRef<HTMLDivElement>(null)
+  const panelRef = React.useRef<HTMLDivElement>(null)
+  const dragStateRef = React.useRef<{
+    startX: number
+    startY: number
+    startTime: number
+    currentOffset: number
+    isDragging: boolean
+    lockedOut: boolean
+    closing: boolean
+  }>({
+    startX: 0,
+    startY: 0,
+    startTime: 0,
+    currentOffset: 0,
+    isDragging: false,
+    lockedOut: false,
+    closing: false,
+  })
 
   React.useEffect(() => {
     if (!open) return
+    if (panelRef.current) {
+      panelRef.current.style.transition = ''
+      panelRef.current.style.transform = ''
+    }
+    dragStateRef.current = {
+      startX: 0,
+      startY: 0,
+      startTime: 0,
+      currentOffset: 0,
+      isDragging: false,
+      lockedOut: false,
+      closing: false,
+    }
+
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const onKey = (e: KeyboardEvent) => {
@@ -55,6 +87,116 @@ export function BottomSheet({
       document.removeEventListener('keydown', onKey)
     }
   }, [open, dismissible, onOpenChange])
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!dismissible || dragStateRef.current.closing || e.touches.length !== 1) {
+      return
+    }
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) return
+
+    const target = e.target as HTMLElement | null
+    if (target?.closest('textarea, input[type="range"], [data-no-sheet-drag]')) {
+      dragStateRef.current.lockedOut = true
+      return
+    }
+
+    const touch = e.touches[0]
+    dragStateRef.current = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startTime: Date.now(),
+      currentOffset: 0,
+      isDragging: false,
+      lockedOut: false,
+      closing: false,
+    }
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const state = dragStateRef.current
+    if (
+      !dismissible ||
+      state.lockedOut ||
+      state.closing ||
+      e.touches.length !== 1 ||
+      !panelRef.current
+    ) {
+      return
+    }
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) return
+
+    const touch = e.touches[0]
+    const dx = touch.clientX - state.startX
+    const dy = touch.clientY - state.startY
+
+    if (!state.isDragging) {
+      if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+        state.lockedOut = true
+        return
+      }
+      if (dy < -6) {
+        state.lockedOut = true
+        return
+      }
+      if (dy > 8) {
+        const scrollEl = panelRef.current.querySelector<HTMLElement>(
+          '[data-ledger-sheet-scroll]'
+        )
+        if (scrollEl && scrollEl.scrollTop > 1) {
+          state.lockedOut = true
+          return
+        }
+        state.isDragging = true
+      } else {
+        return
+      }
+    }
+
+    const offset = Math.max(0, dy)
+    state.currentOffset = offset
+    if (e.cancelable) {
+      e.preventDefault()
+    }
+    panelRef.current.style.transition = 'none'
+    panelRef.current.style.transform = `translateY(${offset}px)`
+  }
+
+  const finishTouchDrag = () => {
+    const state = dragStateRef.current
+    const panel = panelRef.current
+    if (!state.isDragging || !panel) {
+      state.isDragging = false
+      state.lockedOut = false
+      return
+    }
+
+    const elapsed = Math.max(1, Date.now() - state.startTime)
+    const velocity = state.currentOffset / elapsed
+    const shouldClose =
+      state.currentOffset > 96 || (state.currentOffset > 44 && velocity > 0.45)
+
+    state.isDragging = false
+    state.lockedOut = false
+
+    if (shouldClose) {
+      state.closing = true
+      panel.style.transition = 'transform 180ms cubic-bezier(0.22, 1, 0.36, 1)'
+      panel.style.transform = 'translateY(100%)'
+      window.setTimeout(() => {
+        onOpenChange(false)
+      }, 160)
+    } else {
+      state.currentOffset = 0
+      panel.style.transition = 'transform 200ms cubic-bezier(0.22, 1, 0.36, 1)'
+      panel.style.transform = 'translateY(0px)'
+      window.setTimeout(() => {
+        if (panelRef.current && !dragStateRef.current.isDragging) {
+          panelRef.current.style.transition = ''
+          panelRef.current.style.transform = ''
+        }
+      }, 210)
+    }
+  }
 
   if (!open || typeof document === 'undefined') return null
 
@@ -80,9 +222,14 @@ export function BottomSheet({
 
         {/* Mobile: docked bottom full-width. Desktop: centered dialog card. */}
         <div
+          ref={panelRef}
           role="dialog"
           aria-modal="true"
           data-slot="drawer-content"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={finishTouchDrag}
+          onTouchCancel={finishTouchDrag}
           className={cn(
             'absolute z-10 w-full overflow-hidden bg-bg-elevated text-text-primary shadow-2xl outline-none',
             // Mobile bottom sheet — layered depth + blur entrance (Rules 5–6)
@@ -128,7 +275,10 @@ export function BottomSheetContent({
           <X className="h-5 w-5" />
         </button>
       )}
-      <div className="max-h-[calc(92vh-1.5rem)] overflow-y-auto overscroll-contain ledger-scroll md:max-h-[min(85vh,640px)]">
+      <div
+        data-ledger-sheet-scroll=""
+        className="max-h-[calc(92vh-1.5rem)] overflow-y-auto overscroll-contain ledger-scroll md:max-h-[min(85vh,640px)]"
+      >
         {children}
       </div>
     </div>

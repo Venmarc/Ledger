@@ -11,6 +11,7 @@ import type {
 } from '@/lib/types/database'
 import {
   createTransactionSchema,
+  importTransactionsSchema,
   restoreTransactionSchema,
   updateTransactionSchema,
   type CreateTransactionInput,
@@ -82,6 +83,29 @@ export async function createTransaction(
   }
 
   return ok(data as unknown as TransactionWithCategory)
+}
+
+export async function importTransactions(
+  rows: CreateTransactionInput[]
+): Promise<ActionResult<{ insertedCount: number }>> {
+  const ctx = await getAuthedContext()
+  if (!ctx.ok) return fail(ctx.error)
+
+  const parsed = importTransactionsSchema.safeParse(rows)
+  if (!parsed.success) {
+    return fail(parsed.error.issues[0]?.message ?? 'Invalid CSV rows')
+  }
+
+  const insertRows = parsed.data.map((row) => toInsertRow(ctx.userId, row))
+
+  const { error } = await ctx.supabase.from('transactions').insert(insertRows)
+
+  if (error) {
+    console.error('importTransactions:', error)
+    return fail('Could not import transactions')
+  }
+
+  return ok({ insertedCount: insertRows.length })
 }
 
 export async function updateTransaction(
@@ -382,4 +406,3 @@ export async function getMonthSummary(
 
   return ok({ income, expense, balance, carriedIn, expenseRatio })
 }
-

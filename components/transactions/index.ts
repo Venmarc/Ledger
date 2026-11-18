@@ -16,6 +16,7 @@ export {
   SecondaryButton,
   DestructiveButton,
 } from './primary-button'
+export { CsvImportPanel } from './csv-import-panel'
 export { QuickAddSheet } from './quick-add-sheet'
 export { TransactionFilterBar } from './filter-bar'
 export {
