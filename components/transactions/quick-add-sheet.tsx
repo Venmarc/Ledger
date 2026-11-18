@@ -181,7 +181,7 @@ export function QuickAddSheet() {
       dismissible={!createMutation.isPending}
     >
       <BottomSheetContent showClose>
-        <BottomSheetHeader className="pr-12">
+        <BottomSheetHeader className="pr-14">
           <div className="flex items-center justify-between gap-2">
             <BottomSheetTitle>
               {mode === 'import' ? 'Import CSV' : 'Log transaction'}
@@ -197,11 +197,11 @@ export function QuickAddSheet() {
               </button>
             ) : null}
           </div>
-          <BottomSheetDescription>
-            {mode === 'import'
-              ? 'Bulk-add transactions from a CSV file.'
-              : 'Amount first — save in under 10 seconds.'}
-          </BottomSheetDescription>
+          {mode === 'import' ? (
+            <BottomSheetDescription>
+              Bulk-add transactions from a CSV file.
+            </BottomSheetDescription>
+          ) : null}
           {mode === 'single' && openedWithDraft && draft.isDirty ? (
             <div className="mt-2 flex items-center justify-between gap-2 rounded-lg border border-amber/40 bg-amber-muted px-3 py-2">
               <p className="text-xs font-medium text-amber">Draft restored</p>

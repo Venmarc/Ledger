@@ -80,13 +80,16 @@ export function CsvImportPanel({ onSuccess, onBack }: CsvImportPanelProps) {
           aria-label="Select CSV file"
         />
 
-        <div className="rounded-xl border border-border bg-bg-subtle p-4">
+        <div className="overflow-hidden rounded-xl border border-border bg-bg-subtle p-4">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-muted text-orange">
               <FileSpreadsheet className="h-5 w-5" aria-hidden />
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-text-primary">
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <p
+                title={fileName ?? undefined}
+                className="truncate text-sm font-semibold text-text-primary"
+              >
                 {fileName ?? 'Upload a CSV file'}
               </p>
               <p className="mt-1 text-xs leading-relaxed text-text-secondary">
