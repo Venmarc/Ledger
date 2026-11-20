@@ -47,6 +47,9 @@ next-env.d.ts
 # MCP config — carries a Supabase personal access token, never commit
 /.mcp.json
 
+# Supabase local state — auth tokens, linked project ref, never commit
+/.supabase/
+
 # obsidian vault config (not app content)
 /.obsidian/
 
