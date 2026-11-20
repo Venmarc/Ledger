@@ -35,9 +35,9 @@ Source audit (immutable): `SecondBrain/raw/2026-08-04-ledger-landing-page-audit.
   apps created after 2025-11-14) forces an email-code OTP on any new-device password sign-in, and
   the demo address was a fake domain with no mailbox (code unreachable). Disabling Device Trust
   would weaken security for all users — rejected.
-- Account fully reverted to Victor's real `nbmichael97@gmail.com` (verified + primary); the fake
+- Account fully reverted to the project owner's primary address (verified + primary); the fake
   `spidey@bnd.man` was deleted. Password was overwritten during the attempt and is unrecoverable —
-  Victor resets it himself via Dashboard.
+  the owner resets it via Dashboard.
 - **All read-only demo guard code was removed** (09/08/2026): `lib/demo.ts`, the
   `requireWrite`/`DEMO_USER_ID` wiring across `lib/actions/*`, and
   `scripts/migrations/20260807_demo_account_readonly.sql`. RLS migration was **never applied** to
@@ -526,7 +526,7 @@ Victor asked (19/08): 13 routes × 2 themes (dark + light) = 26 mobile screensho
 
 #### Auth blocker discovered 20/08/2026
 
-Programmatic Clerk login does **not** work end-to-end against the production Vercel deploy: Clerk's sign-in form routes any "new device" through `/sign-in/client-trust`, which emails a 6-digit OTP. Headless Playwright contexts always look like new devices, and the OTP goes to Victor's email (the Spidey account's underlying address is `nbmichael97@gmail.com` per the masked value shown on the trust page). Without mailbox access there is no way for an agent to satisfy that step.
+Programmatic Clerk login does **not** work end-to-end against the production Vercel deploy: Clerk's sign-in form routes any "new device" through `/sign-in/client-trust`, which emails a 6-digit OTP. Headless Playwright contexts always look like new devices, and the OTP goes to the account owner's email (the demo account's underlying address, shown masked on the trust page). Without mailbox access there is no way for an agent to satisfy that step.
 
 Workaround (chosen): reuse Victor's existing trusted session. Two-script flow:
 - `scripts/export-storage-state.mjs` — connects to Victor's live Brave via Chrome DevTools Protocol (`--remote-debugging-port=9222`), opens a tab on `/dashboard`, confirms auth, writes cookies + localStorage to `scripts/storageState.json`.
